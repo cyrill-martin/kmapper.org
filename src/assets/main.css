@@ -1,0 +1,24 @@
+@import "./base.css";
+
+.site-wrapper {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+header {
+  min-height: 55px;
+  background-color: #f1f1f1;
+  padding: var(--site-padding);
+}
+
+main {
+  flex-grow: 1;
+  padding: var(--site-padding);
+}
+
+footer {
+  min-height: 85px;
+  padding: var(--site-padding);
+  background-color: #f1f1f1;
+}

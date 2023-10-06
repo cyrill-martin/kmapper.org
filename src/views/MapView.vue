@@ -1,7 +1,16 @@
 <script setup>
+import { ref } from "vue"
 import { NGrid, NGridItem } from "naive-ui"
-import TheSearch from "../components/TheSearch.vue"
-import TheMap from "../components/TheMap.vue"
+import TheSearch from "../components/ui/TheSearch.vue"
+import HomeMap from "../components/maps/HomeMap.vue"
+import DetailsMap from "../components/maps/DetailsMap.vue"
+
+const maps = {
+  HomeMap,
+  DetailsMap
+}
+
+const currentMap = ref("HomeMap")
 </script>
 
 <template>
@@ -13,7 +22,7 @@ import TheMap from "../components/TheMap.vue"
     </n-grid-item>
     <n-grid-item>
       <div>
-        <TheMap />
+        <component :is="maps[currentMap]"></component>
       </div>
     </n-grid-item>
   </n-grid>

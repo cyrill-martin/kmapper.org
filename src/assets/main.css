@@ -1,11 +1,5 @@
 @import "./base.css";
 
-.site-wrapper {
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
-}
-
 header {
   min-height: 55px;
   background-color: #f1f1f1;

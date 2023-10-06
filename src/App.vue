@@ -5,7 +5,7 @@ import TheFooter from "./components/layout/TheFooter.vue"
 </script>
 
 <template>
-  <div class="site-wrapper">
+  <!-- <div class="site-wrapper"> -->
     <TheHeader />
 
     <main>
@@ -13,7 +13,7 @@ import TheFooter from "./components/layout/TheFooter.vue"
     </main>
 
     <TheFooter />
-  </div>
+  <!-- </div> -->
 </template>
 
 <style scoped></style>

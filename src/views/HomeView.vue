@@ -1,6 +1,6 @@
 <script setup>
 import { NGrid, NGridItem } from "naive-ui"
-import TheSearch from "../components/TheSearch.vue"
+import TheSearch from "../components/ui/TheSearch.vue"
 
 </script>
 

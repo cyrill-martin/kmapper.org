@@ -1,17 +1,24 @@
 <script setup>
-import { computed } from "vue";
-import { useRouter, useRoute } from 'vue-router';
-import { NInputGroup, NInput, NButton, NIcon } from "naive-ui";
-import { useSearchStore } from "../stores/search.js";
+import { computed } from "vue"
+import { useRouter, useRoute } from 'vue-router'
+import { NInputGroup, NInput, NButton, NIcon } from "naive-ui"
+import { useSearchStore } from "../../stores/search.js"
+import { useMapsStore } from "../../stores/maps.js"
+
 // Icon
-import SearchOutline from "@vicons/ionicons5/SearchOutline";
+import SearchOutline from "@vicons/ionicons5/SearchOutline"
+// Functions
+import { assignKmapperSubjects } from "../../utils/assignKmapperSubjects.js"
+import { assignDoajRelevance } from "../../utils/assignDoajRelevance.js"
+import { createDataByArticle } from "../../utils/createDataByArticle.js"
 
 // Use the router
 const router = useRouter()
 const route = useRoute()
 
-// Use search store
+// Use stores
 const searchStore = useSearchStore()
+const mapsStore = useMapsStore()
 
 
 // Check if it's a valid search
@@ -22,9 +29,16 @@ const isValidSearch = computed(() => {
 // Function to dearch the DOAJ
 async function search() {
   try {
+    // Search Doaj
     searchStore.searchResults = await searchStore.searchDoaj(searchStore.searchQuery, searchStore.pageSize)
 
-    console.log(searchStore.searchResults)
+    console.log("Search Results", searchStore.searchResults)
+    // Create map data
+    assignKmapperSubjects(searchStore.searchResults.results)
+    assignDoajRelevance(searchStore.searchResults.results)
+    mapsStore.homeMapData = createDataByArticle(searchStore.searchResults.results)
+
+    console.log("HomeMapData", mapsStore.homeMapData)
 
     // Change route if not already on /map
     if (route.name !== "map") {

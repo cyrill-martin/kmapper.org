@@ -2,36 +2,34 @@
 import { onMounted, ref } from "vue";
 // eslint-disable-next-line
 import * as d3 from "d3"
-
 // import { useMapsStore } from "../../stores/maps";
 
 // Maps store
 // const mapsStore = useMapsStore()
 
-// Initiate the SVG
+onMounted(() => {
+  initiateSvg() // Initiate the SVG canvas
+  // Continue to draw the visualization with according functions
+  // console.log(mapsStore.homeMapData)
+})
 
-// Data
+//////////////////////////////////////////////////////////////////////////
+// Initiate the SVG //////////////////////////////////////////////////////
 const dimensions = {
   width: 1400,
   height: 700,
-  margin: {
-    top: 50,
-    bottom: 80,
-    left: 80,
-    right: 310,
-  }
+  margin: { top: 50, bottom: 50, left: 50, right: 50 },
+  ctrWidth: null,
+  ctrHeight: null
 }
-
-// Add a width for the up to come container inside the up to come svg image
+// Add container width and height for the later created container
 dimensions.ctrWidth = dimensions.width - (dimensions.margin.left + dimensions.margin.right)
-
-// Add a height for the up to come container inside the up to come svg image
 dimensions.ctrHeight = dimensions.height - (dimensions.margin.top + dimensions.margin.bottom)
 
 const svg = ref(null)
 const ctr = ref(null)
 
-function createSvg() {
+function initiateSvg() {
   // Draw <svg> canvas
     svg.value = d3
     .select("#home-map")
@@ -39,19 +37,15 @@ function createSvg() {
     .attr("id", "svg-chart")
     .attr("viewBox", `0 0 ${dimensions.width} ${dimensions.height}`)
 
-  // Add <g> container with margins
-  ctr.value = svg.value
+  // Add <g> container with margins to avoid overlapping
+    ctr.value = svg.value
     .append("g")
     .attr(
       "transform",
       `translate(${dimensions.margin.left}, ${dimensions.margin.top})`
     )
 }
-
-onMounted(() => {
-  createSvg()
-})
-
+//////////////////////////////////////////////////////////////////////////
 </script>
 
 <template>

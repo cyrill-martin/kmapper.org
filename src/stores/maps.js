@@ -5,9 +5,8 @@ export const useMapsStore = defineStore("maps", () => {
 
   // Maps state
   const homeMapData = ref({})
-  const articleMapData = ref({})
-  const subjectMapData = ref({})
-  const relevanceMapData = ref({})
+  const sdgNodes = ref(null)
+  const conceptNodes = ref(null)
 
-  return { homeMapData, articleMapData, subjectMapData, relevanceMapData }
+  return { homeMapData, sdgNodes, conceptNodes }
 })

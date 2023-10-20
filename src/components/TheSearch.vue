@@ -3,8 +3,10 @@ import { computed } from "vue"
 import { useRouter, useRoute } from 'vue-router'
 import { NInputGroup, NInput, NButton, NIcon } from "naive-ui"
 import { useSearchStore } from "../stores/search.js"
-// import { useMapsStore } from "../../stores/maps.js"
-
+import { useMapsStore } from "../stores/maps.js"
+import { mapOpenAlexWorks } from "../utils/mapOpenAlexWorks.js"
+import { createSdgNodes } from "../utils/createSdgNodes.js"
+import { createConceptNodes } from "../utils/createConceptNodes.js"
 // Icon
 import SearchOutline from "@vicons/ionicons5/SearchOutline"
 
@@ -14,12 +16,11 @@ const route = useRoute()
 
 // Use stores
 const search = useSearchStore()
-// const maps = useMapsStore()
+const maps = useMapsStore()
 
-const email = "mail@kmapper.com"
 
 // Base function to search OpenAlex works
-async function searchOpenAlexWorks(query, perPage, goldOpenAccessOnly) {
+async function searchOpenAlexWorks(query, perPage, goldOpenAccessOnly, email) {
   query = encodeURIComponent(query)
 
   try {
@@ -49,22 +50,36 @@ async function searchOpenAlexWorks(query, perPage, goldOpenAccessOnly) {
   }
 }
 
-// Function to search OpenAlex
+
+const politeMail = "mail@kmapper.com"
+
+// Function to search OpenAlex and transform search results to kmapper data
 async function searchContent() {
   try {
 
     // Search OpenAlex
-    search.isLoading = true
-    search.searchResults = await searchOpenAlexWorks(search.searchQuery, search.pageSize, search.goldOpenAccess)
+    search.isLoading = true // Start loading indication
+    search.searchResults = await searchOpenAlexWorks(search.searchQuery, search.pageSize, search.goldOpenAccess, politeMail)
+    console.log("Search results", search.searchResults)
 
-    console.log("Search Results", search.searchResults)
+    // Map OpenAlex results to kmapper home map
+    maps.homeMapData = await mapOpenAlexWorks(search.searchResults)
+    console.log("Home map", maps.homeMapData)
+
+    // Create SDG nodes
+    maps.sdgNodes = await createSdgNodes(maps.homeMapData)
+    console.log("SDG nodes", maps.sdgNodes)
+
+    // Create concept nodes
+    maps.conceptNodes = await createConceptNodes(maps.homeMapData)
+    console.log("Concept nodes", maps.conceptNodes)
 
     // Change route if not already on /map
     if (route.name !== "map") {
       router.push({ name: "map" })
     }
 
-    search.isLoading = false
+    search.isLoading = false // End loading indication
 
   } catch (error) {
     console.error("Request failed:", error.message)

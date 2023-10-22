@@ -7,6 +7,7 @@ import { useGraphStore } from "../stores/graph.js"
 import { mapOpenAlexWorks } from "../utils/mapOpenAlexWorks.js"
 import { createSdgWorkNodes } from "../utils/createSdgWorkNodes.js"
 import { createConceptWorkNodes } from "../utils/createConceptWorkNodes.js"
+import { politeMail } from "../data/politeMail.js"
 // Icon
 import SearchOutline from "@vicons/ionicons5/SearchOutline"
 
@@ -20,8 +21,12 @@ const graph = useGraphStore()
 
 
 // Base function to search OpenAlex works
-async function searchOpenAlexWorks(query, perPage, goldOpenAccessOnly, email) {
-  query = encodeURIComponent(query)
+async function searchOpenAlexWorks(obj) {
+
+  const query = encodeURIComponent(obj.query)
+  const perPage = obj.perPage
+  const goldOpenAccessOnly = obj.goldOpenAccessOnly
+  const email = obj.email
 
   try {
     let url = `https://api.openalex.org/works?search=${query}&per-page=${perPage}`
@@ -50,16 +55,21 @@ async function searchOpenAlexWorks(query, perPage, goldOpenAccessOnly, email) {
   }
 }
 
-
-const politeMail = "mail@kmapper.com"
-
 // Function to to conduct user search and transform search results to kmapper data
 async function searchContent() {
   try {
 
     // Search OpenAlex
     search.isLoading = true // Start loading indication
-    search.searchResults = await searchOpenAlexWorks(search.searchQuery, search.pageSize, search.goldOpenAccess, politeMail)
+    search.searchResults = await searchOpenAlexWorks(
+      {
+        query: search.searchQuery,
+        perPage: search.pageSize,
+        goldOpenAccessOnly: search.goldOpenAccess, 
+        email: politeMail
+      }
+    )
+
     console.log("Search results", search.searchResults)
 
     // Map OpenAlex results to kmapper home map

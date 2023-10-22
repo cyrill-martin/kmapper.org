@@ -1,5 +1,5 @@
-import { theSDGs } from "../data/theSDGs.js"
-import { theThresholds } from "../data/theThresholds.js"
+import { SDGs } from "../data/SDGs.js"
+import { thresholds } from "../data/thresholds.js"
 
 export async function mapOpenAlexWorks(searchResults) {
   let uniqueSdgs = new Set()
@@ -68,7 +68,7 @@ export async function mapOpenAlexWorks(searchResults) {
   function getSdgs(work) {
     return work.sustainable_development_goals.length
       ? work.sustainable_development_goals
-          .filter((sdg) => sdg.score > theThresholds.sdg)
+          .filter((sdg) => sdg.score > thresholds.sdg)
           .map((sdg) => {
             const sdgId = sdg.id.replace("https://metadata.un.org/sdg/", "")
             uniqueSdgs.add(parseInt(sdgId))
@@ -91,7 +91,7 @@ export async function mapOpenAlexWorks(searchResults) {
   }
 
   function getConcepts(work) {
-    const workConcepts = work.concepts.filter((concept) => concept.score > theThresholds.concept)
+    const workConcepts = work.concepts.filter((concept) => concept.score > thresholds.concept)
 
     return workConcepts.length
       ? workConcepts.map((concept) => {
@@ -110,9 +110,9 @@ export async function mapOpenAlexWorks(searchResults) {
         .map((goal) => {
           return {
             id: goal,
-            name: theSDGs[goal].name,
-            url: theSDGs[goal].url,
-            color: theSDGs[goal].color
+            name: SDGs[goal].name,
+            url: SDGs[goal].url,
+            color: SDGs[goal].color
           }
         })
     }

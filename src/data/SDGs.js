@@ -1,4 +1,4 @@
-export const theSDGs = {
+export const SDGs = {
   1: {
     id: "1",
     name: "No poverty",

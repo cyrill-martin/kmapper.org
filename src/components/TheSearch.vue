@@ -3,10 +3,10 @@ import { computed } from "vue"
 import { useRouter, useRoute } from 'vue-router'
 import { NInputGroup, NInput, NButton, NIcon } from "naive-ui"
 import { useSearchStore } from "../stores/search.js"
-import { useMapsStore } from "../stores/maps.js"
+import { useGraphStore } from "../stores/graph.js"
 import { mapOpenAlexWorks } from "../utils/mapOpenAlexWorks.js"
-import { createSdgNodes } from "../utils/createSdgNodes.js"
-import { createConceptNodes } from "../utils/createConceptNodes.js"
+import { createSdgWorkNodes } from "../utils/createSdgWorkNodes.js"
+import { createConceptWorkNodes } from "../utils/createConceptWorkNodes.js"
 // Icon
 import SearchOutline from "@vicons/ionicons5/SearchOutline"
 
@@ -16,7 +16,7 @@ const route = useRoute()
 
 // Use stores
 const search = useSearchStore()
-const maps = useMapsStore()
+const graph = useGraphStore()
 
 
 // Base function to search OpenAlex works
@@ -53,7 +53,7 @@ async function searchOpenAlexWorks(query, perPage, goldOpenAccessOnly, email) {
 
 const politeMail = "mail@kmapper.com"
 
-// Function to search OpenAlex and transform search results to kmapper data
+// Function to to conduct user search and transform search results to kmapper data
 async function searchContent() {
   try {
 
@@ -63,16 +63,16 @@ async function searchContent() {
     console.log("Search results", search.searchResults)
 
     // Map OpenAlex results to kmapper home map
-    maps.homeMapData = await mapOpenAlexWorks(search.searchResults)
-    console.log("Home map", maps.homeMapData)
+    graph.homeMapGraph = await mapOpenAlexWorks(search.searchResults)
+    console.log("Home graph", graph.homeMapGraph)
 
-    // Create SDG nodes
-    maps.sdgNodes = await createSdgNodes(maps.homeMapData)
-    console.log("SDG nodes", maps.sdgNodes)
+    // Create SDG-work nodes
+    graph.sdgWorkNodes = await createSdgWorkNodes(graph.homeMapGraph)
+    console.log("SDG-work nodes", graph.sdgWorkNodes)
 
-    // Create concept nodes
-    maps.conceptNodes = await createConceptNodes(maps.homeMapData)
-    console.log("Concept nodes", maps.conceptNodes)
+    // Create concept-work nodes
+    graph.conceptWorkNodes = await createConceptWorkNodes(graph.homeMapGraph)
+    console.log("Concept-work nodes", graph.conceptWorkNodes)
 
     // Change route if not already on /map
     if (route.name !== "map") {
@@ -83,6 +83,7 @@ async function searchContent() {
 
   } catch (error) {
     console.error("Request failed:", error.message)
+    search.isLoading = false // End loading indication
   }
 };
 

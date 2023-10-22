@@ -2,10 +2,10 @@ import { theSDGs } from "../data/theSDGs.js"
 import { theThresholds } from "../data/theThresholds.js"
 
 export async function mapOpenAlexWorks(searchResults) {
+  let uniqueSdgs = new Set()
+
   let uniqueConcepts = new Set()
   const conceptIRIs = {}
-
-  let uniqueSdgs = new Set()
 
   // openAlexId
   function getOpenAlexId(work) {
@@ -64,6 +64,19 @@ export async function mapOpenAlexWorks(searchResults) {
     return authors
   }
 
+  // SDGs
+  function getSdgs(work) {
+    return work.sustainable_development_goals.length
+      ? work.sustainable_development_goals
+          .filter((sdg) => sdg.score > theThresholds.sdg)
+          .map((sdg) => {
+            const sdgId = sdg.id.replace("https://metadata.un.org/sdg/", "")
+            uniqueSdgs.add(parseInt(sdgId))
+            return { type: "sdg", id: sdgId }
+          })
+      : null
+  }
+
   // Concepts
   function getFirstConcept(concepts) {
     const firstConcept = concepts[0]
@@ -72,7 +85,7 @@ export async function mapOpenAlexWorks(searchResults) {
       ? (() => {
           uniqueConcepts.add(firstConcept.display_name)
           conceptIRIs[firstConcept.display_name] = firstConcept.wikidata
-          return [firstConcept.display_name]
+          return [{ type: "concept", id: firstConcept.display_name }]
         })()
       : null
   }
@@ -80,59 +93,44 @@ export async function mapOpenAlexWorks(searchResults) {
   function getConcepts(work) {
     const workConcepts = work.concepts.filter((concept) => concept.score > theThresholds.concept)
 
-    const concepts = workConcepts.length
+    return workConcepts.length
       ? workConcepts.map((concept) => {
           uniqueConcepts.add(concept.display_name)
           conceptIRIs[concept.display_name] = concept.wikidata
-          return concept.display_name
+          return { type: "concept", id: concept.display_name }
         })
       : getFirstConcept(work.concepts)
-
-    return concepts
-  }
-
-  // SDGs
-  function getSdgs(work) {
-    const sdgs = work.sustainable_development_goals.length
-      ? work.sustainable_development_goals
-          .filter((sdg) => sdg.score > theThresholds.sdg)
-          .map((sdg) => {
-            const sdgId = sdg.id.replace("https://metadata.un.org/sdg/", "")
-            uniqueSdgs.add(parseInt(sdgId))
-            return sdgId
-          })
-      : null
-
-    return sdgs
-  }
-
-  // Related works
-  function getRelatedWorks(work) {
-    return work.related_works.length ? work.related_works : null
   }
 
   // SDG data
-  function createSdgData(uniqueSdgSet) {
-    return [...uniqueSdgSet]
-      .sort((a, b) => a - b)
-      .map((goal) => {
-        return {
-          id: goal,
-          name: theSDGs[goal].name,
-          url: theSDGs[goal].url,
-          color: theSDGs[goal].color
-        }
-      })
+  function createGraphSDGs(uniqueSdgSet) {
+    if (uniqueSdgSet.size !== 0) {
+      return [...uniqueSdgSet]
+        .sort((a, b) => a - b)
+        .map((goal) => {
+          return {
+            id: goal,
+            name: theSDGs[goal].name,
+            url: theSDGs[goal].url,
+            color: theSDGs[goal].color
+          }
+        })
+    }
   }
 
   // Concept data
-  function createConceptData(uniqueConceptSet) {
+  function createGraphConcepts(uniqueConceptSet) {
     return [...uniqueConceptSet].sort().map((concept) => {
       return {
         name: concept,
         url: conceptIRIs[concept]
       }
     })
+  }
+
+  // Related works
+  function getRelatedWorks(work) {
+    return work.related_works.length ? work.related_works : null
   }
 
   ////////////////////////////////////////////////////////////
@@ -162,10 +160,12 @@ export async function mapOpenAlexWorks(searchResults) {
     const year = getYear(result)
     // Authors
     const authors = getAuthors(result)
-    // Concepts
-    const concepts = getConcepts(result)
     // SDGs
     const sdgs = getSdgs(result)
+    // Concepts
+    const concepts = getConcepts(result)
+    // Links
+    const links = [...(sdgs || []), ...(concepts || [])]
     // Related works
     const relatedWorks = getRelatedWorks(result)
 
@@ -181,20 +181,19 @@ export async function mapOpenAlexWorks(searchResults) {
       },
       year,
       authors,
-      concepts,
-      sdgs,
+      links,
       relatedWorks
     }
   })
 
-  // SDG data for the home map
-  const sdgData = createSdgData(uniqueSdgs)
-  // Concept data for the home map
-  const conceptData = createConceptData(uniqueConcepts)
+  // SDG data for the home graph
+  const homeMapSDGs = createGraphSDGs(uniqueSdgs)
+  // Concept data for the home graph
+  const homeMapConcepts = createGraphConcepts(uniqueConcepts)
 
   return {
-    sdgs: sdgData,
-    concepts: conceptData,
+    sdgs: homeMapSDGs,
+    concepts: homeMapConcepts,
     works: homeMapWorks
   }
 }

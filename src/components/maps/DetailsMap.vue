@@ -1,5 +1,5 @@
 <script setup></script>
 
 <template>
-  The DetailsMap
+  <div>The DetailsMap</div>
 </template>

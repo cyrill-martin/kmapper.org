@@ -1,11 +1,12 @@
 <script setup>
+import { NMessageProvider } from "naive-ui"
 import { RouterView } from "vue-router"
 import TheHeader from "./components/layout/TheHeader.vue"
 import TheFooter from "./components/layout/TheFooter.vue"
 </script>
 
 <template>
-  <!-- <div class="site-wrapper"> -->
+  <n-message-provider>
     <TheHeader />
 
     <main>
@@ -13,7 +14,7 @@ import TheFooter from "./components/layout/TheFooter.vue"
     </main>
 
     <TheFooter />
-  <!-- </div> -->
+  </n-message-provider>
 </template>
 
 <style scoped></style>

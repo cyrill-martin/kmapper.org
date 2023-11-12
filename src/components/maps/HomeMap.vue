@@ -1,21 +1,25 @@
 <script setup>
-import { onMounted, ref } from "vue";
+import { onMounted, ref, watch } from "vue";
 // eslint-disable-next-line
 import * as d3 from "d3"
-// import { useMapsStore } from "../../stores/maps";
+import { useGraphStore } from "../../stores/graph.js"
 
-// Maps store
-// const mapsStore = useMapsStore()
+const graph = useGraphStore()
 
 onMounted(() => {
   initiateSvg() // Initiate the SVG canvas
   // Continue to draw the visualization with according functions
-  // console.log(mapsStore.homeMapData)
+  console.log("initiateSvg")
 })
 
-//////////////////////////////////////////////////////////////////////////
-// Initiate the SVG //////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////
+watch(() => graph.numberOfGraphs, () => {
+  console.log("changed home map graph")
+});
+
+// Main SVG //////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////
+
+// SVG Dimensions ////////////////////////////////////////////////////
 const dimensions = {
   width: 1400,
   height: 700,
@@ -27,9 +31,11 @@ const dimensions = {
 dimensions.ctrWidth = dimensions.width - (dimensions.margin.left + dimensions.margin.right)
 dimensions.ctrHeight = dimensions.height - (dimensions.margin.top + dimensions.margin.bottom)
 
+// Main SVG elements /////////////////////////////////////////////////
 const svg = ref(null)
 const ctr = ref(null)
 
+// SVG initiation with container /////////////////////////////////////
 function initiateSvg() {
   // Draw <svg> canvas
     svg.value = d3
@@ -46,7 +52,23 @@ function initiateSvg() {
       `translate(${dimensions.margin.left}, ${dimensions.margin.top})`
     )
 }
-//////////////////////////////////////////////////////////////////////////
+
+// Axes //////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////
+// const numberOfSDGs = computed(() => {
+//   return graph.homeMapGraph.sdgs.length
+// })
+
+// const numberOfWorks = computed(() => {
+//   return graph.homeMapGraph.works.length
+// })
+
+// const numberOfConcepts = computed(() => {
+//   return graph.homeMapGraph.concepts.length
+// })
+
+// console.log(numberOfSDGs, numberOfWorks, numberOfConcepts)
+
 </script>
 
 <template>

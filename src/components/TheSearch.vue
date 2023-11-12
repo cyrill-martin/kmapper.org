@@ -30,12 +30,11 @@ onMounted(() => {
   // Access query parameters
   const qParam = route.query.q;
 
-  if (qParam) {
-    search.searchQuery = qParam
+  if (qParam && !search.searchQuery) {
+    search.setSearchQuery(qParam)
     searchAndMapContent()
   }
 });
-
 
 // Base function to search OpenAlex works
 async function searchOpenAlexWorks(obj) {
@@ -75,9 +74,11 @@ async function searchOpenAlexWorks(obj) {
 // Function to to conduct user search and transform search results to kmapper data
 async function searchAndMapContent() {
   try {
+
     // Search OpenAlex
-    search.isLoading = true // Start loading indication
-    search.searchResults = await searchOpenAlexWorks(
+    search.toggleLoading() // Start loading indication
+
+    const searchResults = await searchOpenAlexWorks(
       {
         query: search.searchQuery,
         perPage: search.pageSize,
@@ -85,21 +86,25 @@ async function searchAndMapContent() {
         email: politeMail
       }
     )
-
+    search.setSearchResults(searchResults)
     console.log("Search results", search.searchResults)
 
-    if (search.searchResults.results.length) {
+    if (search.hasSearchResults) {
 
       // Map OpenAlex results to kmapper home map
-      graph.homeMapGraph = await mapOpenAlexWorks(search.searchResults)
+      const homeMapGraph = await mapOpenAlexWorks(search.searchResults)
+      graph.setHomeMapGraph(homeMapGraph)
+
       console.log("Home graph", graph.homeMapGraph)
 
       // Create SDG-work nodes
-      graph.sdgWorkNodes = await createSdgWorkNodes(graph.homeMapGraph)
+      const sdgWorkNodes = await createSdgWorkNodes(graph.homeMapGraph)
+      graph.setSdgWorkNodes(sdgWorkNodes)
       console.log("SDG-work nodes", graph.sdgWorkNodes)
 
       // Create concept-work nodes
-      graph.conceptWorkNodes = await createConceptWorkNodes(graph.homeMapGraph)
+      const conceptWorkNodes = await createConceptWorkNodes(graph.homeMapGraph)
+      graph.setConceptWorkNodes(conceptWorkNodes)
       console.log("Concept-work nodes", graph.conceptWorkNodes)
 
       // Change route if not already on /map
@@ -109,22 +114,24 @@ async function searchAndMapContent() {
           query: { q: search.searchQuery }
         })
       }
+
+      graph.incrementNumberOfGraphs()
+      console.log("Number of graphs", graph.numberOfGraphs)
+
     } else {
       noSearchResults(message, search.searchQuery)
     }
-
-    search.isLoading = false // End loading indication
+    
+    search.toggleLoading() // End loading indication
 
   } catch (error) {
     console.error("Request failed:", error.message)
-    search.isLoading = false // End loading indication
+    search.toggleLoading() // End loading indication
   }
 };
 
 // Check if it's a valid search (used in template)
-const isValidSearch = computed(() => {
-  return search.searchQuery.trim().length !== 0
-})
+const isValidSearch = computed(() => search.isValidSearchQuery)
 </script>
 
 <template>

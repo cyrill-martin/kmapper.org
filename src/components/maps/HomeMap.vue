@@ -8,13 +8,20 @@ const graph = useGraphStore()
 
 onMounted(() => {
   console.log("onMounted")
-  createMap(graph.homeMapGraph)
+  createMap()
 })
 
 watch(() => graph.numberOfGraphs, () => {
   console.log("changed home map graph")
-  createMap(graph.homeMapGraph)
+  createMap()
 });
+
+// The main function handling the creation of the map
+/////////////////////////////////////////////////////
+function createMap() {
+  initiateSvg()
+  console.log(graph.homeMapGraph)
+}
 
 // Main SVG //////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////
@@ -34,11 +41,6 @@ dimensions.ctrHeight = dimensions.height - (dimensions.margin.top + dimensions.m
 // Main SVG elements /////////////////////////////////////////////////
 const svg = ref(null)
 const ctr = ref(null)
-
-function createMap(data) {
-  initiateSvg()
-  console.log(data)
-}
 
 // SVG initiation with container /////////////////////////////////////
 function initiateSvg() {

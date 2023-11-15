@@ -7,13 +7,13 @@ import { useGraphStore } from "../../stores/graph.js"
 const graph = useGraphStore()
 
 onMounted(() => {
-  initiateSvg() // Initiate the SVG canvas
-  // Continue to draw the visualization with according functions
-  console.log("initiateSvg")
+  console.log("onMounted")
+  createMap(graph.homeMapGraph)
 })
 
 watch(() => graph.numberOfGraphs, () => {
   console.log("changed home map graph")
+  createMap(graph.homeMapGraph)
 });
 
 // Main SVG //////////////////////////////////////////////////////////
@@ -34,6 +34,11 @@ dimensions.ctrHeight = dimensions.height - (dimensions.margin.top + dimensions.m
 // Main SVG elements /////////////////////////////////////////////////
 const svg = ref(null)
 const ctr = ref(null)
+
+function createMap(data) {
+  initiateSvg()
+  console.log(data)
+}
 
 // SVG initiation with container /////////////////////////////////////
 function initiateSvg() {

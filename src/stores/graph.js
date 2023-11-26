@@ -1,10 +1,11 @@
-import { ref } from "vue"
+import { ref, computed } from "vue"
 import { defineStore } from "pinia"
 
 export const useGraphStore = defineStore("graph", () => {
 
   // Graph state
   const numberOfGraphs = ref(0)
+
   const homeMapGraph = ref(null)
   const sdgWorkNodes = ref(null)
   const conceptWorkNodes = ref(null)
@@ -26,7 +27,11 @@ export const useGraphStore = defineStore("graph", () => {
     numberOfGraphs.value++
   }
 
+  const numberOfWorks = computed(() => homeMapGraph.value.works.length);
+  const numberOfSDGs = computed(() => homeMapGraph.value.sdgs.length);
+  const numberOfConcepts = computed(() => homeMapGraph.value.concepts.length);
 
+  
   return {
     numberOfGraphs,
     homeMapGraph,
@@ -35,6 +40,9 @@ export const useGraphStore = defineStore("graph", () => {
     setHomeMapGraph,
     setSdgWorkNodes,
     setConceptWorkNodes,
-    incrementNumberOfGraphs
+    incrementNumberOfGraphs, 
+    numberOfWorks,
+    numberOfSDGs,
+    numberOfConcepts
   }
 })

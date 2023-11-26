@@ -9,6 +9,8 @@ import { createSdgWorkNodes } from "../utils/createSdgWorkNodes.js"
 import { createConceptWorkNodes } from "../utils/createConceptWorkNodes.js"
 import { noSearchResults } from "../utils/messages.js"
 import { politeMail } from "../data/politeMail.js"
+import testData25 from "../data/testData25.json"
+import testData50 from "../data/testData50.json"
 // Icon
 import SearchOutline from "@vicons/ionicons5/SearchOutline"
 
@@ -26,48 +28,57 @@ const message = useMessage()
 
 // onMounted //////////////////
 ///////////////////////////////
-onMounted(() => {
+onMounted(async () => {
+  console.log("TheSearch.vue is mounted!!")
   // Access query parameters
   const qParam = route.query.q;
 
   if (qParam && !search.searchQuery) {
     search.setSearchQuery(qParam)
-    searchAndMapContent()
+    await searchAndMapContent()
   }
+  console.log("Set the query", search.searchQuery)
 });
+
+const useTestData = false // 25 or 50
 
 // Base function to search OpenAlex works
 async function searchOpenAlexWorks(obj) {
 
-  const query = encodeURIComponent(obj.query)
-  const perPage = obj.perPage
-  const goldOpenAccessOnly = obj.goldOpenAccessOnly
-  const email = obj.email
+  if (!useTestData) {
+    const query = encodeURIComponent(obj.query)
+    const perPage = obj.perPage
+    const goldOpenAccessOnly = obj.goldOpenAccessOnly
+    const email = obj.email
 
-  try {
-    let url = `https://api.openalex.org/works?search=${query}&per-page=${perPage}`
-    url = goldOpenAccessOnly ? `${url}&filter=open_access.oa_status:gold` : url
-    url = url + `&mailto=${email}`
+    try {
+      let url = `https://api.openalex.org/works?search=${query}&per-page=${perPage}`
+      url = goldOpenAccessOnly ? `${url}&filter=open_access.oa_status:gold` : url
+      url = url + `&mailto=${email}`
 
-    console.log("GET", url)
+      console.log("GET", url)
 
-    const options = {
-      method: "GET",
-      headers: {
-        Accept: "application/json"
+      const options = {
+        method: "GET",
+        headers: {
+          Accept: "application/json"
+        }
       }
+
+      const response = await fetch(url, options)
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}, ${response.statusText}`)
+      }
+
+      return await response.json()
+
+    } catch (error) {
+      console.error(error)
+      throw error
     }
-
-    const response = await fetch(url, options)
-
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}, ${response.statusText}`)
-    }
-
-    return await response.json()
-  } catch (error) {
-    console.error(error)
-    throw error
+  } else {
+    return useTestData === 50 ? testData50 : testData25
   }
 }
 
@@ -121,7 +132,7 @@ async function searchAndMapContent() {
     } else {
       noSearchResults(message, search.searchQuery)
     }
-    
+
     search.toggleLoading() // End loading indication
 
   } catch (error) {

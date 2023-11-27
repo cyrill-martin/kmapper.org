@@ -40,7 +40,7 @@ onMounted(async () => {
   console.log("Set the query", search.searchQuery)
 });
 
-const useTestData = false // 25 or 50
+const useTestData = 25 // false, 25, or 50
 
 // Base function to search OpenAlex works
 async function searchOpenAlexWorks(obj) {

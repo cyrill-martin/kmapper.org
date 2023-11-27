@@ -31,7 +31,6 @@ export const useGraphStore = defineStore("graph", () => {
   const numberOfSDGs = computed(() => homeMapGraph.value.sdgs.length);
   const numberOfConcepts = computed(() => homeMapGraph.value.concepts.length);
 
-  
   return {
     numberOfGraphs,
     homeMapGraph,

@@ -7,21 +7,12 @@ export const useScreenSizeStore = defineStore("screenSize", () => {
 
   const ctrMarginV = computed(() => height.value * 0.8 * 0.01)
   const ctrMarginH = computed(() => width.value * 0.01)
+  const isMobile = computed(() => width.value < 700)
 
   function updateScreenSize() {
     width.value = window.innerWidth
     height.value = window.innerHeight
   }
 
-  function debounce(func, delay) {
-    let timerId
-    return function (...args) {
-      clearTimeout(timerId)
-      timerId = setTimeout(() => {
-        func.apply(this, args)
-      }, delay)
-    }
-  }
-
-  return { width, height, ctrMarginV, ctrMarginH, updateScreenSize, debounce }
+  return { width, height, ctrMarginV, ctrMarginH, isMobile, updateScreenSize }
 })

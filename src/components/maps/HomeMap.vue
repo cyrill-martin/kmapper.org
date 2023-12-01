@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, ref, watch } from "vue"
+import { onMounted, ref, watch, computed } from "vue"
 // eslint-disable-next-line
 import * as d3 from "d3"
 import { useGraphStore } from "../../stores/graph.js"
@@ -58,6 +58,8 @@ function drawDynamicMap() {
 const svg = ref(null)
 const ctr = ref(null)
 const screenFactor = 0.8
+// The total 'height' of the usable chart area (from top do down)
+const totalHeight = computed(() => screenSize.height * screenFactor - screenSize.ctrMarginV * 2)
 
 // SVG initiation with container /////////////////////////////////////
 function initiateSvg() {
@@ -97,17 +99,16 @@ const yScaleWorks = ref(null)
 const yScaleConepts = ref(null)
 
 function getYScaleRange(scale) {
-  // The total 'height' of the usable chart area (from top do down)
-  const totalHeight = screenSize.height * screenFactor - screenSize.ctrMarginV * 2
-
   if (screenSize.isMobile) {
     // For small screens
     // The works will be shown in the bottom half
     // SDGs and concepts will be shown in the top half
-    return scale === "works" ? [totalHeight / 2, totalHeight] : [0, totalHeight / 2]
+    return scale === "works"
+      ? [totalHeight.value / 2, totalHeight.value]
+      : [0, totalHeight.value / 2]
   }
   // For big screens
-  return [0, totalHeight]
+  return [0, totalHeight.value]
 }
 
 function setYScaleSDGs() {
@@ -193,12 +194,6 @@ function drawWorks(data) {
         enter
           .append("g")
           .attr("class", "work")
-          .attr("transform", (d) => {
-            const translate0 = screenSize.isMobile
-              ? `-${xScale.value.bandwidth() * screenFactor}`
-              : 0
-            return `translate(${translate0}, ${yScaleWorks.value(d.id)})`
-          })
           // eslint-disable-next-line no-unused-vars
           .each(function (d) {
             d3.select(this) // Add rectangles
@@ -218,14 +213,27 @@ function drawWorks(data) {
               .attr("x", xScale.value.bandwidth() * 0.005)
               .attr("y", yScaleWorks.value.bandwidth() * 0.85)
               .attr("font-size", () => {
-                // return screenSize.isMobile ? 10 : 12
                 return yScaleWorks.value.bandwidth() * 0.95
               })
               .attr("fill", "white")
           }),
-      (update) => update.select("text").text((d) => d.title),
+      (update) => {
+        update.select("rect").attr("height", yScaleWorks.value.bandwidth())
+        update
+          .select("text")
+          .text((d) => d.title)
+          .attr("y", yScaleWorks.value.bandwidth() * 0.85)
+          .attr("font-size", () => {
+            return yScaleWorks.value.bandwidth() * 0.95
+          })
+        return update
+      },
       (exit) => exit.remove()
     )
+    .attr("transform", (d) => {
+      const translate0 = screenSize.isMobile ? `-${xScale.value.bandwidth() * screenFactor}` : 0
+      return `translate(${translate0}, ${yScaleWorks.value(d.id)})`
+    })
 }
 </script>
 

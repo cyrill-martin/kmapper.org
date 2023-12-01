@@ -1,6 +1,6 @@
 <script setup>
 import { onMounted, computed } from "vue"
-import { useRouter, useRoute } from 'vue-router'
+import { useRouter, useRoute } from "vue-router"
 import { NInputGroup, NInput, NButton, NIcon, useMessage } from "naive-ui"
 import { useSearchStore } from "../stores/search.js"
 import { useGraphStore } from "../stores/graph.js"
@@ -22,7 +22,7 @@ const route = useRoute()
 const search = useSearchStore()
 const graph = useGraphStore()
 
-// The message instance for this component. It will be sent to the 
+// The message instance for this component. It will be sent to the
 // corresponding utils function
 const message = useMessage()
 
@@ -31,25 +31,26 @@ const message = useMessage()
 onMounted(async () => {
   console.log("TheSearch.vue is mounted!!")
   // Access query parameters
-  const qParam = route.query.q;
+  const qParam = route.query.q
 
   if (qParam && !search.searchQuery) {
     search.setSearchQuery(qParam)
     await searchAndMapContent()
   }
   console.log("Set the query", search.searchQuery)
-});
+})
 
-const useTestData = 25 // false, 25, or 50
+const useTestData = false // false, 25, or 50
 
 // Base function to search OpenAlex works
 async function searchOpenAlexWorks(obj) {
-
   if (!useTestData) {
     const query = encodeURIComponent(obj.query)
     const perPage = obj.perPage
     const goldOpenAccessOnly = obj.goldOpenAccessOnly
     const email = obj.email
+
+    console.log("perPage", obj.perPage)
 
     try {
       let url = `https://api.openalex.org/works?search=${query}&per-page=${perPage}`
@@ -72,7 +73,6 @@ async function searchOpenAlexWorks(obj) {
       }
 
       return await response.json()
-
     } catch (error) {
       console.error(error)
       throw error
@@ -85,23 +85,19 @@ async function searchOpenAlexWorks(obj) {
 // Function to to conduct user search and transform search results to kmapper data
 async function searchAndMapContent() {
   try {
-
     // Search OpenAlex
     search.toggleLoading() // Start loading indication
 
-    const searchResults = await searchOpenAlexWorks(
-      {
-        query: search.searchQuery,
-        perPage: search.pageSize,
-        goldOpenAccessOnly: search.goldOpenAccess,
-        email: politeMail
-      }
-    )
+    const searchResults = await searchOpenAlexWorks({
+      query: search.searchQuery,
+      perPage: search.pageSize,
+      goldOpenAccessOnly: search.goldOpenAccess,
+      email: politeMail
+    })
     search.setSearchResults(searchResults)
     console.log("Search results", search.searchResults)
 
     if (search.hasSearchResults) {
-
       // Map OpenAlex results to kmapper home map
       const homeMapGraph = await mapOpenAlexWorks(search.searchResults)
       graph.setHomeMapGraph(homeMapGraph)
@@ -118,28 +114,28 @@ async function searchAndMapContent() {
       graph.setConceptWorkNodes(conceptWorkNodes)
       console.log("Concept-work nodes", graph.conceptWorkNodes)
 
-      // Change route if not already on /map
-      if (route.name !== "map") {
+      
+      if (route.name !== "map") { // Change route if not already on /map
         router.push({
           name: "map",
           query: { q: search.searchQuery }
         })
+      } else { // Else, update query parameter q
+        router.replace({ query: { ...route.query, q: search.searchQuery } })
       }
 
       graph.incrementNumberOfGraphs()
       console.log("Number of graphs", graph.numberOfGraphs)
-
     } else {
       noSearchResults(message, search.searchQuery)
     }
 
     search.toggleLoading() // End loading indication
-
   } catch (error) {
     console.error("Request failed:", error.message)
     search.toggleLoading() // End loading indication
   }
-};
+}
 
 // Check if it's a valid search (used in template)
 const isValidSearch = computed(() => search.isValidSearchQuery)
@@ -147,8 +143,13 @@ const isValidSearch = computed(() => search.isValidSearchQuery)
 
 <template>
   <n-input-group>
-    <n-input round v-model:loading="search.isLoading" placeholder="Search..." v-model:value="search.searchQuery"
-      @keyup.enter="isValidSearch && searchAndMapContent()">
+    <n-input
+      round
+      v-model:loading="search.isLoading"
+      placeholder="Search..."
+      v-model:value="search.searchQuery"
+      @keyup.enter="isValidSearch && searchAndMapContent()"
+    >
       <template #prefix>
         <n-icon :component="SearchOutline" />
       </template>

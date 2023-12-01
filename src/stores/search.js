@@ -1,14 +1,18 @@
 import { ref, computed } from "vue"
 import { defineStore } from "pinia"
+import { useScreenSizeStore } from "./screenSize.js"
 
 export const useSearchStore = defineStore("search", () => {
+  const screenSize = useScreenSizeStore()
 
   // State
   const searchQuery = ref(null)
-  const pageSize = ref(50)
+  const pageSize = computed(() => screenSize.isMobile ? 20 : 35)
   const goldOpenAccess = ref(true)
   const isLoading = ref(false)
   const searchResults = ref(null)
+  const hasSearchResults = computed(() => searchResults.value.results.length)
+  const isValidSearchQuery = computed(() => searchQuery.value.trim().length !== 0)
 
   // Actions
   function setSearchQuery(query) {
@@ -22,11 +26,6 @@ export const useSearchStore = defineStore("search", () => {
   function setSearchResults(data) {
     searchResults.value = data
   }
-
-  // Getters
-  const hasSearchResults = computed(() => searchResults.value.results.length);
-
-  const isValidSearchQuery = computed(() => searchQuery.value.trim().length !== 0)
 
   return {
     searchQuery,

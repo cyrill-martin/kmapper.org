@@ -41,7 +41,7 @@ const debouncedResize = debounce(() => {
 }, 500)
 
 // The main functions handling the creation of the map
-/////////////////////////////////////////////////////
+//////////////////////////////////////////////////////
 function createStaticMapElements() {
   initiateSvg()
   setXScale()
@@ -50,7 +50,10 @@ function createStaticMapElements() {
 
 function drawDynamicMap() {
   setYScales()
+  setCircularValues()
   drawWorks(graph.homeMapGraph.works)
+  drawSDGs(graph.homeMapGraph.sdgs)
+  drawConcepts(graph.homeMapGraph.concepts.reverse())
 }
 
 // Main SVG //////////////////////////////////////////////////////////
@@ -94,9 +97,7 @@ function setXScale() {
 
 // yScales ///////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////
-const yScaleSDGs = ref(null)
 const yScaleWorks = ref(null)
-const yScaleConepts = ref(null)
 
 function getYScaleRange(scale) {
   if (screenSize.isMobile) {
@@ -104,19 +105,11 @@ function getYScaleRange(scale) {
     // The works will be shown in the bottom half
     // SDGs and concepts will be shown in the top half
     return scale === "works"
-      ? [totalHeight.value / 2, totalHeight.value]
-      : [0, totalHeight.value / 2]
+      ? [totalHeight.value * 0.5, totalHeight.value]
+      : [0, totalHeight.value * 0.5]
   }
   // For big screens
   return [0, totalHeight.value]
-}
-
-function setYScaleSDGs() {
-  yScaleSDGs.value = d3
-    .scaleBand()
-    .domain(graph.homeMapGraph.sdgs.map((sdg) => sdg.id))
-    .align(0.5)
-    .range(getYScaleRange("sdgs"))
 }
 
 function setYScaleWorks() {
@@ -128,24 +121,13 @@ function setYScaleWorks() {
     .range(getYScaleRange("works"))
 }
 
-function setYScaleConcepts() {
-  yScaleConepts.value = d3
-    .scaleBand()
-    .domain(graph.homeMapGraph.concepts.map((concept) => concept.name))
-    .align(0.5)
-    .range(getYScaleRange("concepts"))
-}
-
 function setYScales() {
-  setYScaleSDGs()
   setYScaleWorks()
-  setYScaleConcepts()
 }
 
 // Draw elements /////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////
-// const theBlack = "rgb(59 69 78)"
-const theBlack = "black"
+const theBlack = "#333447"
 
 // Element groups ////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////
@@ -183,58 +165,279 @@ function addMapGroups() {
   addConceptsGroup(xScale.value)
 }
 
-// Draw works  ///////////////////////////////////////////////////////
+// Draw works ////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////
 function drawWorks(data) {
   worksGroup.value
     .selectAll("g")
     .data(data)
     .join(
+      // Handling data-dependent elements
       (enter) =>
         enter
           .append("g")
           .attr("class", "work")
-          // eslint-disable-next-line no-unused-vars
-          .each(function (d) {
-            d3.select(this) // Add rectangles
-              .append("rect")
-              .attr("width", () => {
-                return screenSize.isMobile
-                  ? xScale.value.bandwidth() + 2 * xScale.value.bandwidth() * screenFactor
-                  : xScale.value.bandwidth()
-              })
-              .attr("height", yScaleWorks.value.bandwidth())
-              .attr("stroke", theBlack)
-              .attr("fill", theBlack)
-
-            d3.select(this) // Add work title
+          .attr("id", (d) => `work-${d.id}`)
+          .each(function () {
+            // Add rectangles
+            d3.select(this).append("rect")
+            // Add work title
+            d3.select(this)
               .append("text")
               .text((d) => d.title)
-              .attr("x", xScale.value.bandwidth() * 0.005)
-              .attr("y", yScaleWorks.value.bandwidth() * 0.85)
-              .attr("font-size", () => {
-                return yScaleWorks.value.bandwidth() * 0.95
-              })
-              .attr("fill", "white")
+              .attr("cursor", "default")
+            d3.select(this).append("rect").attr("class", "work-rect")
           }),
       (update) => {
-        update.select("rect").attr("height", yScaleWorks.value.bandwidth())
+        return update.select("text").text((d) => d.title)
+      },
+      (exit) => exit.remove()
+    )
+
+  // Positioning each <g> element with class "work" along the yScaleWorks
+  worksGroup.value.selectAll("g.work").attr("transform", (d) => {
+    const translate0 = screenSize.isMobile ? `-${xScale.value.bandwidth() * screenFactor}` : 0
+    return `translate(${translate0}, ${yScaleWorks.value(d.id)})`
+  })
+
+  // Handling the <rect> elements inside each g.work
+  worksGroup.value
+    .selectAll("g.work rect")
+    .attr("width", () => {
+      return screenSize.isMobile
+        ? xScale.value.bandwidth() + 2 * xScale.value.bandwidth() * screenFactor
+        : xScale.value.bandwidth()
+    })
+    .attr("height", yScaleWorks.value.bandwidth())
+    .attr("stroke", theBlack)
+    .attr("fill", theBlack)
+
+  worksGroup.value.selectAll("rect.work-rect").attr("fill-opacity", 0).attr("cursor", "pointer")
+
+  // Handling the <text> elements of the work title
+  worksGroup.value
+    .selectAll("g.work text")
+    .attr("x", xScale.value.bandwidth() * 0.01)
+    .attr("y", yScaleWorks.value.bandwidth() * 0.85)
+    .attr("font-size", () => {
+      return yScaleWorks.value.bandwidth() * 0.95
+    })
+    .attr("fill", "white")
+}
+
+// Calculate the circular values to place SDG and concept elements
+//////////////////////////////////////////////////////////////////////
+const adjacent = ref(null)
+const countercathete = ref(null)
+const radius = ref(null)
+const alpha = ref(null)
+
+const sdgDegrees = ref(null)
+const sdgStart = ref(null)
+
+const conceptDegrees = ref(null)
+const conceptStart = ref(null)
+
+const circleElementRadius = ref(null)
+const textElementXOffset = ref(null)
+
+// To convert from Polar Coordinates (r,θ) to Cartesian Coordinates (x,y):
+// x = r * cos(θ)
+// y = r * sin(θ)
+
+function setCircularValues() {
+  adjacent.value = screenSize.width * 1.5 // desired x, a.k.a. the center adjustment
+  countercathete.value = totalHeight.value * 0.45 // desired y
+  radius.value = Math.sqrt(Math.pow(adjacent.value, 2) + Math.pow(countercathete.value, 2)) // The radius is the hypotenuse
+  alpha.value = Math.tan(countercathete.value / adjacent.value) * (180 / Math.PI) // In degrees
+
+  sdgDegrees.value = (alpha.value * 2) / (graph.homeMapGraph.sdgs.length - 1) // The gaps between the SDG elements
+  sdgStart.value = 180 - alpha.value // The starting angle of the SDG elements (on a regular cartesian coordinate system)
+
+  conceptDegrees.value = (alpha.value * 2) / (graph.homeMapGraph.concepts.length - 1) // The gaps between the concept elements
+  conceptStart.value = 360 - alpha.value // The starting angle of the SDG elements (on a regular cartesian coordinate system)
+
+  circleElementRadius.value = yScaleWorks.value.bandwidth() * 0.5
+  textElementXOffset.value = circleElementRadius.value * 2
+}
+
+function degToRad(degrees) {
+  return degrees * (Math.PI / 180)
+}
+
+function getCircularX(element, startDegree, radius, angle, i) {
+  const circularX = radius * Math.cos(degToRad(startDegree) + degToRad(angle * i))
+  // Depending on the startDegree, circularX might have a negative value (e.g. for SDGs)!!
+  const centerAdjustment = element === "sdg" ? adjacent.value : -adjacent.value
+  const margin =
+    element === "sdg" ? xScale.value.bandwidth() * 0.75 : xScale.value.bandwidth() * 0.25
+  return centerAdjustment + circularX + margin // Add some margin
+}
+
+function getCircularY(startDegree, radius, angle, i) {
+  const circularY = radius * Math.sin(degToRad(startDegree) + degToRad(angle * i))
+  // Adjustment for y center + the calculated y (which is negative because SVG 0/0 is top left)
+  return totalHeight.value * 0.5 + -circularY
+}
+
+// Draw SDGs /////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////
+function getSdgId(d) {
+  return `SDG ${d.id}`
+}
+
+function getSdgLabel(d) {
+  return d.name
+}
+
+function drawSDGs(data) {
+  SDGsGroup.value
+    .selectAll("g")
+    .data(data)
+    .join(
+      (enter) =>
+        enter
+          .append("g")
+          .attr("class", "sdg")
+          .each(function () {
+            // Add circles
+            d3.select(this)
+              .append("circle")
+              .attr("stroke", (d) => d.color)
+              .attr("fill", (d) => d.color)
+            // Add SDG ID
+            d3.select(this)
+              .append("text")
+              .attr("class", "sdg-id")
+              .text((d) => getSdgId(d))
+              .attr("x", -textElementXOffset.value)
+              .attr("y", "0")
+              .attr("dominant-baseline", "text-after-edge")
+              .attr("text-anchor", "end")
+            // Add SDG label
+            d3.select(this)
+              .append("text")
+              .attr("class", "sdg-label")
+              .text((d) => getSdgLabel(d))
+              .attr("x", -textElementXOffset.value)
+              .attr("y", "0")
+              .attr("dominant-baseline", "text-before-edge")
+              .attr("font-size", "0.75em")
+              .attr("text-anchor", "end")
+          }),
+      (update) => {
         update
-          .select("text")
-          .text((d) => d.title)
-          .attr("y", yScaleWorks.value.bandwidth() * 0.85)
-          .attr("font-size", () => {
-            return yScaleWorks.value.bandwidth() * 0.95
-          })
+          .selectAll("sdg-id")
+          .text((d) => getSdgId(d))
+          .attr("x", -textElementXOffset.value)
+          .attr("y", "0")
+        update
+          .selectAll("sdg-label")
+          .text((d) => getSdgLabel(d))
+          .attr("x", -textElementXOffset.value)
+        update
+          .select("circle")
+          .attr("stroke", (d) => d.color)
+          .attr("fill", (d) => d.color)
         return update
       },
       (exit) => exit.remove()
     )
-    .attr("transform", (d) => {
-      const translate0 = screenSize.isMobile ? `-${xScale.value.bandwidth() * screenFactor}` : 0
-      return `translate(${translate0}, ${yScaleWorks.value(d.id)})`
-    })
+
+  SDGsGroup.value
+    .selectAll("g.sdg")
+    .attr(
+      "transform",
+      (_, i) =>
+        `translate(${getCircularX(
+          "sdg",
+          sdgStart.value,
+          radius.value,
+          sdgDegrees.value,
+          i
+        )}, ${getCircularY(sdgStart.value, radius.value, sdgDegrees.value, i)})`
+    )
+
+  // Position the SDG circles
+  SDGsGroup.value
+    .selectAll("g.sdg circle")
+    .attr("cx", 0)
+    .attr("cy", 0)
+    .attr("r", circleElementRadius.value)
 }
+
+// Draw Concepts /////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////
+function drawConcepts(data) {
+  conceptsGroup.value
+    .selectAll("g")
+    .data(data)
+    .join(
+      (enter) =>
+        enter
+          .append("g")
+          .attr("class", "concept")
+          .each(function () {
+            // Add circles
+            d3.select(this).append("circle").attr("stroke", theBlack).attr("fill", theBlack)
+            // Add concept
+            d3.select(this)
+              .append("text")
+              .attr("class", "concept-name")
+              .text((d) => d.name)
+              .attr("x", textElementXOffset.value)
+              .attr("y", "0")
+              .attr("dominant-baseline", "middle")
+          }),
+      (update) => {
+        update.selectAll("concept-name").text((d) => d.name)
+        return update
+      },
+      (exit) => exit.remove()
+    )
+
+  conceptsGroup.value
+    .selectAll("g.concept")
+    .attr(
+      "transform",
+      (_, i) =>
+        `translate(${getCircularX(
+          "concept",
+          conceptStart.value,
+          radius.value,
+          conceptDegrees.value,
+          i
+        )}, ${getCircularY(conceptStart.value, radius.value, conceptDegrees.value, i)})`
+    )
+
+  // Position the concept circles
+  conceptsGroup.value
+    .selectAll("g.concept circle")
+    .attr("cx", 0)
+    .attr("cy", 0)
+    .attr("r", circleElementRadius.value)
+}
+
+// Draw SDG-works lines //////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////
+
+// Add works mouseovers //////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////
+
+// Add SDG mouseovers ////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////
+
+// Add concepts mouseovers ///////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////
+
+// Add work click events /////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////
+
+// Add SDG click events //////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////
+
+// Add concepts click events /////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////
 </script>
 
 <template>

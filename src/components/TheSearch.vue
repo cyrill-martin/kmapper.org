@@ -9,8 +9,9 @@ import { createSdgWorkNodes } from "../utils/createSdgWorkNodes.js"
 import { createConceptWorkNodes } from "../utils/createConceptWorkNodes.js"
 import { noSearchResults } from "../utils/messages.js"
 import { politeMail } from "../data/politeMail.js"
-import testData25 from "../data/testData25.json"
-import testData50 from "../data/testData50.json"
+import { useScreenSizeStore } from "../stores/screenSize.js"
+import testDataMobile from "../data/testDataMobile.json"
+import testDataDesktop from "../data/testDataDesktop.json"
 // Icon
 import SearchOutline from "@vicons/ionicons5/SearchOutline"
 
@@ -21,6 +22,7 @@ const route = useRoute()
 // Use stores
 const search = useSearchStore()
 const graph = useGraphStore()
+const screenSize = useScreenSizeStore()
 
 // The message instance for this component. It will be sent to the
 // corresponding utils function
@@ -40,7 +42,7 @@ onMounted(async () => {
   console.log("Set the query", search.searchQuery)
 })
 
-const useTestData = false // false, 25, or 50
+const useTestData = true
 
 // Base function to search OpenAlex works
 async function searchOpenAlexWorks(obj) {
@@ -78,7 +80,8 @@ async function searchOpenAlexWorks(obj) {
       throw error
     }
   } else {
-    return useTestData === 50 ? testData50 : testData25
+    return screenSize.isMobile ? testDataMobile : testDataDesktop
+    // return useTestData === 50 ? testData50 : testData25
   }
 }
 

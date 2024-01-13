@@ -235,6 +235,10 @@ const alpha = ref(null)
 const sdgDegrees = ref(null)
 const sdgStart = ref(null)
 
+// Margin to handle between works and circle elements
+// The smaller the closer the circles to the works (it's a fraction of the xScale.bandwidth())
+const elementMarginFactor = ref(0.2) 
+
 const conceptDegrees = ref(null)
 const conceptStart = ref(null)
 
@@ -270,8 +274,10 @@ function getCircularX(element, startDegree, radius, angle, i) {
   // Depending on the startDegree, circularX might have a negative value (e.g. for SDGs)!!
   const centerAdjustment = element === "sdg" ? adjacent.value : -adjacent.value
   const margin =
-    element === "sdg" ? xScale.value.bandwidth() * 0.75 : xScale.value.bandwidth() * 0.25
-  return centerAdjustment + circularX + margin // Add some margin
+    element === "sdg"
+      ? xScale.value.bandwidth() * (1 - elementMarginFactor.value)
+      : xScale.value.bandwidth() * elementMarginFactor.value // Add some margin
+  return centerAdjustment + circularX + margin
 }
 
 function getCircularY(startDegree, radius, angle, i) {

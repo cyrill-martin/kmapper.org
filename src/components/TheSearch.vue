@@ -39,14 +39,11 @@ onMounted(async () => {
     search.setSearchQuery(qParam)
     await searchAndMapContent()
   }
-  console.log("Set the query", search.searchQuery)
 })
-
-const useTestData = true
 
 // Base function to search OpenAlex works
 async function searchOpenAlexWorks(obj) {
-  if (!useTestData) {
+  if (!search.testData) {
     const query = encodeURIComponent(obj.query)
     const perPage = obj.perPage
     const goldOpenAccessOnly = obj.goldOpenAccessOnly
@@ -130,6 +127,8 @@ async function searchAndMapContent() {
       graph.incrementNumberOfGraphs()
       console.log("Number of graphs", graph.numberOfGraphs)
     } else {
+      graph.setHomeMapGraph(null)
+      graph.incrementNumberOfGraphs()
       noSearchResults(message, search.searchQuery)
     }
 

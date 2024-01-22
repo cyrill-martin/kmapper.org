@@ -387,9 +387,9 @@ function addWorkMouseEvents() {
     d3.selectAll(`.sdg.work-element-${workId} .sdg-id`)
       .attr("fill", elementColor(event.type))
       .attr("font-weight", fontWeight(event.type))
-    d3.selectAll(`.sdg.work-element-${workId} .sdg-label`)
-      .attr("fill", elementColor(event.type))
-      .attr("font-weight", fontWeight(event.type))
+    // d3.selectAll(`.sdg.work-element-${workId} .sdg-label`)
+    //   .attr("fill", elementColor(event.type))
+    //   .attr("font-weight", fontWeight(event.type))
 
     // Highlighting and setting back concepts
     d3.selectAll(`.concept.work-element-${workId} .concept-name`)
@@ -608,7 +608,7 @@ function drawSdgWorkLines(callback) {
       .duration(transitionDuration * 1.5)
       .attr("stroke", theGrey)
 
-    callback(graph.homeMapGraph.sdgs, addSdgMouseEvents) // callback is drawSDGs
+    callback(graph.homeMapGraph.sdgs, measureSdgLabels, updateSdgLabels, addSdgMouseEvents) // callback is drawSDGs
   }
 }
 
@@ -622,7 +622,60 @@ function addSdgWorkClasses(sdg) {
   return graph.sdgWorkNodes[sdg].works.map((work) => `work-element-${work}`)
 }
 
-function drawSDGs(data, callback) {
+function addSdgLabels(selection, className) {
+  selection
+    .append("text")
+    .attr("class", className)
+    .text((d) => d.name)
+    .attr("x", () => {
+      return screenSize.isMobile ? textElementXOffset.value : -textElementXOffset.value
+    })
+    .attr("y", "0")
+    .attr("dominant-baseline", "text-before-edge")
+    .attr("font-size", () => getFontSize("sdg-label"))
+    .attr("text-anchor", () => {
+      return screenSize.isMobile ? "start" : "end"
+    })
+}
+
+function measureSdgLabels(data) {
+  // A function to get the BBox data of the created SDG labels and...
+  // ...add the data to the graph
+  sdgsGroup.value
+    .selectAll(".sdg-dummy-label")
+    .join(data)
+    .each(function (d) {
+      d.labelBbox = this.getBBox()
+    })
+}
+
+function updateSdgLabels(data) {
+  // Remove dummy labels used for measurements
+  d3.selectAll(".sdg-dummy-label").remove()
+
+  // Selection of all the SDG group elements
+  const sdgGs = sdgsGroup.value.selectAll(".sdg").data(data).join("g")
+
+  // Adding a rect element to each SDG g element...
+  // ...using the bbox measurements of the dummy labels created earlier!!
+  sdgGs
+    .append("rect")
+    .attr("x", (d) => {
+      return screenSize.isMobile
+        ? textElementXOffset.value
+        : -(d.labelBbox.width + textElementXOffset.value)
+    })
+    .attr("y", 0)
+    .attr("fill", (d) => d.color)
+    .attr("opacity", "0.4")
+    .attr("width", (d) => d.labelBbox.width)
+    .attr("height", (d) => d.labelBbox.height)
+
+  // Adding new SDG labels
+  addSdgLabels(sdgGs, "sdg-label")
+}
+
+function drawSDGs(data, callback1, callback2, callback3) {
   sdgsGroup.value
     .selectAll(".sdg")
     .data(data)
@@ -661,8 +714,6 @@ function drawSDGs(data, callback) {
               .attr("class", "sdg-circle")
               .attr("data-id", (d) => d.id)
               .attr("r", circleElementRadius.value)
-              // .attr("stroke", (d) => d.color)
-              // .attr("fill", (d) => d.color)
               .attr("stroke", theBlack)
               .attr("fill", theBlack)
             // Add SDG ID
@@ -680,20 +731,8 @@ function drawSDGs(data, callback) {
               .attr("text-anchor", () => {
                 return screenSize.isMobile ? "start" : "end"
               })
-            // Add SDG label
-            d3.select(this)
-              .append("text")
-              .attr("class", "sdg-label")
-              .text((d) => d.name)
-              .attr("x", () => {
-                return screenSize.isMobile ? textElementXOffset.value : -textElementXOffset.value
-              })
-              .attr("y", "0")
-              .attr("dominant-baseline", "text-before-edge")
-              .attr("font-size", () => getFontSize("sdg-label"))
-              .attr("text-anchor", () => {
-                return screenSize.isMobile ? "start" : "end"
-              })
+            // Add SDG dummy labels for measurements only
+            addSdgLabels(d3.select(this), "sdg-dummy-label")
           }),
       (update) => update,
       (exit) => exit
@@ -717,7 +756,9 @@ function drawSDGs(data, callback) {
         )}, ${getCircularY(sdgStart.value, radius.value, sdgDegrees.value, i)})`
     )
 
-  callback() // callback is addSdgMoueEvents()
+  callback1(data) // callback1 is measureSdgLabels()
+  callback2(graph.homeMapGraph.sdgs) // callback2 is updateSdgLabels()
+  callback3() // callback2 is addSdgMouseEvents()
 }
 
 // Adding the SDG mouse events
@@ -737,10 +778,10 @@ function addSdgMouseEvents() {
       .attr("fill", elementColor(event.type))
       .attr("font-weight", fontWeight(event.type))
 
-    d3.select(this)
-      .select(".sdg-label")
-      .attr("fill", elementColor(event.type))
-      .attr("font-weight", fontWeight(event.type))
+    // d3.select(this)
+    //   .select(".sdg-label")
+    //   .attr("fill", elementColor(event.type))
+    //   .attr("font-weight", fontWeight(event.type))
 
     // Highlighting and setting back the work lines
     d3.selectAll(`.sdg-line.sdg-${sdgId}`)
@@ -785,7 +826,7 @@ function createConceptLinesData() {
         id: concept.name,
         work: work,
         coordinates: [
-          { x: x0, y: y0 }, // Startin point
+          { x: x0, y: y0 }, // Starting point
           { x: x1, y: y1 }, // First control point
           {
             // Second control point

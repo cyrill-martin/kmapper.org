@@ -46,13 +46,14 @@ async function searchOpenAlexWorks(obj) {
   if (!search.testData) {
     const query = encodeURIComponent(obj.query)
     const perPage = obj.perPage
+    const page = obj.page
     const goldOpenAccessOnly = obj.goldOpenAccessOnly
     const email = obj.email
 
     console.log("perPage", obj.perPage)
 
     try {
-      let url = `https://api.openalex.org/works?search=${query}&per-page=${perPage}`
+      let url = `https://api.openalex.org/works?search=${query}&per-page=${perPage}&page=${page}`
       url = goldOpenAccessOnly ? `${url}&filter=open_access.oa_status:gold` : url
       url = url + `&mailto=${email}`
 
@@ -91,6 +92,7 @@ async function searchAndMapContent() {
     const searchResults = await searchOpenAlexWorks({
       query: search.searchQuery,
       perPage: search.pageSize,
+      page: search.page,
       goldOpenAccessOnly: search.goldOpenAccess,
       email: politeMail
     })

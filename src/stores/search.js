@@ -8,13 +8,14 @@ export const useSearchStore = defineStore("search", () => {
   // State
   const searchQuery = ref(null)
   const pageSize = computed(() => screenSize.isMobile ? 18 : 36)
+  const page = ref(1)
   const goldOpenAccess = ref(true)
   const isLoading = ref(false)
   const searchResults = ref(null)
   const hasSearchResults = computed(() => searchResults.value.results.length)
   const isValidSearchQuery = computed(() => searchQuery.value.trim().length !== 0)
 
-  const testData = ref(true)
+  const testData = ref(false)
 
   // Actions
   function setSearchQuery(query) {
@@ -32,6 +33,7 @@ export const useSearchStore = defineStore("search", () => {
   return {
     searchQuery,
     pageSize,
+    page,
     goldOpenAccess,
     isLoading,
     searchResults,

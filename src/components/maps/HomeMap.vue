@@ -6,6 +6,7 @@ import { useGraphStore } from "../../stores/graph.js"
 import { useScreenSizeStore } from "../../stores/screenSize.js"
 import { useSearchStore } from "../../stores/search.js"
 import { debounce } from "../../utils/debounce.js"
+import ThePaginator from "../layout/ThePaginator.vue"
 
 // Use stores
 const screenSize = useScreenSizeStore()
@@ -1009,11 +1010,11 @@ function addConceptMouseEvents() {
 // Add concepts click events /////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////
 
-
-
 </script>
 
 <template>
   <div id="home-map"></div>
-  <div>The Paginator</div>
+  <div v-if="search.hasSearchResults">
+    <ThePaginator :currentPage="search.page" :count="100"/>
+  </div>
 </template>

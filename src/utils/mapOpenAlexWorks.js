@@ -1,11 +1,15 @@
 import { SDGs } from "../data/SDGs.js"
-import { thresholds } from "../data/thresholds.js"
 
 export async function mapOpenAlexWorks(searchResults) {
   let uniqueSdgs = new Set()
 
   let uniqueConcepts = new Set()
   const conceptIRIs = {}
+
+  const thresholds = {
+    sdg: 0.25,
+    concept: 0.75
+  }
 
   // openAlexId
   function getOpenAlexId(work) {

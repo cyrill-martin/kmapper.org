@@ -8,7 +8,6 @@ import { mapOpenAlexWorks } from "../utils/mapOpenAlexWorks.js"
 import { createSdgWorkNodes } from "../utils/createSdgWorkNodes.js"
 import { createConceptWorkNodes } from "../utils/createConceptWorkNodes.js"
 import { noSearchResults } from "../utils/messages.js"
-import { politeMail } from "../data/politeMail.js"
 import { useScreenSizeStore } from "../stores/screenSize.js"
 import testDataMobile from "../data/testDataMobile.json"
 import testDataDesktop from "../data/testDataDesktop.json"
@@ -94,7 +93,7 @@ async function searchAndMapContent() {
       perPage: search.pageSize,
       page: search.page,
       goldOpenAccessOnly: search.goldOpenAccess,
-      email: politeMail
+      email: search.politeMail
     })
     search.setSearchResults(searchResults)
     console.log("Search results", search.searchResults)

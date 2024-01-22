@@ -1008,8 +1008,12 @@ function addConceptMouseEvents() {
 
 // Add concepts click events /////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////
+
+
+
 </script>
 
 <template>
   <div id="home-map"></div>
+  <div>The Paginator</div>
 </template>

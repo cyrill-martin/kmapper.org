@@ -1,1 +1,0 @@
-export const politeMail = "mail@kmapper.com"

@@ -14,6 +14,7 @@ export const useSearchStore = defineStore("search", () => {
   const searchResults = ref(null)
   const hasSearchResults = computed(() => searchResults.value.results.length)
   const isValidSearchQuery = computed(() => searchQuery.value.trim().length !== 0)
+  const politeMail = ref("mail@kmapper.com")
 
   const testData = ref(false)
 
@@ -42,6 +43,7 @@ export const useSearchStore = defineStore("search", () => {
     setSearchResults,
     hasSearchResults,
     isValidSearchQuery,
+    politeMail,
     testData
   }
 })

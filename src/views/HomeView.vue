@@ -18,5 +18,3 @@ import TheSearch from "../components/TheSearch.vue"
     </n-grid-item>
   </n-grid>
 </template>
-
-<style scoped></style>

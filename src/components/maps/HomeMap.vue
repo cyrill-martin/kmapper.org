@@ -388,9 +388,10 @@ function addWorkMouseEvents() {
     d3.selectAll(`.sdg.work-element-${workId} .sdg-id`)
       .attr("fill", elementColor(event.type))
       .attr("font-weight", fontWeight(event.type))
+
     // d3.selectAll(`.sdg.work-element-${workId} .sdg-label`)
-    //   .attr("fill", elementColor(event.type))
-    //   .attr("font-weight", fontWeight(event.type))
+    // .attr("fill", elementColor(event.type))
+    // .attr("font-weight", fontWeight(event.type))
 
     // Highlighting and setting back concepts
     d3.selectAll(`.concept.work-element-${workId} .concept-name`)
@@ -781,8 +782,8 @@ function addSdgMouseEvents() {
 
     // d3.select(this)
     //   .select(".sdg-label")
-    //   .attr("fill", elementColor(event.type))
-    //   .attr("font-weight", fontWeight(event.type))
+    // .attr("fill", elementColor(event.type))
+    // .attr("font-weight", fontWeight(event.type))
 
     // Highlighting and setting back the work lines
     d3.selectAll(`.sdg-line.sdg-${sdgId}`)
@@ -1009,12 +1010,11 @@ function addConceptMouseEvents() {
 
 // Add concepts click events /////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////
-
 </script>
 
 <template>
   <div id="home-map"></div>
-  <div v-if="search.hasSearchResults">
-    <ThePaginator :currentPage="search.page" :count="100"/>
+  <div>
+    <ThePaginator />
   </div>
 </template>

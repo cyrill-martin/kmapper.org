@@ -1,4 +1,4 @@
-import { ref, computed } from "vue"
+import { ref, computed, watch } from "vue"
 import { defineStore } from "pinia"
 import { useScreenSizeStore } from "./screenSize.js"
 import { useGraphStore } from "../stores/graph.js"
@@ -24,18 +24,28 @@ export const useSearchStore = defineStore("search", () => {
   const graph = useGraphStore()
 
   // Use of test data!!
-  const testData = ref(false)
+  const testData = ref(true)
 
   // State
   const searchQuery = ref(null)
+  const isNewQuery = ref(true)
   const pageSize = computed(() => (screenSize.isMobile ? 18 : 36))
   const page = ref(1)
+  const paginatorPage = ref(1)
   const goldOpenAccess = ref(true)
   const isLoading = ref(false)
   const searchResults = ref(null)
+  const resultsCount = computed(() => Math.ceil(searchResults.value.meta.count / pageSize.value))
   const hasSearchResults = computed(() => searchResults.value.results.length)
   const isValidSearchQuery = computed(() => searchQuery.value.trim().length !== 0)
   const politeMail = ref("mail@kmapper.com")
+
+  watch(
+    () => searchQuery.value,
+    () => {
+      page.value = 1
+    }
+  )
 
   // Actions
 
@@ -129,6 +139,7 @@ export const useSearchStore = defineStore("search", () => {
       }
 
       toggleLoading() // End loading indication
+      paginatorPage.value = page.value
     } catch (error) {
       console.error("Request failed:", error.message)
       toggleLoading() // End loading indication
@@ -139,6 +150,11 @@ export const useSearchStore = defineStore("search", () => {
     searchQuery.value = query
   }
 
+  function setPage(receivedPage, callback) {
+    page.value = receivedPage
+    callback()
+  }
+
   function toggleLoading() {
     isLoading.value = !isLoading.value
   }
@@ -146,12 +162,16 @@ export const useSearchStore = defineStore("search", () => {
   return {
     searchAndMapContent,
     searchQuery,
+    isNewQuery,
     pageSize,
     page,
+    paginatorPage,
     goldOpenAccess,
     isLoading,
     searchResults,
+    resultsCount,
     setSearchQuery,
+    setPage,
     toggleLoading,
     hasSearchResults,
     isValidSearchQuery,

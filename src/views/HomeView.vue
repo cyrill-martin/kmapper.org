@@ -7,6 +7,7 @@ import { useScreenSizeStore } from "../stores/screenSize.js"
 const screenSize = useScreenSizeStore()
 const topPadding = computed(() => (screenSize.isMobile ? "5vh 0 0 0" : "25vh 0 0 0"))
 const logoSize = computed(() => (screenSize.isMobile ? "150px" : "250px"))
+const bottomMargin = computed(() => (screenSize.isMobile ? "0 0 10px 0" : "0 0 25px 0"))
 </script>
 
 <template>
@@ -21,7 +22,7 @@ const logoSize = computed(() => (screenSize.isMobile ? "150px" : "250px"))
               alt="The kmapper logo"
             />
           </div>
-          <div class="tagline">...and some text?</div>
+          <div :style="{ margin: bottomMargin }">Visualizing research affinity to SDGs</div>
         </n-grid-item>
         <n-grid-item>
           <div>
@@ -33,8 +34,3 @@ const logoSize = computed(() => (screenSize.isMobile ? "150px" : "250px"))
   </div>
 </template>
 
-<style scoped>
-.tagline {
-  margin-bottom: 5px;
-}
-</style>

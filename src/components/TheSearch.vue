@@ -46,7 +46,7 @@ const searchSize = computed(() => {
         :style="{ width: '560px' }"
         autofocus
         v-model:loading="search.isLoading"
-        placeholder="Search OpenAlex for open access literature"
+        placeholder="Search OpenAlex"
         v-model:value="search.searchQuery"
         @keyup.enter="isValidSearch && search.searchAndMapContent()"
       >

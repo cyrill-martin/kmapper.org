@@ -7,7 +7,7 @@ export const useScreenSizeStore = defineStore("screenSize", () => {
 
   const ctrMarginV = computed(() => height.value * 0.8 * 0.01)
   const ctrMarginH = computed(() => width.value * 0.01)
-  const isMobile = computed(() => width.value < 700)
+  const isMobile = computed(() => width.value < 800)
 
   function updateScreenSize() {
     width.value = window.innerWidth

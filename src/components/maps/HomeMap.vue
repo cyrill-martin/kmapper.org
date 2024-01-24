@@ -184,13 +184,13 @@ function getFontSize(element) {
   const baseSize = yScaleWorks.value.bandwidth() * 0.95
 
   if (element === "work-title") {
-    return baseSize
+    return `${baseSize}px`
   } else if (element === "sdg-id") {
-    return screenSize.isMobile ? baseSize * 0.75 : baseSize
+    return screenSize.isMobile ? `${baseSize * 0.75}px` : `${baseSize}px`
   } else if (element === "sdg-label") {
-    return screenSize.isMobile ? baseSize * 0.5 : baseSize * 0.75
+    return screenSize.isMobile ? `${baseSize * 0.5}px` : `${baseSize * 0.75}px`
   } else if (element === "concept") {
-    return screenSize.isMobile ? baseSize * 0.75 : baseSize
+    return screenSize.isMobile ? `${baseSize * 0.75}px` : `${baseSize}px`
   }
 }
 
@@ -332,7 +332,7 @@ function drawWorks(data, callback) {
     .selectAll(".work-title")
     .attr("x", xScale.value.bandwidth() * 0.01)
     .attr("y", yScaleWorks.value.bandwidth() * 0.85)
-    .attr("font-size", getFontSize("work-title"))
+    .style("font-size", getFontSize("work-title"))
     .attr("fill", "white")
 
   // Positioning each <g> element with class "work" along the yScaleWorks
@@ -634,7 +634,7 @@ function addSdgLabels(selection, className) {
     })
     .attr("y", "0")
     .attr("dominant-baseline", "text-before-edge")
-    .attr("font-size", () => getFontSize("sdg-label"))
+    .style("font-size", () => getFontSize("sdg-label"))
     .attr("text-anchor", () => {
       return screenSize.isMobile ? "start" : "end"
     })
@@ -728,7 +728,7 @@ function drawSDGs(data, callback1, callback2, callback3) {
                 return screenSize.isMobile ? textElementXOffset.value : -textElementXOffset.value
               })
               .attr("y", "0")
-              .attr("font-size", getFontSize("sdg-id"))
+              .style("font-size", getFontSize("sdg-id"))
               .attr("dominant-baseline", "text-after-edge")
               .attr("text-anchor", () => {
                 return screenSize.isMobile ? "start" : "end"
@@ -902,7 +902,6 @@ function drawConcepts(data, callback) {
             ["concept", `concept-${dataName(d.name)}`, ...addConceptWorkClasses(d.name)].join(" ")
           )
           .attr("data-name", (d) => dataName(d.name))
-          .attr("font-size", getFontSize("concept"))
           .attr(
             "transform",
             (_, i) =>
@@ -943,6 +942,7 @@ function drawConcepts(data, callback) {
                 return screenSize.isMobile ? -textElementXOffset.value : textElementXOffset.value
               })
               .attr("y", "0")
+              .style("font-size", getFontSize("concept"))
               .attr("fill", theBlack)
               .attr("dominant-baseline", "middle")
               .attr("text-anchor", () => {

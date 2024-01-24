@@ -21,31 +21,9 @@ const currentMap = ref("HomeMap")
       </div>
     </n-grid-item>
     <n-grid-item>
-      <!-- <div @click="currentMap = 'DetailsMap'"> -->
       <div>
-        <!-- <transition name="slide"> -->
-          <component :is="maps[currentMap]"></component>
-        <!-- </transition> -->
+        <component :is="maps[currentMap]"></component>
       </div>
     </n-grid-item>
   </n-grid>
 </template>
-
-<style scoped>
-.slide-enter-active,
-.slide-leave-active {
-  transition: all 0.5s ease;
-  position: absolute;
-  width: 100%;
-}
-
-.slide-enter-from,
-.slide-leave-to {
-  transform: translateX(100%);
-}
-
-.slide-leave-from,
-.slide-enter-to {
-  transform: translateX(-100%);
-}
-</style>

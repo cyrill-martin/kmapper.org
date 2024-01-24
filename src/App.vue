@@ -1,4 +1,5 @@
 <script setup>
+import { computed } from "vue"
 import {
   NConfigProvider,
   NMessageProvider,
@@ -9,6 +10,10 @@ import {
 import { RouterView } from "vue-router"
 import TheHeader from "./components/layout/TheHeader.vue"
 import TheFooter from "./components/layout/TheFooter.vue"
+import { useScreenSizeStore } from "./stores/screenSize.js"
+
+
+const screenSize = useScreenSizeStore()
 
 const themeOverrides = {
   common: {
@@ -17,17 +22,19 @@ const themeOverrides = {
     primaryColorHover: "#333447"
   }
 }
+
+const dynamicHeight = computed(() => (screenSize.isMobile ? "35px" : "55px"))
 </script>
 
 <template>
   <n-config-provider :theme-overrides="themeOverrides">
     <n-message-provider>
       <div id="the-content-wrapper">
-        <n-layout-header id="the-header">
+        <n-layout-header id="the-header" :style="{ height: dynamicHeight }">
           <TheHeader />
         </n-layout-header>
         <n-layout-content id="the-content">
-          <main style="flex: 1; display: flex; flex-direction: column">
+          <main>
             <RouterView />
           </main>
         </n-layout-content>
@@ -46,12 +53,16 @@ const themeOverrides = {
   min-height: 100vh;
 }
 #the-header {
-  height: 55px;
   padding: 1rem;
 }
 #the-content {
   flex: 1;
   padding: 1rem;
+}
+main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
 }
 #the-footer {
   height: 80px;

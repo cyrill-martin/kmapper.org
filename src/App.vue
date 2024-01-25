@@ -5,7 +5,8 @@ import {
   NMessageProvider,
   NLayoutHeader,
   NLayoutContent,
-  NLayoutFooter
+  NLayoutFooter,
+  NFlex
 } from "naive-ui"
 import { RouterView } from "vue-router"
 import TheHeader from "./components/layout/TheHeader.vue"
@@ -30,6 +31,7 @@ const dynamicHeight = computed(() => (screenSize.isMobile ? "40px" : "55px"))
   <n-config-provider :theme-overrides="themeOverrides">
     <n-message-provider>
       <div id="the-content-wrapper">
+        <n-flex></n-flex>
         <n-layout-header id="the-header" :style="{ height: dynamicHeight }">
           <TheHeader />
         </n-layout-header>

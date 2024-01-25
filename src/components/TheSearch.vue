@@ -43,7 +43,7 @@ const searchSize = computed(() => {
       <n-input
         round
         :size="searchSize"
-        :style="{ width: '560px' }"
+        :style="{ width: '500px' }"
         autofocus
         v-model:loading="search.isLoading"
         placeholder="Search OpenAlex"

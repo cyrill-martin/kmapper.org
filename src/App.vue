@@ -23,7 +23,7 @@ const themeOverrides = {
   }
 }
 
-const dynamicHeight = computed(() => (screenSize.isMobile ? "35px" : "55px"))
+const dynamicHeight = computed(() => (screenSize.isMobile ? "40px" : "55px"))
 </script>
 
 <template>
@@ -57,15 +57,11 @@ const dynamicHeight = computed(() => (screenSize.isMobile ? "35px" : "55px"))
 }
 #the-content {
   flex: 1;
-  padding: 1rem;
-}
-main {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
+  padding: 0 1rem 0 1rem;
 }
 #the-footer {
   height: 80px;
   padding: 1rem;
+  margin-top: 2rem;
 }
 </style>

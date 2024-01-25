@@ -22,7 +22,7 @@ const bottomMargin = computed(() => (screenSize.isMobile ? "0 0 10px 0" : "0 0 2
               alt="The kmapper logo"
             />
           </div>
-          <div :style="{ margin: bottomMargin }">Visualizing research affinity to SDGs</div>
+          <div :style="{ margin: bottomMargin }">Visualizing mapped research</div>
         </n-grid-item>
         <n-grid-item>
           <div>

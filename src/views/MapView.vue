@@ -17,7 +17,7 @@ const currentMap = ref("HomeMap")
 </script>
 
 <template>
-  <n-grid x-gap="12" y-gap="12" cols="1" responsive="screen">
+  <n-grid x-gap="12" y-gap="12" cols="1">
     <n-grid-item>
       <div v-if="screenSize.isMobile">
         <TheSearch />

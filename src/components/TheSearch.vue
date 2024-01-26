@@ -1,7 +1,7 @@
 <script setup>
 import { onMounted, computed } from "vue"
 import { useRoute } from "vue-router"
-import { NSpace, NInputGroup, NInput, NButton, NIcon } from "naive-ui"
+import { NInputGroup, NInput, NButton, NIcon } from "naive-ui"
 import { useSearchStore } from "../stores/search.js"
 import { useScreenSizeStore } from "../stores/screenSize.js"
 // Icon
@@ -38,12 +38,10 @@ const searchSize = computed(() => {
 </script>
 
 <template>
-  <n-space justify="center">
     <n-input-group>
       <n-input
-        round
         :size="searchSize"
-        :style="{ width: '500px' }"
+        round
         autofocus
         v-model:loading="search.isLoading"
         placeholder="Search OpenAlex"
@@ -55,8 +53,8 @@ const searchSize = computed(() => {
         </template>
       </n-input>
       <n-button
-        round
         :size="searchSize"
+        round
         type="primary"
         ghost
         @click="isValidSearch && search.searchAndMapContent()"
@@ -64,5 +62,4 @@ const searchSize = computed(() => {
         Search
       </n-button>
     </n-input-group>
-  </n-space>
 </template>

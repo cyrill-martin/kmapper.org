@@ -1,5 +1,7 @@
-<script setup></script>
+<script setup>
+const props = defineProps(["obj"])
+</script>
 
 <template>
-  <div>The DetailsMap</div>
+  <div style="height: 250px;">{{ props.obj }}</div>
 </template>

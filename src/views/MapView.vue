@@ -1,19 +1,10 @@
 <script setup>
-import { ref } from "vue"
 import { NFlex } from "naive-ui"
 import { useScreenSizeStore } from "../stores/screenSize.js"
 import TheSearch from "../components/TheSearch.vue"
 import HomeMap from "../components/maps/HomeMap.vue"
-import DetailsMap from "../components/maps/DetailsMap.vue"
 
 const screenSize = useScreenSizeStore()
-
-const maps = {
-  HomeMap,
-  DetailsMap
-}
-
-const currentMap = ref("HomeMap")
 </script>
 
 <template>
@@ -23,7 +14,7 @@ const currentMap = ref("HomeMap")
       <TheSearch />
     </div>
     <div class="map-area">
-      <component :is="maps[currentMap]"></component>
+      <HomeMap />
     </div>
   </n-flex>
 </template>

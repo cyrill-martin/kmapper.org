@@ -8,10 +8,11 @@ const screenSize = useScreenSizeStore()
 const logoSize = computed(() => (screenSize.isMobile ? "150px" : "250px"))
 const bottomMargin = computed(() => (screenSize.isMobile ? "0 0 10px 0" : "0 0 25px 0"))
 const desktopHome = computed(() => (screenSize.isMobile ? false : true))
+const homeJustify = computed(() => (screenSize.isMobile ? "start": "center"))
 </script>
 
 <template>
-  <n-flex vertical justify="center" :class="{ desktopHome: desktopHome, mobileHome: !desktopHome }">
+  <n-flex vertical :justify="homeJustify" :class="{ desktopHome: desktopHome, mobileHome: !desktopHome }">
     <div>
       <img
         :style="{ width: logoSize }"

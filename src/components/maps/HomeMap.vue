@@ -6,7 +6,9 @@ import { useGraphStore } from "../../stores/graph.js"
 import { useScreenSizeStore } from "../../stores/screenSize.js"
 import { useSearchStore } from "../../stores/search.js"
 import { debounce } from "../../utils/debounce.js"
+import { NModal } from "naive-ui"
 import ThePaginator from "../layout/ThePaginator.vue"
+import DetailsMap from "./DetailsMap.vue"
 
 // Use stores
 const screenSize = useScreenSizeStore()
@@ -68,6 +70,7 @@ function drawDynamicMap() {
   setYScaleWorks(drawWorks)
   drawSdgWorkLines(drawSDGs)
   drawConceptWorkLines(drawConcepts)
+  addClickEvents()
 }
 
 // Redraw the map in case of new searches or screen re-sizes
@@ -273,7 +276,6 @@ function drawWorks(data, callback) {
         enter
           .append("g")
           .attr("class", "work")
-          .attr("data-id", (d) => d.id)
           .attr("transform", () => {
             return `translate(${workTranslationX.value}, ${totalHeight.value * 0.5})`
           })
@@ -324,6 +326,8 @@ function drawWorks(data, callback) {
     .selectAll(".work-overlay")
     .attr("class", (d) => ["work-overlay", ...addElementClasses(d.links)].join(" "))
     .attr("data-id", (d) => d.id)
+    .attr("data-type", "work")
+    .attr("data-index", (_, i) => i)
     .attr("fill-opacity", 0)
     .attr("cursor", "pointer")
 
@@ -364,6 +368,7 @@ function fontWeight(type) {
   return type === "mouseover" ? "bold" : "regular"
 }
 
+// Add work mouse events
 function addWorkMouseEvents() {
   worksGroup.value.selectAll(".work-overlay").on("mouseover mouseout", function (event) {
     // Get the current work
@@ -687,6 +692,8 @@ function drawSDGs(data, callback1, callback2, callback3) {
           .append("g")
           .attr("class", (d) => ["sdg", `sdg-${d.id}`, ...addSdgWorkClasses(d.id)].join(" "))
           .attr("data-id", (d) => d.id)
+          .attr("data-type", "sdg")
+          .attr("data-index", (_, i) => i)
           // Start position of the SDG elements
           .attr(
             "transform",
@@ -902,6 +909,8 @@ function drawConcepts(data, callback) {
             ["concept", `concept-${dataName(d.name)}`, ...addConceptWorkClasses(d.name)].join(" ")
           )
           .attr("data-name", (d) => dataName(d.name))
+          .attr("data-type", "concept")
+          .attr("data-index", (_, i) => i)
           .attr(
             "transform",
             (_, i) =>
@@ -1002,17 +1011,30 @@ function addConceptMouseEvents() {
   })
 }
 
-// Add work click events /////////////////////////////////////////////
+// Add click events //////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////
+const showModal = ref(false)
+const modalObj = ref(null)
 
-// Add SDG click events //////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////
+function showDetailsMap(obj) {
+  modalObj.value = obj
+  showModal.value = true
+}
 
-// Add concepts click events /////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////
+function addClickEvents() {
+  ctr.value.selectAll(".work-overlay,.sdg,.concept").on("click", function () {
+    const type = d3.select(this).attr("data-type")
+    const index = d3.select(this).attr("data-index")
+    showDetailsMap({type: type, index: index})
+  })
+}
+
 </script>
 
 <template>
+  <n-modal style="width: 90%" v-model:show="showModal" :mask-closable="true" preset="card">
+    <DetailsMap :obj="modalObj" />
+  </n-modal>
   <div id="home-map"></div>
   <div>
     <ThePaginator />

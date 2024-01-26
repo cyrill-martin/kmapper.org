@@ -1,6 +1,6 @@
 <script setup>
 import { ref } from "vue"
-import { NGrid, NGridItem } from "naive-ui"
+import { NFlex } from "naive-ui"
 import { useScreenSizeStore } from "../stores/screenSize.js"
 import TheSearch from "../components/TheSearch.vue"
 import HomeMap from "../components/maps/HomeMap.vue"
@@ -17,16 +17,25 @@ const currentMap = ref("HomeMap")
 </script>
 
 <template>
-  <n-grid x-gap="12" y-gap="12" cols="1">
-    <n-grid-item>
-      <div v-if="screenSize.isMobile">
-        <TheSearch />
-      </div>
-    </n-grid-item>
-    <n-grid-item>
-      <div>
-        <component :is="maps[currentMap]"></component>
-      </div>
-    </n-grid-item>
-  </n-grid>
+  <n-flex vertical class="map-view">
+    <div v-if="screenSize.isMobile" class="map-search">
+      <!-- Otherwise the search is shown in the header -->
+      <TheSearch />
+    </div>
+    <div class="map-area">
+      <component :is="maps[currentMap]"></component>
+    </div>
+  </n-flex>
 </template>
+
+<style>
+.map-view {
+  flex: 1;
+}
+.map-search {
+  flex: 1;
+}
+.map-area {
+  flex: 1;
+}
+</style>

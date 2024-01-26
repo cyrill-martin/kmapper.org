@@ -1,7 +1,7 @@
 <script setup>
 import { computed } from "vue"
 import { useRoute } from "vue-router"
-import { NSpace, NGrid, NGridItem } from "naive-ui"
+import { NFlex } from "naive-ui"
 import TheSearch from "../TheSearch.vue"
 import { useSearchStore } from "../../stores/search.js"
 import { useScreenSizeStore } from "../../stores/screenSize.js"
@@ -26,9 +26,9 @@ function resetSearch() {
 </script>
 
 <template>
-  <header style="height: 50px; padding: 1rem 1rem 0 1rem">
-    <n-grid cols="3">
-      <n-grid-item span="1">
+  <header>
+    <n-flex>
+      <div class="logo-container">
         <RouterLink v-if="route.path !== '/'" to="/" @click="resetSearch">
           <img
             :style="{ width: logoSize }"
@@ -36,19 +36,33 @@ function resetSearch() {
             alt="The kmapper logo"
           />
         </RouterLink>
-      </n-grid-item>
-      <n-grid-item span="1">
-        <div v-if="showHeaderSearch">
-          <TheSearch />
-        </div>
-      </n-grid-item>
-      <n-grid-item span="1">
-        <n-space justify="end">
-          <nav>
-            <RouterLink to="/about">About</RouterLink>
-          </nav>
-        </n-space>
-      </n-grid-item>
-    </n-grid>
+      </div>
+      <div v-if="showHeaderSearch" class="search-container">
+        <TheSearch />
+      </div>
+      <div class="nav-container">
+        <nav>
+          <RouterLink to="/about">About</RouterLink>
+        </nav>
+      </div>
+    </n-flex>
   </header>
 </template>
+
+<style scoped>
+header {
+  padding: 1rem;
+}
+.logo-container {
+  flex: 1;
+}
+.search-container {
+  flex: 2;
+  margin: 10px 10%;
+}
+.nav-container {
+  display: flex;
+  flex: 1;
+  justify-content: end;
+}
+</style>

@@ -326,7 +326,7 @@ function drawWorks(data, callback) {
     .selectAll(".work-overlay")
     .attr("class", (d) => ["work-overlay", ...addElementClasses(d.links)].join(" "))
     .attr("data-id", (d) => d.id)
-    .attr("data-type", "work")
+    .attr("data-type", "works")
     .attr("data-index", (_, i) => i)
     .attr("fill-opacity", 0)
     .attr("cursor", "pointer")
@@ -692,7 +692,7 @@ function drawSDGs(data, callback1, callback2, callback3) {
           .append("g")
           .attr("class", (d) => ["sdg", `sdg-${d.id}`, ...addSdgWorkClasses(d.id)].join(" "))
           .attr("data-id", (d) => d.id)
-          .attr("data-type", "sdg")
+          .attr("data-type", "sdgs")
           .attr("data-index", (_, i) => i)
           // Start position of the SDG elements
           .attr(
@@ -909,7 +909,7 @@ function drawConcepts(data, callback) {
             ["concept", `concept-${dataName(d.name)}`, ...addConceptWorkClasses(d.name)].join(" ")
           )
           .attr("data-name", (d) => dataName(d.name))
-          .attr("data-type", "concept")
+          .attr("data-type", "concepts")
           .attr("data-index", (_, i) => i)
           .attr(
             "transform",
@@ -1025,14 +1025,19 @@ function addClickEvents() {
   ctr.value.selectAll(".work-overlay,.sdg,.concept").on("click", function () {
     const type = d3.select(this).attr("data-type")
     const index = d3.select(this).attr("data-index")
-    showDetailsMap({type: type, index: index})
+    showDetailsMap({ type: type, index: index }) // The modalObj
   })
 }
-
+const modalWidth = computed(() => (screenSize.isMobile ? "98%" : "90%"))
 </script>
 
 <template>
-  <n-modal style="width: 90%" v-model:show="showModal" :mask-closable="true" preset="card">
+  <n-modal
+    :style="{width: modalWidth}"
+    v-model:show="showModal"
+    :mask-closable="true"
+    preset="card"
+  >
     <DetailsMap :obj="modalObj" />
   </n-modal>
   <div id="home-map"></div>

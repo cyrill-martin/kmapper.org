@@ -8,7 +8,7 @@ import { useSearchStore } from "../../stores/search.js"
 import { debounce } from "../../utils/debounce.js"
 import { NModal } from "naive-ui"
 import ThePaginator from "../layout/ThePaginator.vue"
-import DetailsMap from "./DetailsMap.vue"
+import DetailsMapContainer from "./DetailsMapContainer.vue"
 
 // Use stores
 const screenSize = useScreenSizeStore()
@@ -1013,8 +1013,8 @@ function addConceptMouseEvents() {
 
 // Add click events //////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////
-const showModal = ref(false)
 const modalObj = ref(null)
+const showModal = ref(false)
 
 function showDetailsMap(obj) {
   modalObj.value = obj
@@ -1025,7 +1025,8 @@ function addClickEvents() {
   ctr.value.selectAll(".work-overlay,.sdg,.concept").on("click", function () {
     const type = d3.select(this).attr("data-type")
     const index = d3.select(this).attr("data-index")
-    showDetailsMap({ type: type, index: index }) // The modalObj
+    const parent = graph.homeMapGraph[type][index]
+    showDetailsMap({ type, parent }) // The modalObj
   })
 }
 const modalWidth = computed(() => (screenSize.isMobile ? "98%" : "90%"))
@@ -1033,12 +1034,13 @@ const modalWidth = computed(() => (screenSize.isMobile ? "98%" : "90%"))
 
 <template>
   <n-modal
-    :style="{width: modalWidth}"
+    :style="{ width: modalWidth }"
     v-model:show="showModal"
     :mask-closable="true"
     preset="card"
+    destroy-on-close
   >
-    <DetailsMap :obj="modalObj" />
+    <DetailsMapContainer v-if="showModal" :input-obj="modalObj" />
   </n-modal>
   <div id="home-map"></div>
   <div>

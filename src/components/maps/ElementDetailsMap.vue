@@ -5,5 +5,5 @@ const graph = useGraphStore()
 </script>
 
 <template>
-  <div v-if="graph.elementDetailsMapGraph">Element!! {{ graph.elementDetailsMapGraph }}</div>
+  <div v-if="graph.detailsMapGraph">Element!! {{ graph.detailsMapGraph }}</div>
 </template>

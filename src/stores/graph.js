@@ -9,8 +9,8 @@ export const useGraphStore = defineStore("graph", () => {
   const sdgWorkNodes = ref(null)
   const conceptWorkNodes = ref(null)
 
-  const articleDetailsMapGraph = ref(null)
-  const elementDetailsMapGraph = ref(null)
+  const detailsMapGraph = ref(null)
+  // const elementDetailsMapGraph = ref(null)
 
   // Actions
   function setHomeMapGraph(data) {
@@ -29,10 +29,8 @@ export const useGraphStore = defineStore("graph", () => {
     numberOfGraphs.value++
   }
 
-  function setDetailsMapGraph(type, data) {
-    type === "works"
-      ? (articleDetailsMapGraph.value = data)
-      : (elementDetailsMapGraph.value = data)
+  function setDetailsMapGraph(data) {
+    detailsMapGraph.value = data
   }
 
   return {
@@ -40,8 +38,7 @@ export const useGraphStore = defineStore("graph", () => {
     homeMapGraph,
     sdgWorkNodes,
     conceptWorkNodes,
-    articleDetailsMapGraph,
-    elementDetailsMapGraph,
+    detailsMapGraph,
     setHomeMapGraph,
     setSdgWorkNodes,
     setConceptWorkNodes,

@@ -99,7 +99,7 @@ function createDetailsData() {
     children: parentChildren.value
   }
 
-  graph.setDetailsMapGraph(parentType.value, detailsMapObject)
+  graph.setDetailsMapGraph(detailsMapObject)
 }
 
 const maps = {

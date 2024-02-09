@@ -2,8 +2,9 @@
 import { useGraphStore } from "../../stores/graph.js"
 
 const graph = useGraphStore()
+
 </script>
 
 <template>
-  <div v-if="graph.detailsMapGraph">Element!! {{ graph.detailsMapGraph }}</div>
+  <div v-if="graph.detailsMapGraph">{{ graph.detailsMapGraph }}</div>
 </template>

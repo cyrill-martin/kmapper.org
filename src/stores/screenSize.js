@@ -9,10 +9,12 @@ export const useScreenSizeStore = defineStore("screenSize", () => {
   const ctrMarginH = computed(() => width.value * 0.01)
   const isMobile = computed(() => width.value < 800)
 
+  const modalWidth = computed(() => (isMobile.value ? "95%" : "90%"))
+
   function updateScreenSize() {
     width.value = window.innerWidth
     height.value = window.innerHeight
   }
 
-  return { width, height, ctrMarginV, ctrMarginH, isMobile, updateScreenSize }
+  return { width, height, ctrMarginV, ctrMarginH, isMobile, modalWidth, updateScreenSize }
 })

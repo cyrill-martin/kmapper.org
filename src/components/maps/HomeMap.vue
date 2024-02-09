@@ -197,6 +197,17 @@ function getFontSize(element) {
   }
 }
 
+const sizes = computed(() => {
+  return {
+    workTitle: getFontSize("work-title").replace("px", ""),
+    sdgId: getFontSize("sdg-id").replace("px", ""),
+    sdgLabel: getFontSize("sdg-label").replace("px", ""),
+    concept: getFontSize("concept").replace("px", ""),
+    worksBandwidth: yScaleWorks.value.bandwidth(),
+    worksRange: getYScaleWorksRange()
+  }
+})
+
 // Handling the bouncing animation when a map is drawn
 const transitionDuration = 1000
 // The amplitude determines how far the curve goes above or below the endpoints,...
@@ -291,7 +302,6 @@ function drawWorks(data, callback) {
               .attr("class", "work-title")
               .attr("data-id", (d) => d.id)
               .text((d) => d.title)
-              .attr("cursor", "default")
             // Adding an overlay rectangle in order to handle mouse events
             d3.select(this)
               .append("rect")
@@ -393,10 +403,6 @@ function addWorkMouseEvents() {
     d3.selectAll(`.sdg.work-element-${workId} .sdg-id`)
       .attr("fill", elementColor(event.type))
       .attr("font-weight", fontWeight(event.type))
-
-    // d3.selectAll(`.sdg.work-element-${workId} .sdg-label`)
-    // .attr("fill", elementColor(event.type))
-    // .attr("font-weight", fontWeight(event.type))
 
     // Highlighting and setting back concepts
     d3.selectAll(`.concept.work-element-${workId} .concept-name`)
@@ -637,7 +643,7 @@ function addSdgLabels(selection, className) {
     .attr("x", () => {
       return screenSize.isMobile ? textElementXOffset.value : -textElementXOffset.value
     })
-    .attr("y", "0")
+    .attr("y", 0)
     .attr("dominant-baseline", "text-before-edge")
     .style("font-size", () => getFontSize("sdg-label"))
     .attr("text-anchor", () => {
@@ -734,7 +740,7 @@ function drawSDGs(data, callback1, callback2, callback3) {
               .attr("x", () => {
                 return screenSize.isMobile ? textElementXOffset.value : -textElementXOffset.value
               })
-              .attr("y", "0")
+              .attr("y", 0)
               .style("font-size", getFontSize("sdg-id"))
               .attr("dominant-baseline", "text-after-edge")
               .attr("text-anchor", () => {
@@ -786,11 +792,6 @@ function addSdgMouseEvents() {
       .select(".sdg-id")
       .attr("fill", elementColor(event.type))
       .attr("font-weight", fontWeight(event.type))
-
-    // d3.select(this)
-    //   .select(".sdg-label")
-    // .attr("fill", elementColor(event.type))
-    // .attr("font-weight", fontWeight(event.type))
 
     // Highlighting and setting back the work lines
     d3.selectAll(`.sdg-line.sdg-${sdgId}`)
@@ -950,7 +951,7 @@ function drawConcepts(data, callback) {
               .attr("x", () => {
                 return screenSize.isMobile ? -textElementXOffset.value : textElementXOffset.value
               })
-              .attr("y", "0")
+              .attr("y", 0)
               .style("font-size", getFontSize("concept"))
               .attr("fill", theBlack)
               .attr("dominant-baseline", "middle")
@@ -1013,11 +1014,11 @@ function addConceptMouseEvents() {
 
 // Add click events //////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////
-const modalObj = ref(null)
 const showModal = ref(false)
+const modalInput = ref(null)
 
 function showDetailsMap(obj) {
-  modalObj.value = obj
+  modalInput.value = obj
   showModal.value = true
 }
 
@@ -1025,22 +1026,23 @@ function addClickEvents() {
   ctr.value.selectAll(".work-overlay,.sdg,.concept").on("click", function () {
     const type = d3.select(this).attr("data-type")
     const index = d3.select(this).attr("data-index")
-    const parent = graph.homeMapGraph[type][index]
-    showDetailsMap({ type, parent }) // The modalObj
+    const root = graph.homeMapGraph[type][index]
+    showDetailsMap({ type, root, sizes }) // The modalInput
   })
 }
-const modalWidth = computed(() => (screenSize.isMobile ? "98%" : "90%"))
 </script>
 
 <template>
   <n-modal
-    :style="{ width: modalWidth }"
+    id="details-modal"
+    :style="{ width: screenSize.modalWidth }"
     v-model:show="showModal"
     :mask-closable="true"
     preset="card"
     destroy-on-close
+    :on-after-leave="graph.resetDetailsMapGraph"
   >
-    <DetailsMapContainer v-if="showModal" :input-obj="modalObj" />
+    <DetailsMapContainer v-if="showModal" :input-obj="modalInput" />
   </n-modal>
   <div id="home-map"></div>
   <div>

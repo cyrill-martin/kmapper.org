@@ -48,8 +48,19 @@ const ctrMargin = 0
 // The total height of the usable map area shouldn't be the same as the total screen height
 // A fraction of the available screen height is used to account for header elements and avoid...
 // a map that is not completely visible
-const heightFraction = 0.65
-const mapHeight = computed(() => screenSize.height * heightFraction)
+const mapHeight = computed(() => {
+  if (graph.detailsMapGraph.type === "works") {
+    const maxSecondChildren = d3.max(
+      graph.detailsMapGraph.children.map((child) => child.data.children.length)
+    )
+    return screenSize.isMobile
+      ? titleGroupHeight +
+          elementBaseDistance * graph.detailsMapGraph.children.length +
+          maxSecondChildren * worksBaseDistance
+      : titleGroupHeight + maxSecondChildren * worksBaseDistance
+  } else return 5000
+})
+
 const mapWidth = ref(null)
 
 // SVG initiation with container /////////////////////////////////////
@@ -59,7 +70,7 @@ function initiateSvg() {
     .select("#details-map")
     .append("svg")
     .attr("id", "svg-details-chart")
-    .attr("viewBox", `0 0 ${mapWidth.value} ${mapHeight.value * heightFraction}`)
+    .attr("viewBox", `0 0 ${mapWidth.value} ${mapHeight.value}`)
 
   // Add <g> container with margins to avoid overlapping
   ctr.value = svg.value
@@ -95,8 +106,8 @@ function getSecondGroupTranslation() {
   if (screenSize.isMobile) {
     const nrOfChildren = graph.detailsMapGraph.children.length
     const baseDistance =
-      graph.detailsMapGraph.type === "works" ? worksBaseDistance : elementBaseDistance
-    return `translate(0, ${baseDistance * nrOfChildren})`
+      graph.detailsMapGraph.type === "works" ? elementBaseDistance : worksBaseDistance
+    return `translate(0, ${titleGroupHeight + baseDistance * nrOfChildren})`
   } else {
     return `translate(${mapWidth.value * 0.5}, ${titleGroupHeight})`
   }
@@ -161,7 +172,7 @@ function drawWorksTitle() {
   titleGroup.value
     .selectAll(".title")
     .attr("x", 5)
-    .attr("y", props.sizes.worksBandwidth * 0.8)
+    .attr("y", props.sizes.worksBandwidth * 0.85)
     .style("font-size", props.sizes.workTitle)
     .attr("fill", "white")
 }
@@ -234,13 +245,17 @@ function drawConceptTitle() {
 //////////////////////////////////////////////////////////////////////
 function drawFirstGroupContent() {
   if (graph.detailsMapGraph.type === "works") {
-    drawLinesInFirstGroup(graph.detailsMapGraph.children, drawElementsInFirstGroup)
+    drawLinesInFirstGroup(
+      graph.detailsMapGraph.children,
+      drawElementsInFirstGroup,
+      drawWorksInSecondGroup
+    )
   } else {
     drawWorksInFirstGroup()
   }
 }
 
-function drawLinesInFirstGroup(data, callback) {
+function drawLinesInFirstGroup(data, callback1, callback2) {
   firstGroup.value
     .selectAll(".first-group-line")
     .data(data)
@@ -256,11 +271,11 @@ function drawLinesInFirstGroup(data, callback) {
         .attr("y2", (_, i) => i * elementBaseDistance)
     )
 
-  callback(data, addMouseEventsToElementsInFirstGroup) // callback is drawElementsInFirstGroup
+  callback1(data, addMouseEvents, addExpandClickEvents) // callback1 is drawElementsInFirstGroup
+  callback2()
 }
 
-function drawElementsInFirstGroup(data, callback) {
-  console.log("CHILDREN", data)
+function drawElementsInFirstGroup(data, callback1, callback2) {
   firstGroup.value
     .selectAll(".first-group-element")
     .data(data)
@@ -356,7 +371,8 @@ function drawElementsInFirstGroup(data, callback) {
         })
     )
 
-  callback() // callback is addMouseEventsToElementsInFirstGroup()
+  callback1() // callback1 is addMouseEvents()
+  callback2() // callback2 is addExpandClickEvents()
 }
 
 function elementColor(type) {
@@ -375,25 +391,23 @@ function fontWeight(type) {
   return type === "mouseover" ? "bold" : "regular"
 }
 
-function addMouseEventsToElementsInFirstGroup() {
+function addMouseEvents() {
   firstGroup.value.selectAll(".group-element").on("mouseover mouseout", function (event) {
     const index = d3.select(this).attr("data-index")
-
-    // Highlighting and setting back the lines
-    d3.selectAll(`line.element-${index}`)
-      .attr("stroke", lineColor(event.type))
-      .attr("stroke-width", lineWwidth(event.type))
-
+    if (graph.detailsMapGraph.children[index].data.children.length) {
+      // Highlighting and setting back the lines
+      d3.selectAll(`line.element-${index}`)
+        .attr("stroke", lineColor(event.type))
+        .attr("stroke-width", lineWwidth(event.type))
+    }
     // Highlighting and setting back element circles
     d3.selectAll(`.element-${index} circle`)
       .attr("stroke", elementColor(event.type))
       .attr("fill", elementColor(event.type))
-
     // Highlighting and setting back SDGs
     d3.selectAll(`.element-${index} .sdg-group-id`)
       .attr("fill", elementColor(event.type))
       .attr("font-weight", fontWeight(event.type))
-
     // // Highlighting and setting back concepts
     d3.selectAll(`.element-${index} .concept-group-name`)
       .attr("fill", elementColor(event.type))
@@ -401,9 +415,116 @@ function addMouseEventsToElementsInFirstGroup() {
   })
 }
 
-function addClickEventsToElementsInFirstGroup() {}
+function addExpandClickEvents() {
+  firstGroup.value.selectAll(".group-element").on("click", function () {
+    const index = d3.select(this).attr("data-index")
+    if (graph.detailsMapGraph.children[index].data.children.length) {
+      const shownWorks = graph.detailsMapGraph.children[index].data.children
+      worksInSecondGroup.value = shownWorks
+      drawWorksInSecondGroup()
+    }
+  })
+}
 
-function showWorksInSecondGroup() {}
+const worksInSecondGroup = ref([])
+
+function drawWorksInSecondGroup() {
+  const shownWorksSelection = secondGroup.value
+    .selectAll(".shown-work")
+    .data(worksInSecondGroup.value, function (d) {
+      return d
+    })
+
+  const enterShownWorks = shownWorksSelection
+    .enter()
+    .append("g")
+    .attr("class", "shown-work")
+    .attr("transform", () => {
+      return `translate(0, -${worksBaseDistance})`
+    })
+
+  // Add rectangles
+  enterShownWorks.append("rect").attr("class", () => ["shown-work-rect"].join(" "))
+  // .attr("data-id", (d) => d.id)
+
+  // Add work title
+  enterShownWorks
+    .append("text")
+    .attr("class", "shown-work-title")
+    // .attr("data-id", (d) => d.id)
+    .text((d) => d.title)
+
+  // Adding an overlay rectangle in order to handle mouse events
+  enterShownWorks
+    .append("rect")
+    .attr("class", "shown-work-overlay")
+    .data(worksInSecondGroup.value, function (_, i) {
+      return i
+    })
+    .each(function () {
+      // Adding a title element to achieche a standard HTML tooltip
+      // Yes, I like the style of the standard tooltips!!
+      d3.select(this)
+        .append("title")
+        .text((d) => d.title)
+    })
+
+  // Merge the enter and update selections
+  const updateShownWorks = enterShownWorks.merge(shownWorksSelection)
+
+  // Update the attributes of the text elements based on the new data
+  updateShownWorks.select(".shown-work-title").text((d) => d.title)
+
+  // Update the attributes of the overlay elements based on the new data
+  updateShownWorks.select(".shown-work-overlay title").text((d) => d.title)
+
+  // Select the elements that need to be removed
+  const exitShownWorks = shownWorksSelection.exit()
+
+  // Remove them from the DOM
+  exitShownWorks.remove()
+
+  secondGroup.value
+    .selectAll(".shown-work-rect,.shown-work-overlay")
+    .attr("width", () => {
+      return screenSize.isMobile ? mapWidth.value * 0.9 : mapWidth.value * 0.5
+    })
+    .attr("height", props.sizes.worksBandwidth)
+
+  secondGroup.value.selectAll(".shown-work-rect").attr("stroke", theBlack).attr("fill", theBlack)
+
+  // Handling the overlay rect element for handling mouse events as well
+  secondGroup.value
+    .selectAll(".shown-work-overlay")
+    .attr("class", () => ["work-overlay"].join(" "))
+    // .attr("data-id", (d) => d.id)
+    // .attr("data-type", "works")
+    // .attr("data-index", (_, i) => i)
+    .attr("fill-opacity", 0)
+    .attr("cursor", "pointer")
+
+  secondGroup.value
+    .selectAll(".shown-work-title")
+    .attr("x", 5)
+    .attr("y", props.sizes.worksBandwidth * 0.85)
+    .style("font-size", props.sizes.workTitle)
+    .attr("fill", "white")
+
+  secondGroup.value
+    .selectAll(".shown-work")
+    .transition()
+    .duration(transitionDuration)
+    .ease(easeAnimation)
+    .attr("transform", (_, i) => {
+      return `translate(0, ${worksBaseDistance * i})`
+    })
+}
+
+// Handling the bouncing animation when a map is drawn
+const transitionDuration = 1000
+// The amplitude determines how far the curve goes above or below the endpoints,...
+// while the period determines how often the curve oscillates.
+const easeAnimation = d3.easeElasticOut.amplitude(1.0).period(0.4)
 
 function drawWorksInFirstGroup() {}
 </script>

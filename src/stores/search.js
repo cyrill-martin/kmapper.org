@@ -24,7 +24,7 @@ export const useSearchStore = defineStore("search", () => {
   const graph = useGraphStore()
 
   // Use of test data!!
-  const testData = ref(true)
+  const testData = ref(false)
 
   // State
   const searchQuery = ref(null)

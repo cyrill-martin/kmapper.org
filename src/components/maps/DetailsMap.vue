@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, ref, computed } from "vue"
+import { onMounted, ref, computed, watch } from "vue"
 // eslint-disable-next-line
 import * as d3 from "d3"
 import { useScreenSizeStore } from "../../stores/screenSize.js"
@@ -52,14 +52,23 @@ const ctrMargin = 0
 // a map that is not completely visible
 const mapHeight = computed(() => {
   if (graph.detailsMapGraph.type === "works") {
-    const maxSecondChildren = d3.max(
+    const firstChildren = graph.detailsMapGraph.children.length
+
+    let maxSecondChildren = d3.max(
       graph.detailsMapGraph.children.map((child) => child.data.children.length)
     )
+    maxSecondChildren = maxSecondChildren ? maxSecondChildren : 2
+
+    const finalDesktopHeight =
+      firstChildren >= maxSecondChildren
+        ? titleGroupHeight + firstChildren * elementBaseDistance
+        : titleGroupHeight + maxSecondChildren * worksBaseDistance
+
     return screenSize.isMobile
       ? titleGroupHeight +
           elementBaseDistance * graph.detailsMapGraph.children.length +
           maxSecondChildren * worksBaseDistance
-      : titleGroupHeight + maxSecondChildren * worksBaseDistance
+      : finalDesktopHeight
   } else return 5000
 })
 
@@ -490,6 +499,15 @@ function addMouseEvents() {
 
 const clickedFirstGroupElement = ref(null)
 
+const worksInSecondGroup = ref([])
+
+watch(
+  () => clickedFirstGroupElement.value,
+  () => {
+    drawWorksInSecondGroup(drawConnectionsInFirstGroup, addMoreMouseEvents)
+  }
+)
+
 function addExpandClickEvents() {
   firstGroup.value.selectAll(".group-element").on("click", function () {
     const index = d3.select(this).attr("data-index")
@@ -504,11 +522,8 @@ function addExpandClickEvents() {
     } else {
       worksInSecondGroup.value = []
     }
-    drawWorksInSecondGroup(drawConnectionsInFirstGroup, addMoreMouseEvents)
   })
 }
-
-const worksInSecondGroup = ref([])
 
 function drawWorksInSecondGroup(callback1, callback2) {
   const shownWorksSelection = secondGroup.value
@@ -619,9 +634,7 @@ function getConnectionLinesData(index) {
     : mapWidth.value * 0.4 + circleRadius * 4
 
   // Second control point (2)
-  const x2 = screenSize.isMobile
-    ? mapWidth.value * 0.98
-    : mapWidth.value * 0.4 + circleRadius * 8
+  const x2 = screenSize.isMobile ? mapWidth.value * 0.98 : mapWidth.value * 0.4 + circleRadius * 8
 
   const y2 = screenSize.isMobile
     ? graph.detailsMapGraph.children.length * elementBaseDistance * 0.9

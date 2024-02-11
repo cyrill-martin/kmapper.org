@@ -287,9 +287,7 @@ function drawWorks(data, callback) {
         enter
           .append("g")
           .attr("class", "work")
-          .attr("transform", () => {
-            return `translate(${workTranslationX.value}, ${totalHeight.value * 0.5})`
-          })
+          .attr("transform", `translate(${workTranslationX.value}, ${totalHeight.value * 0.5})`)
           .each(function () {
             // Add rectangles
             d3.select(this)

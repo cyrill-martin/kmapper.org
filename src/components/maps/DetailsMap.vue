@@ -4,6 +4,7 @@ import { onMounted, ref, computed } from "vue"
 import * as d3 from "d3"
 import { useScreenSizeStore } from "../../stores/screenSize.js"
 import { useGraphStore } from "../../stores/graph.js"
+import { createDetailsMapGraph } from "../../utils/createDetailsMapGraph.js"
 
 const props = defineProps(["sizes"])
 
@@ -30,6 +31,7 @@ function getAvailableModalWidth() {
 
 // Creating the static, only screen-dependent map elements
 function createStaticMapElements() {
+  d3.select("#svg-details-chart").remove()
   initiateSvg()
   addMapGroups()
 }
@@ -150,38 +152,62 @@ function drawTitle() {
 }
 
 function drawWorksTitle() {
-  titleGroup.value.append("g").append("rect").attr("class", "title-rect")
+  const theTitleGroup = titleGroup.value
+    .append("g")
+    .attr("class", "title-group")
+    .attr("transform", `translate(0,-${props.sizes.worksBandwidth * 2})`)
 
-  titleGroup.value.append("text").attr("class", "title").text(graph.detailsMapGraph.data.title)
+  theTitleGroup.append("rect").attr("class", "title-rect")
 
-  titleGroup.value
+  theTitleGroup.append("text").attr("class", "title").text(graph.detailsMapGraph.data.title)
+
+  const titleLink = theTitleGroup
+    .append("a")
+    .attr("xlink:href", graph.detailsMapGraph.data.openAlexId)
+    .attr("target", "_blank")
+
+  titleLink
     .append("rect")
     .attr("class", "title-rect-overlay")
     .append("title")
     .text(graph.detailsMapGraph.data.title)
 
-  titleGroup.value
+  theTitleGroup
     .selectAll(".title-rect,.title-rect-overlay")
-    .attr("width", () => mapWidth.value)
+    .attr("width", mapWidth.value)
     .attr("height", props.sizes.worksBandwidth)
 
-  titleGroup.value.selectAll(".title-rect").attr("stroke", theBlack).attr("fill", theBlack)
+  theTitleGroup.selectAll(".title-rect").attr("stroke", theBlack).attr("fill", theBlack)
 
-  titleGroup.value
-    .selectAll(".title-rect-overlay")
-    .attr("fill-opacity", 0)
-    .attr("cursor", "pointer")
+  theTitleGroup.selectAll(".title-rect-overlay").attr("fill-opacity", 0).attr("cursor", "pointer")
 
-  titleGroup.value
+  theTitleGroup
     .selectAll(".title")
     .attr("x", 5)
     .attr("y", props.sizes.worksBandwidth * 0.85)
     .style("font-size", props.sizes.workTitle)
     .attr("fill", "white")
+
+  titleGroup.value
+    .select(".title-group")
+    .transition()
+    .duration(transitionDuration)
+    .ease(easeAnimation)
+    .attr("transform", "translate(0,0)")
 }
 
 function drawSdgTitle() {
-  const sdgGroup = titleGroup.value
+  const theTitleGroup = titleGroup.value
+    .append("g")
+    .attr("class", "title-group")
+    .attr("transform", `translate(0,-${props.sizes.worksBandwidth * 4})`)
+
+  const sdgLink = theTitleGroup
+    .append("a")
+    .attr("xlink:href", graph.detailsMapGraph.data.url)
+    .attr("target", "_blank")
+
+  const sdgGroup = sdgLink
     .append("g")
     .attr("transform", `translate(${props.sizes.worksBandwidth}, ${props.sizes.worksBandwidth})`)
 
@@ -219,10 +245,27 @@ function drawSdgTitle() {
     .attr("dominant-baseline", "text-before-edge")
     .style("font-size", props.sizes.sdgLabel)
     .attr("text-anchor", "start")
+
+  titleGroup.value
+    .select(".title-group")
+    .transition()
+    .duration(transitionDuration)
+    .ease(easeAnimation)
+    .attr("transform", "translate(0,0)")
 }
 
 function drawConceptTitle() {
-  const conceptGroup = titleGroup.value
+  const theTitleGroup = titleGroup.value
+    .append("g")
+    .attr("class", "title-group")
+    .attr("transform", `translate(0,-${props.sizes.worksBandwidth * 4})`)
+
+  const conceptLink = theTitleGroup
+    .append("a")
+    .attr("xlink:href", graph.detailsMapGraph.data.url)
+    .attr("target", "_blank")
+
+  const conceptGroup = conceptLink
     .append("g")
     .attr("transform", `translate(${props.sizes.worksBandwidth}, ${props.sizes.worksBandwidth})`)
 
@@ -242,6 +285,13 @@ function drawConceptTitle() {
     .style("font-size", `${props.sizes.concept}px`)
     .attr("dominant-baseline", "middle")
     .attr("text-anchor", "start")
+
+  titleGroup.value
+    .select(".title-group")
+    .transition()
+    .duration(transitionDuration)
+    .ease(easeAnimation)
+    .attr("transform", "translate(0,0)")
 }
 
 // Draw first group //////////////////////////////////////////////////
@@ -275,7 +325,7 @@ function drawLinesInFirstGroup(data, callback1, callback2) {
     )
 
   callback1(data, addMouseEvents, addExpandClickEvents) // callback1 is drawElementsInFirstGroup()
-  callback2(drawConnectionsInFirstGroup) // callback2 is drawWorksInSecondGroup()
+  callback2(drawConnectionsInFirstGroup, addMoreMouseEvents) // callback2 is drawWorksInSecondGroup()
 }
 
 function drawElementsInFirstGroup(data, callback1, callback2) {
@@ -286,7 +336,7 @@ function drawElementsInFirstGroup(data, callback1, callback2) {
       enter
         .append("g")
         .attr("class", (_, i) => ["first-group-element", `element-${i}`].join(" "))
-        .attr("transform", (_, i) => `translate(0, ${i * elementBaseDistance})`)
+        .attr("transform", `translate(0, -${elementBaseDistance * 2})`)
         .each(function (d, i) {
           if (d.type === "sdg") {
             // Trick to get the labelBox data of the SDG
@@ -374,6 +424,13 @@ function drawElementsInFirstGroup(data, callback1, callback2) {
         })
     )
 
+  firstGroup.value
+    .selectAll(".first-group-element")
+    .transition()
+    .duration(transitionDuration)
+    .ease(easeAnimation)
+    .attr("transform", (_, i) => `translate(0, ${i * elementBaseDistance})`)
+
   callback1() // callback1 is addMouseEvents()
   callback2() // callback2 is addExpandClickEvents()
 }
@@ -403,6 +460,19 @@ function addMouseEvents() {
         .attr("stroke", lineColor(event.type))
         .attr("stroke-width", lineWwidth(event.type))
     }
+
+    // Highlighting and setting back connection lines
+    d3.selectAll(`.connection-line-${index}`)
+      .attr("stroke", lineColor(event.type))
+      .attr("stroke-width", lineWwidth(event.type))
+
+    // Highlighting and setting back shown works
+    if (index === clickedFirstGroupElement.value) {
+      d3.selectAll(".shown-work-rect")
+        .attr("stroke", elementColor(event.type))
+        .attr("fill", elementColor(event.type))
+    }
+
     // Highlighting and setting back element circles
     d3.selectAll(`.element-${index} circle`)
       .attr("stroke", elementColor(event.type))
@@ -422,19 +492,25 @@ const clickedFirstGroupElement = ref(null)
 
 function addExpandClickEvents() {
   firstGroup.value.selectAll(".group-element").on("click", function () {
-    clickedFirstGroupElement.value = d3.select(this).attr("data-index")
-    if (graph.detailsMapGraph.children[clickedFirstGroupElement.value].data.children.length) {
-      const shownWorks =
-        graph.detailsMapGraph.children[clickedFirstGroupElement.value].data.children
+    const index = d3.select(this).attr("data-index")
+
+    graph.detailsMapGraph.children[index].data.children.length
+      ? (clickedFirstGroupElement.value = index)
+      : (clickedFirstGroupElement.value = null)
+
+    if (graph.detailsMapGraph.children[index].data.children.length) {
+      const shownWorks = graph.detailsMapGraph.children[index].data.children
       worksInSecondGroup.value = shownWorks
-      drawWorksInSecondGroup(drawConnectionsInFirstGroup)
+    } else {
+      worksInSecondGroup.value = []
     }
+    drawWorksInSecondGroup(drawConnectionsInFirstGroup, addMoreMouseEvents)
   })
 }
 
 const worksInSecondGroup = ref([])
 
-function drawWorksInSecondGroup(callback) {
+function drawWorksInSecondGroup(callback1, callback2) {
   const shownWorksSelection = secondGroup.value
     .selectAll(".shown-work")
     .data(worksInSecondGroup.value, function (d) {
@@ -445,13 +521,13 @@ function drawWorksInSecondGroup(callback) {
     .enter()
     .append("g")
     .attr("class", "shown-work")
-    .attr("transform", () => {
-      return `translate(0, -${worksBaseDistance})`
-    })
+    .attr("transform", `translate(0, -${worksBaseDistance * 2})`)
 
   // Add rectangles
-  enterShownWorks.append("rect").attr("class", () => ["shown-work-rect"].join(" "))
-  // .attr("data-id", (d) => d.id)
+  enterShownWorks
+    .append("rect")
+    .attr("class", "shown-work-rect")
+    .attr("data-id", (_, i) => i)
 
   // Add work title
   enterShownWorks
@@ -502,8 +578,8 @@ function drawWorksInSecondGroup(callback) {
   // Handling the overlay rect element for handling mouse events as well
   secondGroup.value
     .selectAll(".shown-work-overlay")
-    .attr("class", () => ["work-overlay"].join(" "))
-    // .attr("data-id", (d) => d.id)
+    .attr("class", "shown-work-overlay")
+    .attr("data-id", (_, i) => i)
     // .attr("data-type", "works")
     // .attr("data-index", (_, i) => i)
     .attr("fill-opacity", 0)
@@ -525,7 +601,8 @@ function drawWorksInSecondGroup(callback) {
       return `translate(0, ${worksBaseDistance * i})`
     })
 
-  callback() // callback is drawConnectionsInFirstGroup()
+  callback1() // callback1 is drawConnectionsInFirstGroup()
+  callback2(addShwonWorksClickEvents) // callback2 is addMoreMouseEvents()
 }
 
 function getConnectionLinesData(index) {
@@ -543,21 +620,25 @@ function getConnectionLinesData(index) {
 
   // Second control point (2)
   const x2 = screenSize.isMobile
-    ? mapWidth.value * 0.9 + circleRadius * 4
-    : mapWidth.value * 0.4 + circleRadius * 4
+    ? mapWidth.value * 0.98
+    : mapWidth.value * 0.4 + circleRadius * 8
 
   const y2 = screenSize.isMobile
-    ? graph.detailsMapGraph.children.length * elementBaseDistance
+    ? graph.detailsMapGraph.children.length * elementBaseDistance * 0.9
     : props.sizes.worksBandwidth * 0.5
 
   // End point (3)
-  const x3 = screenSize.isMobile ? mapWidth.value * 0.45 : mapWidth.value * 0.5
+  const x3 = screenSize.isMobile ? mapWidth.value * 0.98 : mapWidth.value * 0.5
+
+  const y3 = screenSize.isMobile
+    ? graph.detailsMapGraph.children.length * elementBaseDistance
+    : props.sizes.worksBandwidth * 0.5
 
   const linePoints = [
     { x: x0, y: y0 }, // Starting point (0)
     { x: x1, y: y0 }, // First control point (1)
     { x: x2, y: y2 }, // Second control point (2)
-    { x: x3, y: y2 } // End point (3)
+    { x: x3, y: y3 } // End point (3)
   ]
 
   return [linePoints]
@@ -586,7 +667,10 @@ function drawConnectionsInFirstGroup() {
       (enter) =>
         enter
           .append("path")
-          .attr("class", "connection-line")
+          .attr(
+            "class",
+            ["connection-line", `connection-line-${clickedFirstGroupElement.value}`].join(" ")
+          )
           // .attr("class", (d) => ["sdg-line", `sdg-${d.id}`, `work-line-${d.work}`].join(" "))
           .attr("d", (d) => drawQuadraticCurve(d))
           .attr("stroke", "white")
@@ -601,6 +685,63 @@ function drawConnectionsInFirstGroup() {
     .transition()
     .duration(transitionDuration * 0.3)
     .attr("stroke", theGrey)
+}
+
+function addMoreMouseEvents(callback) {
+  secondGroup.value.selectAll(".shown-work-overlay").on("mouseover mouseout", function (event) {
+    const elementIndex = clickedFirstGroupElement.value
+    const workIndex = d3.select(this).attr("data-id")
+
+    // Highlighting and setting back shown work
+    d3.select(`.shown-work-rect[data-id='${workIndex}']`)
+      .attr("stroke", elementColor(event.type))
+      .attr("fill", elementColor(event.type))
+
+    d3.selectAll(`line.element-${elementIndex}`)
+      .attr("stroke", lineColor(event.type))
+      .attr("stroke-width", lineWwidth(event.type))
+
+    // Highlighting and setting back connection lines
+    d3.selectAll(`.connection-line-${elementIndex}`)
+      .attr("stroke", lineColor(event.type))
+      .attr("stroke-width", lineWwidth(event.type))
+    // Highlighting and setting back element circles
+    d3.selectAll(`.element-${elementIndex} circle`)
+      .attr("stroke", elementColor(event.type))
+      .attr("fill", elementColor(event.type))
+    // Highlighting and setting back SDGs
+    d3.selectAll(`.element-${elementIndex} .sdg-group-id`)
+      .attr("fill", elementColor(event.type))
+      .attr("font-weight", fontWeight(event.type))
+    // // Highlighting and setting back concepts
+    d3.selectAll(`.element-${elementIndex} .concept-group-name`)
+      .attr("fill", elementColor(event.type))
+      .attr("font-weight", fontWeight(event.type))
+  })
+
+  callback() // callback is addShwonWorksClickEvents()
+}
+
+function addShwonWorksClickEvents() {
+  secondGroup.value.selectAll(".shown-work-overlay").on("click", async function () {
+    const workIndex = d3.select(this).attr("data-id")
+
+    // E.g. {type: 'works', root: {...}, sizes: {...} }
+    const inputObj = {
+      type: "works",
+      root: worksInSecondGroup.value[workIndex],
+      sizes: props.sizes
+    }
+
+    const detailsData = await createDetailsMapGraph(inputObj)
+    graph.setDetailsMapGraph(detailsData)
+
+    worksInSecondGroup.value = []
+    clickedFirstGroupElement.value = null
+
+    createStaticMapElements()
+    drawDynamicMap()
+  })
 }
 
 function drawWorksInFirstGroup() {}

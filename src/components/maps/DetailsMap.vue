@@ -102,6 +102,9 @@ const worksBaseDistance = props.sizes.worksBandwidth * 1.5
 const circleRadius = props.sizes.worksBandwidth * 0.5
 const textElementXOffset = props.sizes.worksBandwidth * 0.5 * 2
 
+const transitionDuration = 1000
+const easeAnimation = d3.easeElasticOut.amplitude(1.0).period(0.4)
+
 function getSecondGroupTranslation() {
   if (screenSize.isMobile) {
     const nrOfChildren = graph.detailsMapGraph.children.length
@@ -271,8 +274,8 @@ function drawLinesInFirstGroup(data, callback1, callback2) {
         .attr("y2", (_, i) => i * elementBaseDistance)
     )
 
-  callback1(data, addMouseEvents, addExpandClickEvents) // callback1 is drawElementsInFirstGroup
-  callback2()
+  callback1(data, addMouseEvents, addExpandClickEvents) // callback1 is drawElementsInFirstGroup()
+  callback2(drawConnectionsInFirstGroup) // callback2 is drawWorksInSecondGroup()
 }
 
 function drawElementsInFirstGroup(data, callback1, callback2) {
@@ -415,20 +418,23 @@ function addMouseEvents() {
   })
 }
 
+const clickedFirstGroupElement = ref(null)
+
 function addExpandClickEvents() {
   firstGroup.value.selectAll(".group-element").on("click", function () {
-    const index = d3.select(this).attr("data-index")
-    if (graph.detailsMapGraph.children[index].data.children.length) {
-      const shownWorks = graph.detailsMapGraph.children[index].data.children
+    clickedFirstGroupElement.value = d3.select(this).attr("data-index")
+    if (graph.detailsMapGraph.children[clickedFirstGroupElement.value].data.children.length) {
+      const shownWorks =
+        graph.detailsMapGraph.children[clickedFirstGroupElement.value].data.children
       worksInSecondGroup.value = shownWorks
-      drawWorksInSecondGroup()
+      drawWorksInSecondGroup(drawConnectionsInFirstGroup)
     }
   })
 }
 
 const worksInSecondGroup = ref([])
 
-function drawWorksInSecondGroup() {
+function drawWorksInSecondGroup(callback) {
   const shownWorksSelection = secondGroup.value
     .selectAll(".shown-work")
     .data(worksInSecondGroup.value, function (d) {
@@ -487,7 +493,7 @@ function drawWorksInSecondGroup() {
   secondGroup.value
     .selectAll(".shown-work-rect,.shown-work-overlay")
     .attr("width", () => {
-      return screenSize.isMobile ? mapWidth.value * 0.9 : mapWidth.value * 0.5
+      return screenSize.isMobile ? mapWidth.value : mapWidth.value * 0.5
     })
     .attr("height", props.sizes.worksBandwidth)
 
@@ -518,13 +524,84 @@ function drawWorksInSecondGroup() {
     .attr("transform", (_, i) => {
       return `translate(0, ${worksBaseDistance * i})`
     })
+
+  callback() // callback is drawConnectionsInFirstGroup()
 }
 
-// Handling the bouncing animation when a map is drawn
-const transitionDuration = 1000
-// The amplitude determines how far the curve goes above or below the endpoints,...
-// while the period determines how often the curve oscillates.
-const easeAnimation = d3.easeElasticOut.amplitude(1.0).period(0.4)
+function getConnectionLinesData(index) {
+  // Starting point (0)
+  const x0 = screenSize.isMobile
+    ? mapWidth.value * 0.9 + circleRadius * 1.5
+    : mapWidth.value * 0.4 + circleRadius * 1.5
+
+  const y0 = index * elementBaseDistance
+
+  // First control point (1)
+  const x1 = screenSize.isMobile
+    ? mapWidth.value * 0.9 + circleRadius * 4
+    : mapWidth.value * 0.4 + circleRadius * 4
+
+  // Second control point (2)
+  const x2 = screenSize.isMobile
+    ? mapWidth.value * 0.9 + circleRadius * 4
+    : mapWidth.value * 0.4 + circleRadius * 4
+
+  const y2 = screenSize.isMobile
+    ? graph.detailsMapGraph.children.length * elementBaseDistance
+    : props.sizes.worksBandwidth * 0.5
+
+  // End point (3)
+  const x3 = screenSize.isMobile ? mapWidth.value * 0.45 : mapWidth.value * 0.5
+
+  const linePoints = [
+    { x: x0, y: y0 }, // Starting point (0)
+    { x: x1, y: y0 }, // First control point (1)
+    { x: x2, y: y2 }, // Second control point (2)
+    { x: x3, y: y2 } // End point (3)
+  ]
+
+  return [linePoints]
+}
+
+function drawQuadraticCurve(coordinates) {
+  const lineGenerator = d3
+    .line()
+    .x((d) => d.x) // set the x accessor
+    .y((d) => d.y) // set the y accessor
+    .curve(d3.curveCatmullRom.alpha(0.5))
+  return lineGenerator(coordinates) // generate the path data string
+}
+
+function drawConnectionsInFirstGroup() {
+  const connectionLinesData = clickedFirstGroupElement.value
+    ? getConnectionLinesData(clickedFirstGroupElement.value)
+    : []
+
+  d3.selectAll(".connection-line").remove()
+
+  firstGroup.value
+    .selectAll(".connection-line")
+    .data(connectionLinesData)
+    .join(
+      (enter) =>
+        enter
+          .append("path")
+          .attr("class", "connection-line")
+          // .attr("class", (d) => ["sdg-line", `sdg-${d.id}`, `work-line-${d.work}`].join(" "))
+          .attr("d", (d) => drawQuadraticCurve(d))
+          .attr("stroke", "white")
+          .attr("fill", "none")
+          .attr("stroke-width", lineWidth),
+      (update) => update,
+      (exit) => exit
+    )
+
+  firstGroup.value
+    .selectAll(".connection-line")
+    .transition()
+    .duration(transitionDuration * 0.3)
+    .attr("stroke", theGrey)
+}
 
 function drawWorksInFirstGroup() {}
 </script>

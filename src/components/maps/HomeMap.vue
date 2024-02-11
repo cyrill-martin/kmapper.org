@@ -533,7 +533,6 @@ function drawQuadraticCurve(coordinates) {
     .line()
     .x((d) => d.x) // set the x accessor
     .y((d) => d.y) // set the y accessor
-    // .curve(d3.curveBasis) // set the curve type
     .curve(d3.curveCatmullRom.alpha(0.6))
   return lineGenerator(coordinates) // generate the path data string
 }

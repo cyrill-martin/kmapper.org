@@ -51,25 +51,42 @@ const ctrMargin = 0
 // A fraction of the available screen height is used to account for header elements and avoid...
 // a map that is not completely visible
 const mapHeight = computed(() => {
+  const firstChildren = graph.detailsMapGraph.children.length
+
+  let maxSecondChildren = d3.max(
+    graph.detailsMapGraph.children.map((child) => {
+      return graph.detailsMapGraph.type === "works"
+        ? child.data.children.length
+        : child.children.length
+    })
+  )
+  console.log("maxSecondChildren", maxSecondChildren)
+  maxSecondChildren = maxSecondChildren ? maxSecondChildren : 2
+
+  const firstGroupBaseDistance =
+    graph.detailsMapGraph.type === "works" ? elementBaseDistance : worksBaseDistance
+  const secondGroupBaseDistance =
+    graph.detailsMapGraph.type === "works" ? worksBaseDistance : elementBaseDistance
+
+  let finalDesktopHeight = null
+
   if (graph.detailsMapGraph.type === "works") {
-    const firstChildren = graph.detailsMapGraph.children.length
-
-    let maxSecondChildren = d3.max(
-      graph.detailsMapGraph.children.map((child) => child.data.children.length)
-    )
-    maxSecondChildren = maxSecondChildren ? maxSecondChildren : 2
-
-    const finalDesktopHeight =
+    finalDesktopHeight =
       firstChildren >= maxSecondChildren
-        ? titleGroupHeight + firstChildren * elementBaseDistance
-        : titleGroupHeight + maxSecondChildren * worksBaseDistance
+        ? titleGroupHeight + firstChildren * firstGroupBaseDistance
+        : titleGroupHeight + maxSecondChildren * secondGroupBaseDistance
+  } else {
+    finalDesktopHeight =
+      firstChildren > maxSecondChildren
+        ? titleGroupHeight + firstChildren * firstGroupBaseDistance
+        : titleGroupHeight + maxSecondChildren * secondGroupBaseDistance
+  }
 
-    return screenSize.isMobile
-      ? titleGroupHeight +
-          elementBaseDistance * graph.detailsMapGraph.children.length +
-          maxSecondChildren * worksBaseDistance
-      : finalDesktopHeight
-  } else return 5000
+  return screenSize.isMobile
+    ? titleGroupHeight +
+        firstGroupBaseDistance * graph.detailsMapGraph.children.length +
+        maxSecondChildren * secondGroupBaseDistance
+    : finalDesktopHeight
 })
 
 const mapWidth = ref(null)
@@ -118,10 +135,17 @@ const easeAnimation = d3.easeElasticOut.amplitude(1.0).period(0.4)
 
 function getSecondGroupTranslation() {
   if (screenSize.isMobile) {
-    const nrOfChildren = graph.detailsMapGraph.children.length
+    let nrOfChildren = graph.detailsMapGraph.children.length
+
     const baseDistance =
       graph.detailsMapGraph.type === "works" ? elementBaseDistance : worksBaseDistance
-    return `translate(0, ${titleGroupHeight + baseDistance * nrOfChildren})`
+
+    const extraDistance =
+      graph.detailsMapGraph.type === "works"
+        ? nrOfChildren * baseDistance
+        : nrOfChildren * baseDistance + worksBaseDistance * 1.5
+
+    return `translate(0, ${titleGroupHeight + extraDistance})`
   } else {
     return `translate(${mapWidth.value * 0.5}, ${titleGroupHeight})`
   }
@@ -137,14 +161,14 @@ function addTitleGroup() {
 function addFirstGroup() {
   firstGroup.value = ctr.value
     .append("g")
-    .attr("class", "details-elements-group")
+    .attr("class", "details-first-group")
     .attr("transform", `translate(0, ${titleGroupHeight})`)
 }
 
 function addSecondGroup() {
   secondGroup.value = ctr.value
     .append("g")
-    .attr("class", "details-works-group")
+    .attr("class", "details-second-group")
     .attr("transform", getSecondGroupTranslation())
 }
 
@@ -307,17 +331,21 @@ function drawConceptTitle() {
 //////////////////////////////////////////////////////////////////////
 function drawFirstGroupContent() {
   if (graph.detailsMapGraph.type === "works") {
-    drawLinesInFirstGroup(
+    drawElementLinesInFirstGroup(
       graph.detailsMapGraph.children,
       drawElementsInFirstGroup,
       drawWorksInSecondGroup
     )
   } else {
-    drawWorksInFirstGroup()
+    drawWorkLinesInFirstGroup(
+      graph.detailsMapGraph.children,
+      drawWorksInFirstGroup,
+      drawElementsInSecondGroup
+    )
   }
 }
 
-function drawLinesInFirstGroup(data, callback1, callback2) {
+function drawElementLinesInFirstGroup(data, callback1, callback2) {
   firstGroup.value
     .selectAll(".first-group-line")
     .data(data)
@@ -333,8 +361,8 @@ function drawLinesInFirstGroup(data, callback1, callback2) {
         .attr("y2", (_, i) => i * elementBaseDistance)
     )
 
-  callback1(data, addMouseEvents, addExpandClickEvents) // callback1 is drawElementsInFirstGroup()
-  callback2(drawConnectionsInFirstGroup, addMoreMouseEvents) // callback2 is drawWorksInSecondGroup()
+  callback1(data, addElementMouseEvents, addElementExpandClickEvents) // callback1 is drawElementsInFirstGroup()
+  callback2(drawElementConnectionsInFirstGroup, addShownWorksMouseEvents) // callback2 is drawWorksInSecondGroup()
 }
 
 function drawElementsInFirstGroup(data, callback1, callback2) {
@@ -418,7 +446,7 @@ function drawElementsInFirstGroup(data, callback1, callback2) {
             // Add actual circle with count, if children are available
             circleGroup
               .append("circle")
-              .attr("r", circleRadius * 1.5)
+              .attr("r", circleRadius * 1.4)
               .attr("stroke", theBlack)
               .attr("fill", theBlack)
 
@@ -440,8 +468,8 @@ function drawElementsInFirstGroup(data, callback1, callback2) {
     .ease(easeAnimation)
     .attr("transform", (_, i) => `translate(0, ${i * elementBaseDistance})`)
 
-  callback1() // callback1 is addMouseEvents()
-  callback2() // callback2 is addExpandClickEvents()
+  callback1() // callback1 is addElementMouseEvents()
+  callback2() // callback2 is addElementExpandClickEvents()
 }
 
 function elementColor(type) {
@@ -460,9 +488,10 @@ function fontWeight(type) {
   return type === "mouseover" ? "bold" : "regular"
 }
 
-function addMouseEvents() {
+function addElementMouseEvents() {
   firstGroup.value.selectAll(".group-element").on("mouseover mouseout", function (event) {
     const index = d3.select(this).attr("data-index")
+
     if (graph.detailsMapGraph.children[index].data.children.length) {
       // Highlighting and setting back the lines
       d3.selectAll(`line.element-${index}`)
@@ -500,15 +529,20 @@ function addMouseEvents() {
 const clickedFirstGroupElement = ref(null)
 
 const worksInSecondGroup = ref([])
+const elementsInSecondGroup = ref([])
 
 watch(
   () => clickedFirstGroupElement.value,
   () => {
-    drawWorksInSecondGroup(drawConnectionsInFirstGroup, addMoreMouseEvents)
+    if (graph.detailsMapGraph.type === "works") {
+      drawWorksInSecondGroup(drawElementConnectionsInFirstGroup, addShownWorksMouseEvents)
+    } else {
+      drawElementsInSecondGroup(drawWorkConnectionsInFristGroup, addShownElementsMouseEvents)
+    }
   }
 )
 
-function addExpandClickEvents() {
+function addElementExpandClickEvents() {
   firstGroup.value.selectAll(".group-element").on("click", function () {
     const index = d3.select(this).attr("data-index")
 
@@ -522,6 +556,25 @@ function addExpandClickEvents() {
     } else {
       worksInSecondGroup.value = []
     }
+    console.log(worksInSecondGroup.value)
+  })
+}
+
+function addWorkExpandClickEvents() {
+  firstGroup.value.selectAll(".group-element").on("click", function () {
+    const index = d3.select(this).attr("data-index")
+
+    graph.detailsMapGraph.children[index].children.length
+      ? (clickedFirstGroupElement.value = index)
+      : (clickedFirstGroupElement.value = null)
+
+    if (graph.detailsMapGraph.children[index].children.length) {
+      const shownElements = graph.detailsMapGraph.children[index].children
+      elementsInSecondGroup.value = shownElements
+    } else {
+      elementsInSecondGroup.value = []
+    }
+    console.log(elementsInSecondGroup.value)
   })
 }
 
@@ -616,11 +669,11 @@ function drawWorksInSecondGroup(callback1, callback2) {
       return `translate(0, ${worksBaseDistance * i})`
     })
 
-  callback1() // callback1 is drawConnectionsInFirstGroup()
-  callback2(addShwonWorksClickEvents) // callback2 is addMoreMouseEvents()
+  callback1() // callback1 is drawElementConnectionsInFirstGroup()
+  callback2(addShwonWorksClickEvents) // callback2 is addShownWorksMouseEvents()
 }
 
-function getConnectionLinesData(index) {
+function getElementConnectionLinesData(index) {
   // Starting point (0)
   const x0 = screenSize.isMobile
     ? mapWidth.value * 0.9 + circleRadius * 1.5
@@ -666,9 +719,9 @@ function drawQuadraticCurve(coordinates) {
   return lineGenerator(coordinates) // generate the path data string
 }
 
-function drawConnectionsInFirstGroup() {
+function drawElementConnectionsInFirstGroup() {
   const connectionLinesData = clickedFirstGroupElement.value
-    ? getConnectionLinesData(clickedFirstGroupElement.value)
+    ? getElementConnectionLinesData(clickedFirstGroupElement.value)
     : []
 
   d3.selectAll(".connection-line").remove()
@@ -684,7 +737,6 @@ function drawConnectionsInFirstGroup() {
             "class",
             ["connection-line", `connection-line-${clickedFirstGroupElement.value}`].join(" ")
           )
-          // .attr("class", (d) => ["sdg-line", `sdg-${d.id}`, `work-line-${d.work}`].join(" "))
           .attr("d", (d) => drawQuadraticCurve(d))
           .attr("stroke", "white")
           .attr("fill", "none")
@@ -700,7 +752,7 @@ function drawConnectionsInFirstGroup() {
     .attr("stroke", theGrey)
 }
 
-function addMoreMouseEvents(callback) {
+function addShownWorksMouseEvents(callback) {
   secondGroup.value.selectAll(".shown-work-overlay").on("mouseover mouseout", function (event) {
     const elementIndex = clickedFirstGroupElement.value
     const workIndex = d3.select(this).attr("data-id")
@@ -757,7 +809,362 @@ function addShwonWorksClickEvents() {
   })
 }
 
-function drawWorksInFirstGroup() {}
+function drawWorkLinesInFirstGroup(data, callback1, callback2) {
+  callback1(data, addWorkMouseEvents, addWorkExpandClickEvents) // callback1 is drawWorksInFirstGroup()
+
+  firstGroup.value
+    .selectAll(".first-group-line")
+    .data(data)
+    .join((enter) =>
+      enter
+        .append("line")
+        .attr("class", (_, i) => ["first-group-line", `element-${i}`].join(" "))
+        .attr("stroke", (d) => (d.children.length ? theGrey : null))
+        .attr("stroke-width", lineWidth)
+        .attr("x1", screenSize.isMobile ? mapWidth.value * 0.85 : mapWidth.value * 0.45)
+        .attr("y1", (_, i) => i * worksBaseDistance + props.sizes.worksBandwidth * 0.5)
+        .attr(
+          "x2",
+          screenSize.isMobile
+            ? mapWidth.value - circleRadius * 1.5 * 2
+            : mapWidth.value * 0.5 - circleRadius * 1.5
+        )
+        .attr("y2", (_, i) => i * worksBaseDistance + props.sizes.worksBandwidth * 0.5)
+    )
+
+  callback2(drawWorkConnectionsInFristGroup, addShownElementsMouseEvents) // callback2 is drawElementsInSecondGroup()
+}
+
+function drawWorksInFirstGroup(data, callback1, callback2) {
+  firstGroup.value
+    .selectAll(".first-group-element")
+    .data(data)
+    .join((enter) =>
+      enter
+        .append("g")
+        .attr("class", (_, i) => ["first-group-element", `element-${i}`].join(" "))
+        .attr("transform", `translate(0, -${worksBaseDistance * 2})`)
+        .each(function (d, i) {
+          const workGroup = d3
+            .select(this)
+            .append("g")
+            .attr("class", ["group-element", `element-${i}`].join(" "))
+            .attr("data-index", i)
+
+          // Add rectangles
+          workGroup.append("rect").attr("class", "first-group-work-rect").attr("data-id", i)
+
+          // Add work title
+          workGroup
+            .append("text")
+            .attr("class", "first-group-work-title")
+            .attr("data-id", (d) => d.id)
+            .text((d) => d.title)
+          // Adding an overlay rectangle in order to handle mouse events
+          workGroup
+            .append("rect")
+            .attr("class", "first-group-work-overlay")
+            .each(function () {
+              d3.select(this)
+                .append("title")
+                .text((d) => d.title)
+            })
+
+          const circleGroup = d3
+            .select(this)
+            .append("g")
+            .attr("class", ["group-element", `element-${i}`].join(" "))
+            .attr("data-index", i)
+            .attr(
+              "transform",
+              `translate(${
+                screenSize.isMobile ? mapWidth.value - circleRadius * 1.5 : mapWidth.value * 0.5
+              },${props.sizes.worksBandwidth * 0.5})`
+            )
+            .attr("cursor", "pointer")
+
+          if (d.children.length) {
+            // Add actual circle with count, if children are available
+            circleGroup
+              .append("circle")
+              .attr("class", "first-group-work-circle")
+              .attr("r", circleRadius * 1.4)
+              .attr("stroke", theBlack)
+              .attr("fill", theBlack)
+
+            circleGroup
+              .append("text")
+              .text((d) => d.children.length)
+              .attr("fill", "white")
+              .style("font-size", `${props.sizes.concept}px`)
+              .attr("dominant-baseline", "middle")
+              .attr("text-anchor", "middle")
+          }
+        })
+    )
+
+  // Handling the <rect> elements inside each g.work
+  firstGroup.value
+    .selectAll(".first-group-work-rect,.first-group-work-overlay")
+    .attr("width", () => {
+      return screenSize.isMobile ? mapWidth.value * 0.85 : mapWidth.value * 0.45
+    })
+    .attr("height", props.sizes.worksBandwidth)
+
+  // Setting the background work-rect's colors separately
+  firstGroup.value
+    .selectAll(".first-group-work-rect")
+    .attr("stroke", theBlack)
+    .attr("fill", theBlack)
+
+  // Handling the overlay rect element for handling mouse events as well
+  firstGroup.value
+    .selectAll(".first-group-work-overlay")
+    // .attr("class", (d) => ["work-overlay", ...addElementClasses(d.links)].join(" "))
+    // .attr("data-id", (d) => d.id)
+    // .attr("data-type", "works")
+    // .attr("data-index", (_, i) => i)
+    .attr("fill-opacity", 0)
+    .attr("cursor", "pointer")
+
+  // Handling the <text> elements of the work title
+  firstGroup.value
+    .selectAll(".first-group-work-title")
+    .attr("x", 5)
+    .attr("y", props.sizes.worksBandwidth * 0.85)
+    .style("font-size", props.sizes.workTitle)
+    .attr("fill", "white")
+
+  // Positioning each <g> element with class "work" along the yScaleWorks
+  firstGroup.value
+    .selectAll(".first-group-element")
+    .transition()
+    .duration(transitionDuration)
+    .ease(easeAnimation)
+    .attr("transform", (_, i) => {
+      return `translate(0, ${worksBaseDistance * i})`
+    })
+
+  callback1() // callback1 is addWorkMouseEvents()
+  callback2() // callback is addWorkExpandClickEvents()
+}
+
+function addWorkMouseEvents() {
+  firstGroup.value.selectAll(".group-element").on("mouseover mouseout", function (event) {
+    const index = d3.select(this).attr("data-index")
+
+    if (graph.detailsMapGraph.children[index].children.length) {
+      // Highlighting and setting back the lines
+      d3.selectAll(`line.element-${index}`)
+        .attr("stroke", lineColor(event.type))
+        .attr("stroke-width", lineWwidth(event.type))
+    }
+
+    // Highlighting and setting back connection lines
+    d3.selectAll(`.connection-line-${index}`)
+      .attr("stroke", lineColor(event.type))
+      .attr("stroke-width", lineWwidth(event.type))
+
+    // Highlighting and setting back shown elements
+    if (index === clickedFirstGroupElement.value) {
+      d3.selectAll(".shown-element-circle")
+        .attr("stroke", elementColor(event.type))
+        .attr("fill", elementColor(event.type))
+
+      d3.selectAll(".shown-sdg-group-id, .shown-concept-group-name")
+        .attr("fill", elementColor(event.type))
+        .attr("font-weight", fontWeight(event.type))
+    }
+
+    // Highlighting and setting back work circles
+    d3.selectAll(`.element-${index} .first-group-work-circle`)
+      .attr("stroke", elementColor(event.type))
+      .attr("fill", elementColor(event.type))
+
+    // Highlighting and setting back first group works
+    d3.selectAll(`.element-${index} .first-group-work-rect`)
+      .attr("stroke", elementColor(event.type))
+      .attr("fill", elementColor(event.type))
+  })
+}
+
+function drawElementsInSecondGroup(callback1, callback2) {
+  // No update function for shown elements. The SDG groups and the concept groups differ too much
+  d3.selectAll(".shown-element").remove()
+
+  const shownElementsSelection = secondGroup.value
+    .selectAll(".shown-element")
+    .data(elementsInSecondGroup.value, function (d) {
+      return d
+    })
+
+  const enterShownElements = shownElementsSelection
+    .enter()
+    .append("g")
+    .attr("class", "shown-element")
+    .attr(
+      "transform",
+      `translate(${screenSize.isMobile ? mapWidth.value * 0.85 : mapWidth.value * 0.15}, -${
+        elementBaseDistance * 2
+      })`
+    )
+
+  enterShownElements.each(function (d, i) {
+    if (d.type === "sdg") {
+      // Trick to get the labelBox data of the SDG
+      const sdg = graph.homeMapGraph.sdgs.find((sdg) => sdg.id === d.data.id)
+
+      const sdgLabelGroup = d3
+        .select(this)
+        .append("g")
+        .attr("class", ["group-element", "shown-sdg-element", `element-${i}`].join(" "))
+        .attr("data-index", i)
+        .attr("cursor", "pointer")
+
+      sdgLabelGroup
+        .append("circle")
+        .attr("class", "shown-element-circle")
+        .attr("data-id", (d) => d.id)
+        .attr("r", circleRadius)
+        .attr("stroke", theBlack)
+        .attr("fill", theBlack)
+
+      // Add SDG ID
+      sdgLabelGroup
+        .append("text")
+        .attr("class", "shown-sdg-group-id")
+        .text((d) => `SDG ${d.data.id}`)
+        .attr("x", () => {
+          return screenSize.isMobile ? -textElementXOffset : textElementXOffset
+        })
+        .attr("y", 0)
+        .style("font-size", `${props.sizes.sdgId}px`)
+        .attr("dominant-baseline", "text-after-edge")
+        .attr("text-anchor", () => {
+          return screenSize.isMobile ? "end" : "start"
+        })
+      // Add rectangle for SDG label
+      sdgLabelGroup
+        .append("rect")
+        .attr("class", "shown-sdg-group-color")
+        .attr(
+          "x",
+          screenSize.isMobile ? -(sdg.labelBbox.width + textElementXOffset) : textElementXOffset
+        )
+        .attr("y", 0)
+        .attr("fill", (d) => d.data.color)
+        .attr("opacity", 0.4)
+        .attr("width", sdg.labelBbox.width)
+        .attr("height", sdg.labelBbox.height)
+      // Add SDG label
+      sdgLabelGroup
+        .append("text")
+        .attr("class", "shown-sdg-group-label")
+        .text((d) => d.data.name)
+        .attr("x", () => {
+          return screenSize.isMobile ? -textElementXOffset : textElementXOffset
+        })
+        .attr("y", 0)
+        .attr("dominant-baseline", "text-before-edge")
+        .style("font-size", props.sizes.sdgLabel)
+        .attr("text-anchor", () => {
+          return screenSize.isMobile ? "end" : "start"
+        })
+    } else {
+      // Add concept
+      const conceptLabelGroup = d3
+        .select(this)
+        .append("g")
+        .attr("class", ["group-element", "shown-concept-element", `element-${i}`].join(" "))
+        .attr("data-index", i)
+        .attr("cursor", "pointer")
+
+      conceptLabelGroup
+        .append("circle")
+        .attr("class", "shown-element-circle")
+        .attr("data-id", (d) => d.id)
+        .attr("r", circleRadius)
+        .attr("stroke", theBlack)
+        .attr("fill", theBlack)
+
+      conceptLabelGroup
+        .append("text")
+        .attr("class", "shown-concept-group-name")
+        .text((d) => d.data.name)
+        .attr("x", () => {
+          return screenSize.isMobile ? -textElementXOffset : textElementXOffset
+        })
+        .attr("y", 0)
+        .style("font-size", `${props.sizes.concept}px`)
+        .attr("dominant-baseline", "middle")
+        .attr("text-anchor", () => {
+          return screenSize.isMobile ? "end" : "start"
+        })
+    }
+  })
+
+  secondGroup.value
+    .selectAll(".shown-element")
+    .transition()
+    .duration(transitionDuration)
+    .ease(easeAnimation)
+    .attr("transform", (_, i) => {
+      return `translate(${screenSize.isMobile ? mapWidth.value * 0.85 : mapWidth.value * 0.15}, ${
+        elementBaseDistance * i
+      })`
+    })
+
+  callback1() // callback1 is drawWorkConnectionsInFristGroup()
+  callback2(addShwonElementsClickEvents) // callback2 is addShownElementsMouseEvents()
+}
+
+function drawWorkConnectionsInFristGroup() {}
+
+function addShownElementsMouseEvents(callback) {
+  secondGroup.value.selectAll(".shown-element").on("mouseover mouseout", function (event) {
+    const workIndex = clickedFirstGroupElement.value
+    // const elementIndex = d3.select(this).attr("data-id")
+
+    console.log("clicked work idx", workIndex)
+    // console.log("current element data-id", elementIndex)
+
+    // Highlighting and setting back shown element circle
+    d3.select(this)
+      .select(".shown-element-circle")
+      .attr("stroke", elementColor(event.type))
+      .attr("fill", elementColor(event.type))
+
+    // Highlighting and setting back shown element labels
+    d3.select(this)
+      .select(".shown-sdg-group-id, .shown-concept-group-name")
+      .attr("fill", elementColor(event.type))
+      .attr("font-weight", fontWeight(event.type))
+
+    // Highlighting and setting back work to circle line
+    d3.selectAll(`line.element-${workIndex}`)
+      .attr("stroke", lineColor(event.type))
+      .attr("stroke-width", lineWwidth(event.type))
+
+    // // Highlighting and setting back connection lines
+    // d3.selectAll(`.connection-line-${elementIndex}`)
+    //   .attr("stroke", lineColor(event.type))
+    //   .attr("stroke-width", lineWwidth(event.type))
+
+    // Highlighting and setting back work circles
+    d3.selectAll(`.element-${workIndex} .first-group-work-circle`)
+      .attr("stroke", elementColor(event.type))
+      .attr("fill", elementColor(event.type))
+
+    // Highlighting and setting back work
+    d3.selectAll(`.element-${workIndex} .first-group-work-rect`)
+      .attr("stroke", elementColor(event.type))
+      .attr("fill", elementColor(event.type))
+  })
+
+  callback() // callback is addShwonElementsClickEvents()
+}
+
+function addShwonElementsClickEvents() {}
 </script>
 
 <template>

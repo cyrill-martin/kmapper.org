@@ -1002,6 +1002,7 @@ function drawElementsInSecondGroup(callback1, callback2) {
     .enter()
     .append("g")
     .attr("class", "shown-element")
+    .attr("data-id", (_, i) => i)
     .attr(
       "transform",
       `translate(${screenSize.isMobile ? mapWidth.value * 0.85 : mapWidth.value * 0.15}, -${
@@ -1164,7 +1165,35 @@ function addShownElementsMouseEvents(callback) {
   callback() // callback is addShwonElementsClickEvents()
 }
 
-function addShwonElementsClickEvents() {}
+function addShwonElementsClickEvents() {
+  secondGroup.value.selectAll(".shown-element").on("click", async function () {
+    const elementIndex = d3.select(this).attr("data-id")
+
+    let root = elementsInSecondGroup.value[elementIndex].data
+
+    // Trick to add labelBox info of relevant SDG
+    if (elementsInSecondGroup.value[elementIndex].type === "sdg") {
+      const sdg = graph.homeMapGraph.sdgs.find((sdg) => sdg.id === root.id)
+      root.labelBbox = sdg.labelBbox
+    }
+
+    // E.g. {type: 'sdgs', root: {...}, sizes: {...} }
+    const inputObj = {
+      type: `${elementsInSecondGroup.value[elementIndex].type}s`,
+      root: root,
+      sizes: props.sizes
+    }
+
+    const detailsData = await createDetailsMapGraph(inputObj)
+    graph.setDetailsMapGraph(detailsData)
+
+    elementsInSecondGroup.value = []
+    clickedFirstGroupElement.value = null
+
+    createStaticMapElements()
+    drawDynamicMap()
+  })
+}
 </script>
 
 <template>

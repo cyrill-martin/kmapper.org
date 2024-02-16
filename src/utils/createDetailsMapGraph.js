@@ -2,6 +2,9 @@ import { ref } from "vue"
 import { useGraphStore } from "../stores/graph.js"
 
 export async function createDetailsMapGraph(inputObj) {
+
+  console.log("from UTILS", inputObj)
+
   // Use stores
   const graph = useGraphStore()
 

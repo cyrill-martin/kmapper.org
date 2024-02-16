@@ -362,7 +362,7 @@ function drawElementLinesInFirstGroup(data, callback1, callback2) {
     )
 
   callback1(data, addElementMouseEvents, addElementExpandClickEvents) // callback1 is drawElementsInFirstGroup()
-  callback2(drawElementConnectionsInFirstGroup, addShownWorksMouseEvents) // callback2 is drawWorksInSecondGroup()
+  callback2(drawElementToWorksConnectionsInFirstGroup, addShownWorksMouseEvents) // callback2 is drawWorksInSecondGroup()
 }
 
 function drawElementsInFirstGroup(data, callback1, callback2) {
@@ -535,9 +535,9 @@ watch(
   () => clickedFirstGroupElement.value,
   () => {
     if (graph.detailsMapGraph.type === "works") {
-      drawWorksInSecondGroup(drawElementConnectionsInFirstGroup, addShownWorksMouseEvents)
+      drawWorksInSecondGroup(drawElementToWorksConnectionsInFirstGroup, addShownWorksMouseEvents)
     } else {
-      drawElementsInSecondGroup(drawWorkConnectionsInFristGroup, addShownElementsMouseEvents)
+      drawElementsInSecondGroup(drawWorkToElementsConnections, addShownElementsMouseEvents)
     }
   }
 )
@@ -579,6 +579,9 @@ function addWorkExpandClickEvents() {
 }
 
 function drawWorksInSecondGroup(callback1, callback2) {
+
+  
+
   const shownWorksSelection = secondGroup.value
     .selectAll(".shown-work")
     .data(worksInSecondGroup.value, function (d) {
@@ -637,7 +640,7 @@ function drawWorksInSecondGroup(callback1, callback2) {
   secondGroup.value
     .selectAll(".shown-work-rect,.shown-work-overlay")
     .attr("width", () => {
-      return screenSize.isMobile ? mapWidth.value : mapWidth.value * 0.5
+      return screenSize.isMobile ? mapWidth.value * 0.9 : mapWidth.value * 0.5
     })
     .attr("height", props.sizes.worksBandwidth)
 
@@ -648,8 +651,6 @@ function drawWorksInSecondGroup(callback1, callback2) {
     .selectAll(".shown-work-overlay")
     .attr("class", "shown-work-overlay")
     .attr("data-id", (_, i) => i)
-    // .attr("data-type", "works")
-    // .attr("data-index", (_, i) => i)
     .attr("fill-opacity", 0)
     .attr("cursor", "pointer")
 
@@ -669,11 +670,11 @@ function drawWorksInSecondGroup(callback1, callback2) {
       return `translate(0, ${worksBaseDistance * i})`
     })
 
-  callback1() // callback1 is drawElementConnectionsInFirstGroup()
+  callback1() // callback1 is drawElementToWorksConnectionsInFirstGroup()
   callback2(addShwonWorksClickEvents) // callback2 is addShownWorksMouseEvents()
 }
 
-function getElementConnectionLinesData(index) {
+function getElementToWorksConnectionLinesData(index) {
   // Starting point (0)
   const x0 = screenSize.isMobile
     ? mapWidth.value * 0.9 + circleRadius * 1.5
@@ -682,23 +683,26 @@ function getElementConnectionLinesData(index) {
   const y0 = index * elementBaseDistance
 
   // First control point (1)
-  const x1 = screenSize.isMobile
-    ? mapWidth.value * 0.9 + circleRadius * 4
-    : mapWidth.value * 0.4 + circleRadius * 4
+  const x1 = screenSize.isMobile ? mapWidth.value * 0.96 : mapWidth.value * 0.4 + circleRadius * 4
 
   // Second control point (2)
-  const x2 = screenSize.isMobile ? mapWidth.value * 0.98 : mapWidth.value * 0.4 + circleRadius * 8
+  const x2 = screenSize.isMobile ? mapWidth.value * 0.96 : mapWidth.value * 0.4 + circleRadius * 8
 
   const y2 = screenSize.isMobile
-    ? graph.detailsMapGraph.children.length * elementBaseDistance * 0.9
+    ? graph.detailsMapGraph.children.length * elementBaseDistance +
+      (worksInSecondGroup.value.length - 1) * 0.5 * worksBaseDistance +
+      props.sizes.worksBandwidth * 0.5
     : props.sizes.worksBandwidth * 0.5
 
   // End point (3)
-  const x3 = screenSize.isMobile ? mapWidth.value * 0.98 : mapWidth.value * 0.5
+  const x3 = screenSize.isMobile ? mapWidth.value * 0.92 : mapWidth.value * 0.495
 
   const y3 = screenSize.isMobile
-    ? graph.detailsMapGraph.children.length * elementBaseDistance
-    : props.sizes.worksBandwidth * 0.5
+    ? graph.detailsMapGraph.children.length * elementBaseDistance +
+      (worksInSecondGroup.value.length - 1) * 0.5 * worksBaseDistance +
+      props.sizes.worksBandwidth * 0.5
+    : (worksInSecondGroup.value.length - 1) * 0.5 * worksBaseDistance +
+      props.sizes.worksBandwidth * 0.5
 
   const linePoints = [
     { x: x0, y: y0 }, // Starting point (0)
@@ -719,9 +723,9 @@ function drawQuadraticCurve(coordinates) {
   return lineGenerator(coordinates) // generate the path data string
 }
 
-function drawElementConnectionsInFirstGroup() {
+function drawElementToWorksConnectionsInFirstGroup() {
   const connectionLinesData = clickedFirstGroupElement.value
-    ? getElementConnectionLinesData(clickedFirstGroupElement.value)
+    ? getElementToWorksConnectionLinesData(clickedFirstGroupElement.value)
     : []
 
   d3.selectAll(".connection-line").remove()
@@ -821,18 +825,18 @@ function drawWorkLinesInFirstGroup(data, callback1, callback2) {
         .attr("class", (_, i) => ["first-group-line", `element-${i}`].join(" "))
         .attr("stroke", (d) => (d.children.length ? theGrey : null))
         .attr("stroke-width", lineWidth)
-        .attr("x1", screenSize.isMobile ? mapWidth.value * 0.85 : mapWidth.value * 0.45)
+        .attr("x1", screenSize.isMobile ? mapWidth.value * 0.75 : mapWidth.value * 0.45)
         .attr("y1", (_, i) => i * worksBaseDistance + props.sizes.worksBandwidth * 0.5)
         .attr(
           "x2",
           screenSize.isMobile
-            ? mapWidth.value - circleRadius * 1.5 * 2
+            ? mapWidth.value * 0.9 - circleRadius * 1.5 * 2
             : mapWidth.value * 0.5 - circleRadius * 1.5
         )
         .attr("y2", (_, i) => i * worksBaseDistance + props.sizes.worksBandwidth * 0.5)
     )
 
-  callback2(drawWorkConnectionsInFristGroup, addShownElementsMouseEvents) // callback2 is drawElementsInSecondGroup()
+  callback2(drawWorkToElementsConnections, addShownElementsMouseEvents) // callback2 is drawElementsInSecondGroup()
 }
 
 function drawWorksInFirstGroup(data, callback1, callback2) {
@@ -878,7 +882,9 @@ function drawWorksInFirstGroup(data, callback1, callback2) {
             .attr(
               "transform",
               `translate(${
-                screenSize.isMobile ? mapWidth.value - circleRadius * 1.5 : mapWidth.value * 0.5
+                screenSize.isMobile
+                  ? mapWidth.value * 0.9 - circleRadius * 1.5
+                  : mapWidth.value * 0.5
               },${props.sizes.worksBandwidth * 0.5})`
             )
             .attr("cursor", "pointer")
@@ -907,7 +913,7 @@ function drawWorksInFirstGroup(data, callback1, callback2) {
   firstGroup.value
     .selectAll(".first-group-work-rect,.first-group-work-overlay")
     .attr("width", () => {
-      return screenSize.isMobile ? mapWidth.value * 0.85 : mapWidth.value * 0.45
+      return screenSize.isMobile ? mapWidth.value * 0.75 : mapWidth.value * 0.45
     })
     .attr("height", props.sizes.worksBandwidth)
 
@@ -1110,24 +1116,88 @@ function drawElementsInSecondGroup(callback1, callback2) {
     .duration(transitionDuration)
     .ease(easeAnimation)
     .attr("transform", (_, i) => {
-      return `translate(${screenSize.isMobile ? mapWidth.value * 0.85 : mapWidth.value * 0.15}, ${
-        elementBaseDistance * i
-      })`
+      return `translate(${
+        screenSize.isMobile ? mapWidth.value * 0.9 - circleRadius * 1.5 : mapWidth.value * 0.15
+      }, ${elementBaseDistance * i})`
     })
 
-  callback1() // callback1 is drawWorkConnectionsInFristGroup()
+  callback1() // callback1 is drawWorkToElementsConnections()
   callback2(addShwonElementsClickEvents) // callback2 is addShownElementsMouseEvents()
 }
 
-function drawWorkConnectionsInFristGroup() {}
+function getWorksToElementsConnectionLinesData(index) {
+  // Starting point (0)
+  const x0 = screenSize.isMobile ? mapWidth.value * 0.9 : circleRadius * 1.5
+  const y0 = index * worksBaseDistance + props.sizes.worksBandwidth * 0.5
+
+  // First control point (1)
+  const x1 = screenSize.isMobile ? mapWidth.value * 0.95 : mapWidth.value * 0.1
+
+  // Second control point (2)
+  const x2 = screenSize.isMobile ? mapWidth.value * 0.95 : mapWidth.value * 0.1
+  const y2 = screenSize.isMobile
+    ? graph.detailsMapGraph.children.length * worksBaseDistance +
+      elementsInSecondGroup.value.length * 0.5 * elementBaseDistance +
+      elementBaseDistance * 0.25
+    : (elementsInSecondGroup.value.length - 1) * 0.5 * elementBaseDistance
+
+  // End point (3)
+  const x3 = screenSize.isMobile ? mapWidth.value * 0.9 : mapWidth.value * 0.14
+
+  const y3 = screenSize.isMobile
+    ? graph.detailsMapGraph.children.length * worksBaseDistance +
+      elementsInSecondGroup.value.length * 0.5 * elementBaseDistance +
+      elementBaseDistance * 0.25
+    : (elementsInSecondGroup.value.length - 1) * 0.5 * elementBaseDistance
+
+  const linePoints = [
+    { x: x0, y: y0 }, // Starting point (0)
+    { x: x1, y: y0 }, // First control point (1)
+    { x: x2, y: y2 }, // Second control point (2)
+    { x: x3, y: y3 } // End point (3)
+  ]
+
+  return [linePoints]
+}
+
+function drawWorkToElementsConnections() {
+  const connectionLinesData = clickedFirstGroupElement.value
+    ? getWorksToElementsConnectionLinesData(clickedFirstGroupElement.value)
+    : []
+
+  const groutToAppendTo = screenSize.isMobile ? firstGroup.value : secondGroup.value
+
+  d3.selectAll(".connection-line").remove()
+
+  groutToAppendTo
+    .selectAll(".connection-line")
+    .data(connectionLinesData)
+    .join(
+      (enter) =>
+        enter
+          .append("path")
+          .attr(
+            "class",
+            ["connection-line", `connection-line-${clickedFirstGroupElement.value}`].join(" ")
+          )
+          .attr("d", (d) => drawQuadraticCurve(d))
+          .attr("stroke", "white")
+          .attr("fill", "none")
+          .attr("stroke-width", lineWidth),
+      (update) => update,
+      (exit) => exit
+    )
+
+  groutToAppendTo
+    .selectAll(".connection-line")
+    .transition()
+    .duration(transitionDuration * 0.3)
+    .attr("stroke", theGrey)
+}
 
 function addShownElementsMouseEvents(callback) {
   secondGroup.value.selectAll(".shown-element").on("mouseover mouseout", function (event) {
     const workIndex = clickedFirstGroupElement.value
-    // const elementIndex = d3.select(this).attr("data-id")
-
-    console.log("clicked work idx", workIndex)
-    // console.log("current element data-id", elementIndex)
 
     // Highlighting and setting back shown element circle
     d3.select(this)
@@ -1146,10 +1216,10 @@ function addShownElementsMouseEvents(callback) {
       .attr("stroke", lineColor(event.type))
       .attr("stroke-width", lineWwidth(event.type))
 
-    // // Highlighting and setting back connection lines
-    // d3.selectAll(`.connection-line-${elementIndex}`)
-    //   .attr("stroke", lineColor(event.type))
-    //   .attr("stroke-width", lineWwidth(event.type))
+    // Highlighting and setting back connection lines
+    d3.selectAll(`.connection-line-${workIndex}`)
+      .attr("stroke", lineColor(event.type))
+      .attr("stroke-width", lineWwidth(event.type))
 
     // Highlighting and setting back work circles
     d3.selectAll(`.element-${workIndex} .first-group-work-circle`)

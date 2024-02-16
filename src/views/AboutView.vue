@@ -1,7 +1,7 @@
 <template>
   <n-flex vertical>
     <p>
-      kmapper.org is uses the
+      kmapper.org uses the
       <a href="https://docs.openalex.org/api-entities/works" target="_blank">works endpoint</a> of
       the <a href="https://docs.openalex.org/" target="_blank">OpenAlex API</a> to search for gold
       open access articles.<br />

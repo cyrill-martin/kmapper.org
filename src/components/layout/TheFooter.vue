@@ -7,9 +7,7 @@
 footer {
   text-align: center;
   font-size: 0.9rem;
-  /* height: 40px; */
   padding: 1rem;
   margin-top: 2rem;
-  /* background-color: rgb(243, 243, 243); */
 }
 </style>

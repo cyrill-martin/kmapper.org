@@ -81,29 +81,69 @@ export async function mapOpenAlexWorks(searchResults) {
       : null
   }
 
-  // Concepts
-  function getFirstConcept(concepts) {
-    const firstConcept = concepts[0]
+  // // Concepts
+  // function getFirstConcept(concepts) {
+  //   const firstConcept = concepts[0]
 
-    return firstConcept
+  //   return firstConcept
+  //     ? (() => {
+  //         uniqueConcepts.add(firstConcept.display_name)
+  //         conceptIRIs[firstConcept.display_name] = firstConcept.wikidata
+  //         return [{ type: "concept", id: firstConcept.display_name }]
+  //       })()
+  //     : null
+  // }
+
+  // function getConcepts(work) {
+  //   const workConcepts = work.concepts.filter((concept) => concept.score > thresholds.concept)
+
+  //   return workConcepts.length
+  //     ? workConcepts.map((concept) => {
+  //         uniqueConcepts.add(concept.display_name)
+  //         conceptIRIs[concept.display_name] = concept.wikidata
+  //         return { type: "concept", id: concept.display_name }
+  //       })
+  //     : getFirstConcept(work.concepts)
+  // }
+
+  // domains
+  function getFirstConcept(topics) {
+    const firstTopic = topics[0]
+
+    return firstTopic
       ? (() => {
-          uniqueConcepts.add(firstConcept.display_name)
-          conceptIRIs[firstConcept.display_name] = firstConcept.wikidata
-          return [{ type: "concept", id: firstConcept.display_name }]
+          uniqueConcepts.add(firstTopic.domain.display_name)
+          conceptIRIs[firstTopic.domain.display_name] = firstTopic.id
+          return [{ type: "concept", id: firstTopic.domain.display_name }]
         })()
       : null
   }
 
   function getConcepts(work) {
-    const workConcepts = work.concepts.filter((concept) => concept.score > thresholds.concept)
+    const workTopics = work.topics.filter((topic) => topic.score > thresholds.concept)
 
-    return workConcepts.length
-      ? workConcepts.map((concept) => {
-          uniqueConcepts.add(concept.display_name)
-          conceptIRIs[concept.display_name] = concept.wikidata
-          return { type: "concept", id: concept.display_name }
-        })
-      : getFirstConcept(work.concepts)
+    if (workTopics.length) {
+      let uniqueDomains = new Set()
+      workTopics.forEach((topic) => {
+        // Handling the unique domains of THIS work
+        uniqueDomains.add(topic.domain.display_name)
+
+        // Handling the unique domains of ALL the works
+        uniqueConcepts.add(topic.domain.display_name)
+        conceptIRIs[topic.domain.display_name] = topic.id
+      })
+      return [...uniqueDomains].map((domain) => ({ type: "concept", id: domain }))
+    } else {
+      return getFirstConcept(work.topics)
+    }
+
+    // return workTopics.length
+    //   ? workTopics.map((topic) => {
+    //       uniqueConcepts.add(topic.domain.display_name)
+    //       conceptIRIs[topic.domain.display_name] = topic.id
+    //       return { type: "concept", id: topic.domain.display_name }
+    //     })
+    //   : getFirstConcept(work.topics)
   }
 
   // SDG data

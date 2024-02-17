@@ -128,8 +128,6 @@ export const useSearchStore = defineStore("search", () => {
         } else {
           // Else, update query parameter q
           router.replace({ query: { ...route.query, q: searchQuery.value } })
-
-          // router.replace("/map?", "/?")
         }
 
         graph.incrementNumberOfGraphs()

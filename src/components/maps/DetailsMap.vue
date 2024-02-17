@@ -5,6 +5,7 @@ import * as d3 from "d3"
 import { useScreenSizeStore } from "../../stores/screenSize.js"
 import { useGraphStore } from "../../stores/graph.js"
 import { createDetailsMapGraph } from "../../utils/createDetailsMapGraph.js"
+import { debounce } from "../../utils/debounce.js"
 
 const props = defineProps(["sizes"])
 
@@ -24,6 +25,29 @@ onMounted(() => {
 function getAvailableModalWidth() {
   const modalContent = d3.select("#details-map")
   mapWidth.value = modalContent.style("width").replace("px", "")
+}
+
+
+const debouncedRedraw = debounce(() => {
+  redrawMap()
+}, 500)
+
+watch(
+  // If the screen is being resized,...
+  // it waits for completion of the event...
+  // and only then re-draws the map
+  () => screenSize.width,
+  () => {
+    debouncedRedraw()
+  }
+)
+
+// Redraw the map in case of screen re-sizes
+function redrawMap() {
+  getAvailableModalWidth()
+  // Create the static, screen-dependent map elements
+  createStaticMapElements()
+  drawDynamicMap()
 }
 
 // The main functions handling the creation of the map ///////////////

@@ -44,7 +44,7 @@ const searchSize = computed(() => {
         round
         autofocus
         v-model:loading="search.isLoading"
-        placeholder="Search OpenAlex"
+        placeholder="Search OpenAlex for gold open access"
         v-model:value="search.searchQuery"
         @keyup.enter="isValidSearch && search.searchAndMapContent()"
       >

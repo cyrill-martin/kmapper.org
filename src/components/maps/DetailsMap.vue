@@ -316,12 +316,13 @@ function drawConceptTitle() {
     .attr("class", "title-group")
     .attr("transform", `translate(0,-${props.sizes.worksBandwidth * 4})`)
 
-  const conceptLink = theTitleGroup
-    .append("a")
-    .attr("xlink:href", graph.detailsMapGraph.data.url)
-    .attr("target", "_blank")
+  // const conceptLink = theTitleGroup
+  //   .append("a")
+  //   .attr("xlink:href", graph.detailsMapGraph.data.url)
+  //   .attr("target", "_blank")
 
-  const conceptGroup = conceptLink
+  // const conceptGroup = conceptLink
+  const conceptGroup = theTitleGroup
     .append("g")
     .attr("transform", `translate(${props.sizes.worksBandwidth}, ${props.sizes.worksBandwidth})`)
 
@@ -473,7 +474,9 @@ function drawElementsInFirstGroup(data, callback1, callback2) {
               .attr("y", 0)
               .text((d) => d.data.name)
               .style("font-size", `${props.sizes.concept}px`)
-              .attr("dominant-baseline", "text-after-edge")
+              .attr("dominant-baseline", () =>
+                d.data.children.length ? "text-after-edge" : "middle"
+              )
               .attr("text-anchor", "start")
           }
 

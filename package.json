@@ -7,8 +7,16 @@
     "build": "vite build",
     "preview": "vite preview",
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs --fix --ignore-path .gitignore",
-    "format": "prettier --write src/"
+    "format": "prettier --write src/",
+    "predeploy": "vue-cli-service build",
+    "deploy": "gh-pages -d dist"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cyrill-martin/kmapper.org.git"
+    
+  },
+  "homepage": "https://github.com/cyrill-martin/kmapper.org",
   "dependencies": {
     "d3": "^7.8.5",
     "pinia": "^2.1.6",

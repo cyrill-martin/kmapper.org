@@ -8,11 +8,15 @@ const screenSize = useScreenSizeStore()
 const logoSize = computed(() => (screenSize.isMobile ? "150px" : "250px"))
 const bottomMargin = computed(() => (screenSize.isMobile ? "0 0 10px 0" : "0 0 25px 0"))
 const desktopHome = computed(() => (screenSize.isMobile ? false : true))
-const homeJustify = computed(() => (screenSize.isMobile ? "start": "center"))
+const homeJustify = computed(() => (screenSize.isMobile ? "start" : "center"))
 </script>
 
 <template>
-  <n-flex vertical :justify="homeJustify" :class="{ desktopHome: desktopHome, mobileHome: !desktopHome }">
+  <n-flex
+    vertical
+    :justify="homeJustify"
+    :class="{ desktopHome: desktopHome, mobileHome: !desktopHome }"
+  >
     <div>
       <img
         :style="{ width: logoSize }"
@@ -20,7 +24,9 @@ const homeJustify = computed(() => (screenSize.isMobile ? "start": "center"))
         alt="The kmapper logo"
       />
     </div>
-    <div :style="{ margin: bottomMargin }">Visualizing mapped research</div>
+    <div :style="{ margin: bottomMargin }">
+      Visualizing relevant SDGs and domains of research works
+    </div>
     <div>
       <TheSearch />
     </div>

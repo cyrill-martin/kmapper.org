@@ -5,7 +5,7 @@
       <a href="https://docs.openalex.org/api-entities/works" target="_blank">works endpoint</a> of
       the <a href="https://docs.openalex.org/" target="_blank">OpenAlex API</a> to search for gold
       open access articles.<br />
-      It also visualizes the relevant Sustainable Development Goals and research fields assigned to
+      It also visualizes the relevant Sustainable Development Goals and research domains assigned to
       the search results by OpenAlex.
     </p>
     <p>This is an ongoing experiment and I welcome your feedback.</p>

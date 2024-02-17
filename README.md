@@ -1,6 +1,12 @@
-# kmapper_8
+# kmapper.org
 
-This template should help get you started developing with Vue 3 in Vite.
+[kmapper.org](https://kmapper.org) uses the [works endpoint](https://docs.openalex.org/api-entities/works) of the [OpenAlex API](https://docs.openalex.org/) to search for gold open access articles.
+It also visualizes the relevant Sustainable Development Goals and research domains assigned to the search results by OpenAlex.
+
+This is an ongoing experiment and I welcome your feedback.
+
+Cyrill Martin
+cyrill.martin@kmapper.com
 
 ## Recommended IDE Setup
 

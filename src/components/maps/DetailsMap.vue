@@ -27,7 +27,6 @@ function getAvailableModalWidth() {
   mapWidth.value = modalContent.style("width").replace("px", "")
 }
 
-
 const debouncedRedraw = debounce(() => {
   redrawMap()
 }, 500)
@@ -379,7 +378,7 @@ function drawElementLinesInFirstGroup(data, callback1, callback2) {
         .attr("class", (_, i) => ["first-group-line", `element-${i}`].join(" "))
         .attr("stroke", (d) => (d.data.children.length ? theGrey : null))
         .attr("stroke-width", lineWidth)
-        .attr("x1", 0)
+        .attr("x1", textElementXOffset * 1.5)
         .attr("y1", (_, i) => i * elementBaseDistance)
         .attr("x2", () => (screenSize.isMobile ? mapWidth.value * 0.9 : mapWidth.value * 0.4))
         .attr("y2", (_, i) => i * elementBaseDistance)
@@ -410,10 +409,22 @@ function drawElementsInFirstGroup(data, callback1, callback2) {
               .attr("data-index", i)
               .attr("cursor", "pointer")
 
+            sdgLabelGroup
+              .append("circle")
+              .attr("class", "group-element-circle")
+              .attr("data-id", (d) => d.id)
+              .attr("cx", circleRadius * 1.1)
+              .attr("cy", 0)
+              .attr("r", circleRadius)
+              .attr("stroke", theBlack)
+              .attr("fill", theBlack)
+
             // Add SDG ID
             sdgLabelGroup
               .append("text")
               .attr("class", "sdg-group-id")
+              .attr("x", textElementXOffset * 1.5)
+              .attr("y", 0)
               .text((d) => `SDG ${d.data.id}`)
               .style("font-size", `${props.sizes.sdgId}px`)
               .attr("dominant-baseline", "text-after-edge")
@@ -421,7 +432,7 @@ function drawElementsInFirstGroup(data, callback1, callback2) {
             // Add rectangle for SDG label
             sdgLabelGroup
               .append("rect")
-              .attr("x", 0)
+              .attr("x", textElementXOffset * 1.5)
               .attr("y", 0)
               .attr("fill", (d) => d.data.color)
               .attr("opacity", 0.4)
@@ -431,7 +442,7 @@ function drawElementsInFirstGroup(data, callback1, callback2) {
             sdgLabelGroup
               .append("text")
               .text((d) => d.data.name)
-              .attr("x", 0)
+              .attr("x", textElementXOffset * 1.5)
               .attr("y", 0)
               .attr("dominant-baseline", "text-before-edge")
               .style("font-size", props.sizes.sdgLabel)
@@ -446,8 +457,20 @@ function drawElementsInFirstGroup(data, callback1, callback2) {
               .attr("cursor", "pointer")
 
             conceptLabelGroup
+              .append("circle")
+              .attr("class", "group-element-circle")
+              .attr("data-id", (d) => d.id)
+              .attr("cx", circleRadius * 1.1)
+              .attr("cy", 0)
+              .attr("r", circleRadius)
+              .attr("stroke", theBlack)
+              .attr("fill", theBlack)
+
+            conceptLabelGroup
               .append("text")
               .attr("class", "concept-group-name")
+              .attr("x", textElementXOffset * 1.5)
+              .attr("y", 0)
               .text((d) => d.data.name)
               .style("font-size", `${props.sizes.concept}px`)
               .attr("dominant-baseline", "text-after-edge")
@@ -603,9 +626,6 @@ function addWorkExpandClickEvents() {
 }
 
 function drawWorksInSecondGroup(callback1, callback2) {
-
-  
-
   const shownWorksSelection = secondGroup.value
     .selectAll(".shown-work")
     .data(worksInSecondGroup.value, function (d) {

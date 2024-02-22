@@ -7,7 +7,7 @@ export const useGraphStore = defineStore("graph", () => {
 
   const homeMapGraph = ref(null)
   const sdgWorkNodes = ref(null)
-  const conceptWorkNodes = ref(null)
+  const fieldWorkNodes = ref(null)
 
   const detailsMapGraph = ref(null)
 
@@ -20,8 +20,8 @@ export const useGraphStore = defineStore("graph", () => {
     sdgWorkNodes.value = data
   }
 
-  function setConceptWorkNodes(data) {
-    conceptWorkNodes.value = data
+  function setFieldWorkNodes(data) {
+    fieldWorkNodes.value = data
   }
 
   function incrementNumberOfGraphs() {
@@ -40,11 +40,11 @@ export const useGraphStore = defineStore("graph", () => {
     numberOfGraphs,
     homeMapGraph,
     sdgWorkNodes,
-    conceptWorkNodes,
+    fieldWorkNodes,
     detailsMapGraph,
     setHomeMapGraph,
     setSdgWorkNodes,
-    setConceptWorkNodes,
+    setFieldWorkNodes,
     incrementNumberOfGraphs,
     setDetailsMapGraph,
     resetDetailsMapGraph

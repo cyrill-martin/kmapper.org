@@ -2,13 +2,12 @@ import { SDGs } from "../data/SDGs.js"
 
 export async function mapOpenAlexWorks(searchResults) {
   let uniqueSdgs = new Set()
-
-  let uniqueConcepts = new Set()
-  const conceptIRIs = {}
+  let uniqueFields = new Set()
+  const fieldIRIs = {}
 
   const thresholds = {
     sdg: 0.25,
-    concept: 0.75
+    field: 0.75
   }
 
   // openAlexId
@@ -81,92 +80,35 @@ export async function mapOpenAlexWorks(searchResults) {
       : null
   }
 
-  // Concepts
-  // function getFirstConcept(concepts) {
-  //   const firstConcept = concepts[0]
-
-  //   return firstConcept
-  //     ? (() => {
-  //         uniqueConcepts.add(firstConcept.display_name)
-  //         conceptIRIs[firstConcept.display_name] = firstConcept.wikidata
-  //         return [{ type: "concept", id: firstConcept.display_name }]
-  //       })()
-  //     : null
-  // }
-
-  // function getConcepts(work) {
-  //   const workConcepts = work.concepts.filter((concept) => concept.score > thresholds.concept)
-
-  //   return workConcepts.length
-  //     ? workConcepts.map((concept) => {
-  //         uniqueConcepts.add(concept.display_name)
-  //         conceptIRIs[concept.display_name] = concept.wikidata
-  //         return { type: "concept", id: concept.display_name }
-  //       })
-  //     : getFirstConcept(work.concepts)
-  // }
-
-  // Domains
-  // function getFirstConcept(topics) {
-  //   const firstTopic = topics[0]
-
-  //   return firstTopic
-  //     ? (() => {
-  //         uniqueConcepts.add(firstTopic.domain.display_name)
-  //         conceptIRIs[firstTopic.domain.display_name] = firstTopic.id
-  //         return [{ type: "concept", id: firstTopic.domain.display_name }]
-  //       })()
-  //     : null
-  // }
-
-  // function getConcepts(work) {
-  //   const workTopics = work.topics.filter((topic) => topic.score > thresholds.concept)
-
-  //   if (workTopics.length) {
-  //     let uniqueDomains = new Set()
-  //     workTopics.forEach((topic) => {
-  //       // Handling the unique domains of THIS work
-  //       uniqueDomains.add(topic.domain.display_name)
-
-  //       // Handling the unique domains of ALL the works
-  //       uniqueConcepts.add(topic.domain.display_name)
-  //       conceptIRIs[topic.domain.display_name] = topic.id
-  //     })
-  //     return [...uniqueDomains].map((domain) => ({ type: "concept", id: domain }))
-  //   } else {
-  //     return getFirstConcept(work.topics)
-  //   }
-  // }
-
   // Fields
-  function getFirstConcept(topics) {
-    const firstTopic = topics[0]
+  function getFirstField(topics) {
+    const firstField = topics[0]
 
-    return firstTopic
+    return firstField
       ? (() => {
-          uniqueConcepts.add(firstTopic.field.display_name)
-          conceptIRIs[firstTopic.field.display_name] = firstTopic.id
-          return [{ type: "concept", id: firstTopic.field.display_name }]
+          uniqueFields.add(firstField.field.display_name)
+          fieldIRIs[firstField.field.display_name] = firstField.id
+          return [{ type: "field", id: firstField.field.display_name }]
         })()
       : null
   }
 
-  function getConcepts(work) {
-    const workTopics = work.topics.filter((topic) => topic.score > thresholds.concept)
+  function getFields(work) {
+    const workTopics = work.topics.filter((topic) => topic.score > thresholds.field)
 
     if (workTopics.length) {
-      let uniqueFields = new Set()
+      let theseUniqueFields = new Set()
       workTopics.forEach((topic) => {
         // Handling the unique domains of THIS work
-        uniqueFields.add(topic.field.display_name)
+        theseUniqueFields.add(topic.field.display_name)
 
         // Handling the unique domains of ALL the works
-        uniqueConcepts.add(topic.field.display_name)
-        conceptIRIs[topic.domain.display_name] = topic.id
+        uniqueFields.add(topic.field.display_name)
+        fieldIRIs[topic.domain.display_name] = topic.id
       })
-      return [...uniqueFields].map((domain) => ({ type: "concept", id: domain }))
+      return [...theseUniqueFields].map((domain) => ({ type: "field", id: domain }))
     } else {
-      return getFirstConcept(work.topics)
+      return getFirstField(work.topics)
     }
   }
 
@@ -186,12 +128,12 @@ export async function mapOpenAlexWorks(searchResults) {
     }
   }
 
-  // Concept data
-  function createGraphConcepts(uniqueConceptSet) {
-    return [...uniqueConceptSet].sort().map((concept) => {
+  // Field data
+  function createGraphFields(uniqueFieldsSet) {
+    return [...uniqueFieldsSet].sort().map((field) => {
       return {
-        name: concept,
-        url: conceptIRIs[concept]
+        name: field,
+        url: fieldIRIs[field]
       }
     })
   }
@@ -236,10 +178,10 @@ export async function mapOpenAlexWorks(searchResults) {
     const authors = getAuthors(result)
     // SDGs
     const sdgs = getSdgs(result)
-    // Concepts
-    const concepts = getConcepts(result)
+    // Fields
+    const fields = getFields(result)
     // Links
-    const links = [...(sdgs || []), ...(concepts || [])]
+    const links = [...(sdgs || []), ...(fields || [])]
     // Related works
     const relatedWorks = getRelatedWorks(result)
 
@@ -262,12 +204,12 @@ export async function mapOpenAlexWorks(searchResults) {
 
   // SDG data for the home graph
   const homeMapSDGs = createGraphSDGs(uniqueSdgs)
-  // Concept data for the home graph
-  const homeMapConcepts = createGraphConcepts(uniqueConcepts)
+  // Field data for the home graph
+  const homeMapFields = createGraphFields(uniqueFields)
 
   return {
     sdgs: homeMapSDGs,
-    concepts: homeMapConcepts,
+    fields: homeMapFields,
     works: homeMapWorks
   }
 }

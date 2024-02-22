@@ -15,7 +15,7 @@ export async function createDetailsMapGraph(inputObj) {
     } else if (rootType === "sdgs") {
       children = getSdgChildren(rootData.id)
     } else {
-      children = getConceptChildren(rootData.name)
+      children = getFieldChildren(rootData.name)
     }
     rootChildren.value = children
 
@@ -36,8 +36,8 @@ export async function createDetailsMapGraph(inputObj) {
           const sdg = graph.homeMapGraph.sdgs.find((sdg) => sdg.id.toString() === link.id)
           return { type: "sdg", data: sdg }
         } else {
-          const concept = graph.homeMapGraph.concepts.find((concept) => concept.name === link.id)
-          return { type: "concept", data: concept }
+          const field = graph.homeMapGraph.fields.find((field) => field.name === link.id)
+          return { type: "field", data: field }
         }
       })
     return JSON.stringify(children)
@@ -50,8 +50,8 @@ export async function createDetailsMapGraph(inputObj) {
     return JSON.stringify(children)
   }
 
-  function getConceptChildren(conceptName) {
-    const children = graph.conceptWorkNodes[conceptName].works
+  function getFieldChildren(fieldName) {
+    const children = graph.fieldWorkNodes[fieldName].works
       .filter((work) => work !== rootData.id) // filter out the parent work)
       .map((work) => graph.homeMapGraph.works[work]) // map the remaining works to their nodes
     return JSON.stringify(children)
@@ -60,16 +60,16 @@ export async function createDetailsMapGraph(inputObj) {
   function addSecondChildren() {
     const therootChildren = JSON.parse(rootChildren.value)
     if (rootType === "works") {
-      // First children are SDGs/concepts, each has works children
+      // First children are SDGs/fields, each has works children
       therootChildren.forEach((child) => {
         if (child.type === "sdg") {
           child.data.children = JSON.parse(getSdgChildren(child.data.id))
         } else {
-          child.data.children = JSON.parse(getConceptChildren(child.data.name))
+          child.data.children = JSON.parse(getFieldChildren(child.data.name))
         }
       })
     } else {
-      // First children are works, each has SDGs/concepts (in links!!)
+      // First children are works, each has SDGs/fields (in links!!)
       therootChildren.forEach((child) => {
         child.children = JSON.parse(getArticleChildren(child.links))
       })

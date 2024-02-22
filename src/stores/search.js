@@ -5,7 +5,7 @@ import { useGraphStore } from "../stores/graph.js"
 import { useRouter, useRoute } from "vue-router"
 import { mapOpenAlexWorks } from "../utils/mapOpenAlexWorks.js"
 import { createSdgWorkNodes } from "../utils/createSdgWorkNodes.js"
-import { createConceptWorkNodes } from "../utils/createConceptWorkNodes.js"
+import { createFieldWorkNodes } from "../utils/createFieldWorkNodes.js"
 import { noSearchResults } from "../utils/messages.js"
 import testDataMobile from "../data/testDataMobile.json"
 import testDataDesktop from "../data/testDataDesktop.json"
@@ -114,10 +114,10 @@ export const useSearchStore = defineStore("search", () => {
         graph.setSdgWorkNodes(sdgWorkNodes)
         console.log("SDG-work nodes", graph.sdgWorkNodes)
 
-        // Create concept-work nodes
-        const conceptWorkNodes = await createConceptWorkNodes(graph.homeMapGraph)
-        graph.setConceptWorkNodes(conceptWorkNodes)
-        console.log("Concept-work nodes", graph.conceptWorkNodes)
+        // Create field-work nodes
+        const fieldWorkNodes = await createFieldWorkNodes(graph.homeMapGraph)
+        graph.setFieldWorkNodes(fieldWorkNodes)
+        console.log("Field-work nodes", graph.fieldWorkNodes)
 
         if (route.name !== "map") {
           // Change route if not already on /map

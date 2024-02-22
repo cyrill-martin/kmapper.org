@@ -69,7 +69,7 @@ function createStaticMapElements() {
 function drawDynamicMap() {
   setYScaleWorks(drawWorks)
   drawSdgWorkLines(drawSDGs)
-  drawConceptWorkLines(drawConcepts)
+  drawFieldWorkLines(drawFields)
   addClickEvents()
 }
 
@@ -112,13 +112,13 @@ function initiateSvg() {
 
 // xScale ////////////////////////////////////////////////////////////
 // There will always be three bands across the map width...
-// SDGs, works, and concepts
+// SDGs, works, and fields
 const xScale = ref(null)
 
 function setXScale() {
   xScale.value = d3
     .scaleBand()
-    .domain(["sdgs", "works", "concepts"])
+    .domain(["sdgs", "works", "fields"])
     .align(0.5)
     .range([0, screenSize.width - screenSize.ctrMarginH * 2])
 }
@@ -191,8 +191,8 @@ function getFontSize(element) {
   } else if (element === "sdg-id") {
     return screenSize.isMobile ? `${baseSize * 0.75}px` : `${baseSize}px`
   } else if (element === "sdg-label") {
-    return screenSize.isMobile ? `${baseSize * 0.5}px` : `${baseSize * 0.75}px`
-  } else if (element === "concept") {
+    return screenSize.isMobile ? `${baseSize * 0.65}px` : `${baseSize * 0.8}px`
+  } else if (element === "field") {
     return screenSize.isMobile ? `${baseSize * 0.75}px` : `${baseSize}px`
   }
 }
@@ -202,7 +202,7 @@ const sizes = computed(() => {
     workTitle: getFontSize("work-title").replace("px", ""),
     sdgId: getFontSize("sdg-id").replace("px", ""),
     sdgLabel: getFontSize("sdg-label").replace("px", ""),
-    concept: getFontSize("concept").replace("px", ""),
+    field: getFontSize("field").replace("px", ""),
     worksBandwidth: yScaleWorks.value.bandwidth(),
     worksRange: getYScaleWorksRange()
   }
@@ -218,15 +218,15 @@ const easeAnimation = d3.easeElasticOut.amplitude(1.0).period(0.4)
 //////////////////////////////////////////////////////////////////////
 const sdgsGroup = ref(null)
 const worksGroup = ref(null)
-const conceptsGroup = ref(null)
+const fieldsGroup = ref(null)
 const sdgPathsGroup = ref(null)
-const conceptPathsGroup = ref(null)
+const fieldPathsGroup = ref(null)
 
 // Add the needed map groups
 function addMapGroups() {
   addSDGsGroup(xScale.value, addSdgPathsGroup)
   addWorksGroup(xScale.value)
-  addConceptsGroup(xScale.value, addConceptPathsGroup)
+  addFieldsGroup(xScale.value, addFieldPathsGroup)
 }
 
 function addSDGsGroup(xScaleFunction, callback) {
@@ -247,22 +247,22 @@ function addWorksGroup(xScaleFunction) {
     .attr("transform", `translate(${xScaleFunction("works")}, 0)`)
 }
 
-function addConceptsGroup(xScaleFunction, callback) {
-  // Adding the concepts group
-  conceptsGroup.value = ctr.value
+function addFieldsGroup(xScaleFunction, callback) {
+  // Adding the fields group
+  fieldsGroup.value = ctr.value
     .append("g")
-    .attr("class", "concepts-group")
-    .attr("transform", `translate(${xScaleFunction("concepts")}, 0)`)
+    .attr("class", "fields-group")
+    .attr("transform", `translate(${xScaleFunction("fields")}, 0)`)
 
-  callback() // callback is addConceptPathsGroup()
+  callback() // callback is addFieldPathsGroup()
 }
 
 function addSdgPathsGroup() {
   sdgPathsGroup.value = sdgsGroup.value.append("g").attr("class", "sdg-paths-group")
 }
 
-function addConceptPathsGroup() {
-  conceptPathsGroup.value = conceptsGroup.value.append("g").attr("class", "concept-paths-group")
+function addFieldPathsGroup() {
+  fieldPathsGroup.value = fieldsGroup.value.append("g").attr("class", "field-paths-group")
 }
 
 // Draw works ////////////////////////////////////////////////////////
@@ -274,7 +274,7 @@ const workTranslationX = computed(() => {
 
 function addElementClasses(links) {
   return links.map((link) => {
-    return link.type === "sdg" ? `sdg-${link.id}` : `concept-${dataName(link.id)}`
+    return link.type === "sdg" ? `sdg-${link.id}` : `field-${dataName(link.id)}`
   })
 }
 
@@ -402,14 +402,14 @@ function addWorkMouseEvents() {
       .attr("fill", elementColor(event.type))
       .attr("font-weight", fontWeight(event.type))
 
-    // Highlighting and setting back concepts
-    d3.selectAll(`.concept.work-element-${workId} .concept-name`)
+    // Highlighting and setting back fields
+    d3.selectAll(`.field.work-element-${workId} .field-name`)
       .attr("fill", elementColor(event.type))
       .attr("font-weight", fontWeight(event.type))
   })
 }
 
-// Calculate the circular values to place SDG and concept elements
+// Calculate the circular values to place SDG and field elements
 //////////////////////////////////////////////////////////////////////
 // You might want to look up the Pythagorean theorem to follow!!
 
@@ -452,18 +452,18 @@ const sdgDegrees = computed(() => {
   return degrees
 })
 
-// The starting angle of the concept elements (on a regular cartesian coordinate system)
-const conceptStart = computed(() => {
-  return graph.homeMapGraph.concepts.length > 1 ? alpha.value : 0
+// The starting angle of the field elements (on a regular cartesian coordinate system)
+const fieldStart = computed(() => {
+  return graph.homeMapGraph.fields.length > 1 ? alpha.value : 0
 })
 
-// Gaps between concept elements (in degrees)
-const conceptDegrees = computed(() => {
+// Gaps between field elements (in degrees)
+const fieldDegrees = computed(() => {
   let degrees = null
-  if (graph.homeMapGraph.concepts) {
+  if (graph.homeMapGraph.fields) {
     degrees =
-      graph.homeMapGraph.concepts.length > 1
-        ? (alpha.value * 2) / (graph.homeMapGraph.concepts.length - 1)
+      graph.homeMapGraph.fields.length > 1
+        ? (alpha.value * 2) / (graph.homeMapGraph.fields.length - 1)
         : 1
   }
   return degrees
@@ -521,7 +521,7 @@ function getCircularY(startDegree, radius, angle, i) {
     : totalHeight.value * 0.5 + circularY
 }
 
-// Draw lines between SDGs/concepts and works ////////////////////////
+// Draw lines between SDGs/fields and works ////////////////////////
 //////////////////////////////////////////////////////////////////////
 
 // Function to draw the actual curved line along the given coordinates
@@ -802,25 +802,25 @@ function addSdgMouseEvents() {
   })
 }
 
-// Draw concept-work lines ///////////////////////////////////////////
+// Draw field-work lines ///////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////
-function createConceptLinesData() {
+function createFieldLinesData() {
   const lineData = []
 
-  graph.homeMapGraph.concepts.forEach((concept, i) => {
+  graph.homeMapGraph.fields.forEach((field, i) => {
     // The starting coordinates
-    const x0 = getCircularX("concept", conceptStart.value, radius.value, -conceptDegrees.value, i)
-    const y0 = getCircularY(conceptStart.value, radius.value, -conceptDegrees.value, i)
+    const x0 = getCircularX("field", fieldStart.value, radius.value, -fieldDegrees.value, i)
+    const y0 = getCircularY(fieldStart.value, radius.value, -fieldDegrees.value, i)
 
     // The first control point coordinates
     const x1 = getCircularX(
-      "concept",
-      conceptStart.value,
+      "field",
+      fieldStart.value,
       controlPointRadius.value,
-      -conceptDegrees.value,
+      -fieldDegrees.value,
       i
     )
-    const y1 = getCircularY(conceptStart.value, controlPointRadius.value, -conceptDegrees.value, i)
+    const y1 = getCircularY(fieldStart.value, controlPointRadius.value, -fieldDegrees.value, i)
 
     // The second control point x coordinate
     const x2 = screenSize.isMobile ? xScale.value.bandwidth() * 0.85 : 0
@@ -828,9 +828,9 @@ function createConceptLinesData() {
     // The ending x coordinate
     const x3 = screenSize.isMobile ? xScale.value.bandwidth() * elementDistanceFraction.value : 0
 
-    graph.conceptWorkNodes[concept.name].works.forEach((work) => {
+    graph.fieldWorkNodes[field.name].works.forEach((work) => {
       const coordObj = {
-        id: concept.name,
+        id: field.name,
         work: work,
         coordinates: [
           { x: x0, y: y0 }, // Starting point
@@ -853,19 +853,19 @@ function createConceptLinesData() {
   return lineData
 }
 
-function drawConceptWorkLines(callback) {
-  if (graph.homeMapGraph.concepts) {
-    const conceptWorkLinesData = createConceptLinesData()
+function drawFieldWorkLines(callback) {
+  if (graph.homeMapGraph.fields) {
+    const fieldWorkLinesData = createFieldLinesData()
 
-    conceptPathsGroup.value
-      .selectAll(".concept-line")
-      .data(conceptWorkLinesData)
+    fieldPathsGroup.value
+      .selectAll(".field-line")
+      .data(fieldWorkLinesData)
       .join(
         (enter) =>
           enter
             .append("path")
             .attr("class", (d) =>
-              ["concept-line", `concept-${dataName(d.id)}`, `work-line-${d.work}`].join(" ")
+              ["field-line", `field-${dataName(d.id)}`, `work-line-${d.work}`].join(" ")
             )
             .attr("d", (d) => drawQuadraticCurve(d.coordinates))
             .attr("stroke", "white")
@@ -875,45 +875,45 @@ function drawConceptWorkLines(callback) {
         (exit) => exit
       )
 
-    conceptsGroup.value
-      .selectAll(".concept-line")
+      fieldsGroup.value
+      .selectAll(".field-line")
       .transition()
       .duration(transitionDuration * 1.5)
       .attr("stroke", "lightgrey")
 
-    callback(graph.homeMapGraph.concepts, addConceptMouseEvents) // callback is drawConcepts()
+    callback(graph.homeMapGraph.fields, addFieldMouseEvents) // callback is drawFields()
   }
 }
 
-// Draw Concepts /////////////////////////////////////////////////////
+// Draw Fields /////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////
-function addConceptWorkClasses(concept) {
-  return graph.conceptWorkNodes[concept].works.map((work) => `work-element-${work}`)
+function addFieldWorkClasses(field) {
+  return graph.fieldWorkNodes[field].works.map((work) => `work-element-${work}`)
 }
 
 function dataName(name) {
   return name.replace(/[()"\s]/g, "")
 }
 
-function drawConcepts(data, callback) {
-  conceptsGroup.value
-    .selectAll(".concept")
+function drawFields(data, callback) {
+  fieldsGroup.value
+    .selectAll(".field")
     .data(data)
     .join(
       (enter) =>
         enter
           .append("g")
           .attr("class", (d) =>
-            ["concept", `concept-${dataName(d.name)}`, ...addConceptWorkClasses(d.name)].join(" ")
+            ["field", `field-${dataName(d.name)}`, ...addFieldWorkClasses(d.name)].join(" ")
           )
           .attr("data-name", (d) => dataName(d.name))
-          .attr("data-type", "concepts")
+          .attr("data-type", "fields")
           .attr("data-index", (_, i) => i)
           .attr(
             "transform",
             (_, i) =>
               `translate(${getCircularX(
-                "concept",
+                "field",
                 0,
                 screenSize.isMobile
                   ? screenSize.width * mobileAdjecentFactor
@@ -934,22 +934,22 @@ function drawConcepts(data, callback) {
             // Add circles
             d3.select(this)
               .append("circle")
-              .attr("class", "concept-circle")
+              .attr("class", "field-circle")
               .attr("data-name", (d) => dataName(d.name))
               .attr("r", circleElementRadius.value)
               .attr("stroke", theBlack)
               .attr("fill", theBlack)
-            // Add concept
+            // Add field
             d3.select(this)
               .append("text")
-              .attr("class", "concept-name")
+              .attr("class", "field-name")
               .attr("data-name", (d) => dataName(d.name))
               .text((d) => d.name)
               .attr("x", () => {
                 return screenSize.isMobile ? -textElementXOffset.value : textElementXOffset.value
               })
               .attr("y", 0)
-              .style("font-size", getFontSize("concept"))
+              .style("font-size", getFontSize("field"))
               .attr("fill", theBlack)
               .attr("dominant-baseline", "middle")
               .attr("text-anchor", () => {
@@ -960,9 +960,9 @@ function drawConcepts(data, callback) {
       (exit) => exit
     )
 
-  // Positioning the concept <g> elements, incl. animation
-  conceptsGroup.value
-    .selectAll("g.concept")
+  // Positioning the field <g> elements, incl. animation
+    fieldsGroup.value
+    .selectAll("g.field")
     .transition()
     .duration(transitionDuration)
     .ease(easeAnimation)
@@ -970,40 +970,40 @@ function drawConcepts(data, callback) {
       "transform",
       (_, i) =>
         `translate(${getCircularX(
-          "concept",
-          conceptStart.value,
+          "field",
+          fieldStart.value,
           radius.value,
-          -conceptDegrees.value,
+          -fieldDegrees.value,
           i
-        )}, ${getCircularY(conceptStart.value, radius.value, -conceptDegrees.value, i)})`
+        )}, ${getCircularY(fieldStart.value, radius.value, -fieldDegrees.value, i)})`
     )
 
-  callback() // callback is addConceptMouseEvents()
+  callback() // callback is addFieldMouseEvents()
 }
 
-function addConceptMouseEvents() {
-  conceptsGroup.value.selectAll(".concept").on("mouseover mouseout", function (event) {
-    // Get the current concept
-    const conceptName = d3.select(this).attr("data-name")
+function addFieldMouseEvents() {
+  fieldsGroup.value.selectAll(".field").on("mouseover mouseout", function (event) {
+    // Get the current field
+    const fieldName = d3.select(this).attr("data-name")
 
-    // Highlighting and setting back the concept
+    // Highlighting and setting back the field
     d3.select(this)
-      .select(".concept-circle")
+      .select(".field-circle")
       .attr("stroke", elementColor(event.type))
       .attr("fill", elementColor(event.type))
 
     d3.select(this)
-      .select(".concept-name")
+      .select(".field-name")
       .attr("fill", elementColor(event.type))
       .attr("font-weight", fontWeight(event.type))
 
     // Highlighting and setting back the work lines
-    d3.selectAll(`.concept-line.concept-${conceptName}`)
+    d3.selectAll(`.field-line.field-${fieldName}`)
       .attr("stroke", lineColor(event.type))
       .attr("stroke-width", lineWidth(event.type))
 
     // Highlighting and setting back the works
-    d3.selectAll(`.work-rect.concept-${conceptName}`)
+    d3.selectAll(`.work-rect.field-${fieldName}`)
       .attr("stroke", elementColor(event.type))
       .attr("fill", elementColor(event.type))
   })
@@ -1020,7 +1020,7 @@ function showDetailsMap(obj) {
 }
 
 function addClickEvents() {
-  ctr.value.selectAll(".work-overlay,.sdg,.concept").on("click", function () {
+  ctr.value.selectAll(".work-overlay,.sdg,.field").on("click", function () {
     const type = d3.select(this).attr("data-type")
     const index = d3.select(this).attr("data-index")
     const root = graph.homeMapGraph[type][index]

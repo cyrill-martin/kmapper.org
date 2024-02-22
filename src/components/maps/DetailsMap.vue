@@ -203,7 +203,7 @@ function drawTitle() {
   } else if (graph.detailsMapGraph.type === "sdgs") {
     drawSdgTitle()
   } else {
-    drawConceptTitle()
+    drawFieldTitle()
   }
 }
 
@@ -310,36 +310,30 @@ function drawSdgTitle() {
     .attr("transform", "translate(0,0)")
 }
 
-function drawConceptTitle() {
+function drawFieldTitle() {
   const theTitleGroup = titleGroup.value
     .append("g")
     .attr("class", "title-group")
     .attr("transform", `translate(0,-${props.sizes.worksBandwidth * 4})`)
 
-  // const conceptLink = theTitleGroup
-  //   .append("a")
-  //   .attr("xlink:href", graph.detailsMapGraph.data.url)
-  //   .attr("target", "_blank")
-
-  // const conceptGroup = conceptLink
-  const conceptGroup = theTitleGroup
+  const fieldGroup = theTitleGroup
     .append("g")
     .attr("transform", `translate(${props.sizes.worksBandwidth}, ${props.sizes.worksBandwidth})`)
 
-  conceptGroup
+  fieldGroup
     .append("circle")
-    .attr("class", "concept-title-circle")
+    .attr("class", "field-title-circle")
     .attr("r", circleRadius)
     .attr("stroke", theBlack)
     .attr("fill", theBlack)
 
-  conceptGroup
+  fieldGroup
     .append("text")
-    .attr("class", "concept-title-name")
+    .attr("class", "field-title-name")
     .text(graph.detailsMapGraph.data.name)
     .attr("x", textElementXOffset)
     .attr("y", 0)
-    .style("font-size", `${props.sizes.concept}px`)
+    .style("font-size", `${props.sizes.field}px`)
     .attr("dominant-baseline", "middle")
     .attr("text-anchor", "start")
 
@@ -449,15 +443,15 @@ function drawElementsInFirstGroup(data, callback1, callback2) {
               .style("font-size", props.sizes.sdgLabel)
               .attr("text-anchor", "start")
           } else {
-            // Add concept
-            const conceptLabelGroup = d3
+            // Add field
+            const fieldLabelGroup = d3
               .select(this)
               .append("g")
               .attr("class", ["group-element", `element-${i}`].join(" "))
               .attr("data-index", i)
               .attr("cursor", "pointer")
 
-            conceptLabelGroup
+            fieldLabelGroup
               .append("circle")
               .attr("class", "group-element-circle")
               .attr("data-id", (d) => d.id)
@@ -467,13 +461,13 @@ function drawElementsInFirstGroup(data, callback1, callback2) {
               .attr("stroke", theBlack)
               .attr("fill", theBlack)
 
-            conceptLabelGroup
+            fieldLabelGroup
               .append("text")
-              .attr("class", "concept-group-name")
+              .attr("class", "field-group-name")
               .attr("x", textElementXOffset * 1.5)
               .attr("y", 0)
               .text((d) => d.data.name)
-              .style("font-size", `${props.sizes.concept}px`)
+              .style("font-size", `${props.sizes.field}px`)
               .attr("dominant-baseline", () =>
                 d.data.children.length ? "text-after-edge" : "middle"
               )
@@ -504,7 +498,7 @@ function drawElementsInFirstGroup(data, callback1, callback2) {
               .append("text")
               .text((d) => d.data.children.length)
               .attr("fill", "white")
-              .style("font-size", `${props.sizes.concept}px`)
+              .style("font-size", `${props.sizes.field}px`)
               .attr("dominant-baseline", "middle")
               .attr("text-anchor", "middle")
           }
@@ -569,8 +563,8 @@ function addElementMouseEvents() {
     d3.selectAll(`.element-${index} .sdg-group-id`)
       .attr("fill", elementColor(event.type))
       .attr("font-weight", fontWeight(event.type))
-    // // Highlighting and setting back concepts
-    d3.selectAll(`.element-${index} .concept-group-name`)
+    // // Highlighting and setting back fields
+    d3.selectAll(`.element-${index} .field-group-name`)
       .attr("fill", elementColor(event.type))
       .attr("font-weight", fontWeight(event.type))
   })
@@ -829,8 +823,8 @@ function addShownWorksMouseEvents(callback) {
     d3.selectAll(`.element-${elementIndex} .sdg-group-id`)
       .attr("fill", elementColor(event.type))
       .attr("font-weight", fontWeight(event.type))
-    // // Highlighting and setting back concepts
-    d3.selectAll(`.element-${elementIndex} .concept-group-name`)
+    // // Highlighting and setting back fields
+    d3.selectAll(`.element-${elementIndex} .field-group-name`)
       .attr("fill", elementColor(event.type))
       .attr("font-weight", fontWeight(event.type))
   })
@@ -949,7 +943,7 @@ function drawWorksInFirstGroup(data, callback1, callback2) {
               .append("text")
               .text((d) => d.children.length)
               .attr("fill", "white")
-              .style("font-size", `${props.sizes.concept}px`)
+              .style("font-size", `${props.sizes.field}px`)
               .attr("dominant-baseline", "middle")
               .attr("text-anchor", "middle")
           }
@@ -1024,7 +1018,7 @@ function addWorkMouseEvents() {
         .attr("stroke", elementColor(event.type))
         .attr("fill", elementColor(event.type))
 
-      d3.selectAll(".shown-sdg-group-id, .shown-concept-group-name")
+      d3.selectAll(".shown-sdg-group-id, .shown-field-group-name")
         .attr("fill", elementColor(event.type))
         .attr("font-weight", fontWeight(event.type))
     }
@@ -1042,7 +1036,7 @@ function addWorkMouseEvents() {
 }
 
 function drawElementsInSecondGroup(callback1, callback2) {
-  // No update function for shown elements. The SDG groups and the concept groups differ too much
+  // No update function for shown elements. The SDG groups and the field groups differ too much
   d3.selectAll(".shown-element").remove()
 
   const shownElementsSelection = secondGroup.value
@@ -1125,15 +1119,15 @@ function drawElementsInSecondGroup(callback1, callback2) {
           return screenSize.isMobile ? "end" : "start"
         })
     } else {
-      // Add concept
-      const conceptLabelGroup = d3
+      // Add field
+      const fieldLabelGroup = d3
         .select(this)
         .append("g")
-        .attr("class", ["group-element", "shown-concept-element", `element-${i}`].join(" "))
+        .attr("class", ["group-element", "shown-field-element", `element-${i}`].join(" "))
         .attr("data-index", i)
         .attr("cursor", "pointer")
 
-      conceptLabelGroup
+      fieldLabelGroup
         .append("circle")
         .attr("class", "shown-element-circle")
         .attr("data-id", (d) => d.id)
@@ -1141,15 +1135,15 @@ function drawElementsInSecondGroup(callback1, callback2) {
         .attr("stroke", theBlack)
         .attr("fill", theBlack)
 
-      conceptLabelGroup
+      fieldLabelGroup
         .append("text")
-        .attr("class", "shown-concept-group-name")
+        .attr("class", "shown-field-group-name")
         .text((d) => d.data.name)
         .attr("x", () => {
           return screenSize.isMobile ? -textElementXOffset : textElementXOffset
         })
         .attr("y", 0)
-        .style("font-size", `${props.sizes.concept}px`)
+        .style("font-size", `${props.sizes.field}px`)
         .attr("dominant-baseline", "middle")
         .attr("text-anchor", () => {
           return screenSize.isMobile ? "end" : "start"
@@ -1254,7 +1248,7 @@ function addShownElementsMouseEvents(callback) {
 
     // Highlighting and setting back shown element labels
     d3.select(this)
-      .select(".shown-sdg-group-id, .shown-concept-group-name")
+      .select(".shown-sdg-group-id, .shown-field-group-name")
       .attr("fill", elementColor(event.type))
       .attr("font-weight", fontWeight(event.type))
 

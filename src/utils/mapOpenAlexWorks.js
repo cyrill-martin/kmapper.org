@@ -81,7 +81,7 @@ export async function mapOpenAlexWorks(searchResults) {
       : null
   }
 
-  // // Concepts
+  // Concepts
   // function getFirstConcept(concepts) {
   //   const firstConcept = concepts[0]
 
@@ -106,7 +106,7 @@ export async function mapOpenAlexWorks(searchResults) {
   //     : getFirstConcept(work.concepts)
   // }
 
-  // // domains
+  // Domains
   // function getFirstConcept(topics) {
   //   const firstTopic = topics[0]
 
@@ -138,7 +138,7 @@ export async function mapOpenAlexWorks(searchResults) {
   //   }
   // }
 
-  // fields
+  // Fields
   function getFirstConcept(topics) {
     const firstTopic = topics[0]
 

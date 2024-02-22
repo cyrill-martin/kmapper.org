@@ -875,7 +875,7 @@ function drawFieldWorkLines(callback) {
         (exit) => exit
       )
 
-      fieldsGroup.value
+    fieldsGroup.value
       .selectAll(".field-line")
       .transition()
       .duration(transitionDuration * 1.5)
@@ -961,7 +961,7 @@ function drawFields(data, callback) {
     )
 
   // Positioning the field <g> elements, incl. animation
-    fieldsGroup.value
+  fieldsGroup.value
     .selectAll("g.field")
     .transition()
     .duration(transitionDuration)

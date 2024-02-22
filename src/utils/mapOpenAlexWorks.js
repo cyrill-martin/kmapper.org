@@ -106,15 +106,47 @@ export async function mapOpenAlexWorks(searchResults) {
   //     : getFirstConcept(work.concepts)
   // }
 
-  // domains
+  // // domains
+  // function getFirstConcept(topics) {
+  //   const firstTopic = topics[0]
+
+  //   return firstTopic
+  //     ? (() => {
+  //         uniqueConcepts.add(firstTopic.domain.display_name)
+  //         conceptIRIs[firstTopic.domain.display_name] = firstTopic.id
+  //         return [{ type: "concept", id: firstTopic.domain.display_name }]
+  //       })()
+  //     : null
+  // }
+
+  // function getConcepts(work) {
+  //   const workTopics = work.topics.filter((topic) => topic.score > thresholds.concept)
+
+  //   if (workTopics.length) {
+  //     let uniqueDomains = new Set()
+  //     workTopics.forEach((topic) => {
+  //       // Handling the unique domains of THIS work
+  //       uniqueDomains.add(topic.domain.display_name)
+
+  //       // Handling the unique domains of ALL the works
+  //       uniqueConcepts.add(topic.domain.display_name)
+  //       conceptIRIs[topic.domain.display_name] = topic.id
+  //     })
+  //     return [...uniqueDomains].map((domain) => ({ type: "concept", id: domain }))
+  //   } else {
+  //     return getFirstConcept(work.topics)
+  //   }
+  // }
+
+  // fields
   function getFirstConcept(topics) {
     const firstTopic = topics[0]
 
     return firstTopic
       ? (() => {
-          uniqueConcepts.add(firstTopic.domain.display_name)
-          conceptIRIs[firstTopic.domain.display_name] = firstTopic.id
-          return [{ type: "concept", id: firstTopic.domain.display_name }]
+          uniqueConcepts.add(firstTopic.field.display_name)
+          conceptIRIs[firstTopic.field.display_name] = firstTopic.id
+          return [{ type: "concept", id: firstTopic.field.display_name }]
         })()
       : null
   }
@@ -123,27 +155,19 @@ export async function mapOpenAlexWorks(searchResults) {
     const workTopics = work.topics.filter((topic) => topic.score > thresholds.concept)
 
     if (workTopics.length) {
-      let uniqueDomains = new Set()
+      let uniqueFields = new Set()
       workTopics.forEach((topic) => {
         // Handling the unique domains of THIS work
-        uniqueDomains.add(topic.domain.display_name)
+        uniqueFields.add(topic.field.display_name)
 
         // Handling the unique domains of ALL the works
-        uniqueConcepts.add(topic.domain.display_name)
+        uniqueConcepts.add(topic.field.display_name)
         conceptIRIs[topic.domain.display_name] = topic.id
       })
-      return [...uniqueDomains].map((domain) => ({ type: "concept", id: domain }))
+      return [...uniqueFields].map((domain) => ({ type: "concept", id: domain }))
     } else {
       return getFirstConcept(work.topics)
     }
-
-    // return workTopics.length
-    //   ? workTopics.map((topic) => {
-    //       uniqueConcepts.add(topic.domain.display_name)
-    //       conceptIRIs[topic.domain.display_name] = topic.id
-    //       return { type: "concept", id: topic.domain.display_name }
-    //     })
-    //   : getFirstConcept(work.topics)
   }
 
   // SDG data
@@ -180,7 +204,13 @@ export async function mapOpenAlexWorks(searchResults) {
   ////////////////////////////////////////////////////////////
   // MAPPING /////////////////////////////////////////////////
   ////////////////////////////////////////////////////////////
-  const homeMapWorks = searchResults.results.map((result, index) => {
+
+  // Filter out articles without a title and retracted articles
+  const filteredResults = searchResults.results
+    .filter((result) => result.title !== null)
+    .filter((result) => result.is_retracted === false)
+
+  const homeMapWorks = filteredResults.map((result, index) => {
     // openAlexId
     const openAlexId = getOpenAlexId(result)
     // DOI

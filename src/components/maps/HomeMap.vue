@@ -892,7 +892,7 @@ function addFieldWorkClasses(field) {
 }
 
 function dataName(name) {
-  return name.replace(/[()"\s]/g, "")
+  return name.replace(/[()"\s,]/g, "")
 }
 
 function drawFields(data, callback) {

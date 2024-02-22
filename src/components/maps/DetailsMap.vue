@@ -175,21 +175,18 @@ function getSecondGroupTranslation() {
 function addTitleGroup() {
   titleGroup.value = ctr.value
     .append("g")
-    .attr("class", "details-title-group")
     .attr("transform", `translate(0, 0)`)
 }
 
 function addFirstGroup() {
   firstGroup.value = ctr.value
     .append("g")
-    .attr("class", "details-first-group")
     .attr("transform", `translate(0, ${titleGroupHeight})`)
 }
 
 function addSecondGroup() {
   secondGroup.value = ctr.value
     .append("g")
-    .attr("class", "details-second-group")
     .attr("transform", getSecondGroupTranslation())
 }
 
@@ -267,14 +264,12 @@ function drawSdgTitle() {
 
   sdgGroup
     .append("circle")
-    .attr("class", "sdg-title-circle")
     .attr("r", circleRadius)
     .attr("stroke", theBlack)
     .attr("fill", theBlack)
 
   sdgGroup
     .append("text")
-    .attr("class", "sdg-title-id")
     .text(`SDG ${graph.detailsMapGraph.data.id}`)
     .attr("x", textElementXOffset)
     .attr("y", 0)
@@ -320,14 +315,12 @@ function drawFieldTitle() {
 
   fieldGroup
     .append("circle")
-    .attr("class", "field-title-circle")
     .attr("r", circleRadius)
     .attr("stroke", theBlack)
     .attr("fill", theBlack)
 
   fieldGroup
     .append("text")
-    .attr("class", "field-title-name")
     .text(graph.detailsMapGraph.data.name)
     .attr("x", textElementXOffset)
     .attr("y", 0)
@@ -404,7 +397,6 @@ function drawElementsInFirstGroup(data, callback1, callback2) {
 
             sdgLabelGroup
               .append("circle")
-              .attr("class", "group-element-circle")
               .attr("data-id", (d) => d.id)
               .attr("cx", circleRadius * 1.1)
               .attr("cy", 0)
@@ -451,7 +443,6 @@ function drawElementsInFirstGroup(data, callback1, callback2) {
 
             fieldLabelGroup
               .append("circle")
-              .attr("class", "group-element-circle")
               .attr("data-id", (d) => d.id)
               .attr("cx", circleRadius * 1.1)
               .attr("cy", 0)
@@ -641,7 +632,6 @@ function drawWorksInSecondGroup(callback1, callback2) {
   enterShownWorks
     .append("text")
     .attr("class", "shown-work-title")
-    // .attr("data-id", (d) => d.id)
     .text((d) => d.title)
 
   // Adding an overlay rectangle in order to handle mouse events
@@ -963,10 +953,6 @@ function drawWorksInFirstGroup(data, callback1, callback2) {
   // Handling the overlay rect element for handling mouse events as well
   firstGroup.value
     .selectAll(".first-group-work-overlay")
-    // .attr("class", (d) => ["work-overlay", ...addElementClasses(d.links)].join(" "))
-    // .attr("data-id", (d) => d.id)
-    // .attr("data-type", "works")
-    // .attr("data-index", (_, i) => i)
     .attr("fill-opacity", 0)
     .attr("cursor", "pointer")
 
@@ -1061,7 +1047,7 @@ function drawElementsInSecondGroup(callback1, callback2) {
       const sdgLabelGroup = d3
         .select(this)
         .append("g")
-        .attr("class", ["group-element", "shown-sdg-element", `element-${i}`].join(" "))
+        .attr("class", ["group-element", `element-${i}`].join(" "))
         .attr("data-index", i)
         .attr("cursor", "pointer")
 
@@ -1090,7 +1076,6 @@ function drawElementsInSecondGroup(callback1, callback2) {
       // Add rectangle for SDG label
       sdgLabelGroup
         .append("rect")
-        .attr("class", "shown-sdg-group-color")
         .attr(
           "x",
           screenSize.isMobile ? -(sdg.labelBbox.width + textElementXOffset) : textElementXOffset
@@ -1103,7 +1088,6 @@ function drawElementsInSecondGroup(callback1, callback2) {
       // Add SDG label
       sdgLabelGroup
         .append("text")
-        .attr("class", "shown-sdg-group-label")
         .text((d) => d.data.name)
         .attr("x", () => {
           return screenSize.isMobile ? -textElementXOffset : textElementXOffset
@@ -1119,7 +1103,7 @@ function drawElementsInSecondGroup(callback1, callback2) {
       const fieldLabelGroup = d3
         .select(this)
         .append("g")
-        .attr("class", ["group-element", "shown-field-element", `element-${i}`].join(" "))
+        .attr("class", ["group-element", `element-${i}`].join(" "))
         .attr("data-index", i)
         .attr("cursor", "pointer")
 

@@ -18,7 +18,6 @@ onMounted(() => {
   // Create the static, screen-dependent map elements
   createStaticMapElements()
   drawDynamicMap()
-  console.log("Sizes", props.sizes)
   console.log("detailsMapGraph", graph.detailsMapGraph)
 })
 
@@ -83,7 +82,6 @@ const mapHeight = computed(() => {
         : child.children.length
     })
   )
-  console.log("maxSecondChildren", maxSecondChildren)
   maxSecondChildren = maxSecondChildren ? maxSecondChildren : 2
 
   const firstGroupBaseDistance =
@@ -600,7 +598,6 @@ function addElementExpandClickEvents() {
     } else {
       worksInSecondGroup.value = []
     }
-    console.log(worksInSecondGroup.value)
   })
 }
 
@@ -618,7 +615,6 @@ function addWorkExpandClickEvents() {
     } else {
       elementsInSecondGroup.value = []
     }
-    console.log(elementsInSecondGroup.value)
   })
 }
 

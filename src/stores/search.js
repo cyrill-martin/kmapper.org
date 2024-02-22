@@ -131,7 +131,6 @@ export const useSearchStore = defineStore("search", () => {
         }
 
         graph.incrementNumberOfGraphs()
-        console.log("Number of graphs", graph.numberOfGraphs)
       } else {
         graph.setHomeMapGraph(null)
         graph.incrementNumberOfGraphs()

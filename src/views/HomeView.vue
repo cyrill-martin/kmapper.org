@@ -25,7 +25,7 @@ const homeJustify = computed(() => (screenSize.isMobile ? "start" : "center"))
       />
     </div>
     <div :style="{ margin: bottomMargin }">
-      Visualizing relevant Sustainable Development Goals and research fields of open access works
+      Visualizing relevant <a href="https://sdgs.un.org/goals" target="_blank">SDGs</a> and research fields of open access works
     </div>
     <div>
       <TheSearch />

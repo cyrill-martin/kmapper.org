@@ -8,26 +8,34 @@ This is an ongoing experiment and I welcome your feedback.
 Cyrill Martin
 cyrill.martin@kmapper.com
 
-# Visualization
+# What's Going On?
 
-## Sketches
+1. The search bar (TheSearch.vue) sends a GET request to the OpenAlex works endpoint
+2. The mapper (mapOpenAlexWorks.js) transforms the response as needed and adds objects to the graph store (graph.js)
+3. The home map (HomeMap.vue) uses the created graph objects and visualizes search results - works, assigned SDGs, and assigned research fields
+4. Any click on one of the elements (works, SDGs, research fiels) triggers another mapper (createDetailsMapGraph.js) to create the input for the details map component (DetailsMap.vue) shown in a modal
 
-Sketches about the circular representation of the SDGs and research fields.
+# Sketches
 
-### Big screens
+Sketches about the circular representation of the SDGs and research fields. A little bit of Pythagoras' theorem. 
+
+## Big screens
 
 ![desktop](./doc/desktop.jpg)
 
-### Small screens
+## Small screens
+
+On small screens, the radius is so big that the elements seem to be positioned in vertical alignment.
 
 ![desktop](./doc/mobile.jpg)
 
-## Recommended IDE Setup
+## Project Setup
+
+### Recommended IDE Setup
 
 [VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur) + [TypeScript Vue Plugin (Volar)](https://marketplace.visualstudio.com/items?itemName=Vue.vscode-typescript-vue-plugin).
 
-
-## Project Setup
+### Install Needed Modules
 
 ```sh
 npm install

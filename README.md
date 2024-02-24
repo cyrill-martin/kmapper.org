@@ -10,11 +10,17 @@ cyrill.martin@kmapper.com
 
 # Visualization
 
-## Sketches about the circular representation of the SDGs and research fields
+## Sketches
+
+Sketches about the circular representation of the SDGs and research fields.
+
+### Big screens
 
 ![desktop](./doc/desktop.jpg)
 
+### Small screens
 
+![desktop](./doc/mobile.jpg)
 
 ## Recommended IDE Setup
 

@@ -8,13 +8,18 @@ This is an ongoing experiment and I welcome your feedback.
 Cyrill Martin
 cyrill.martin@kmapper.com
 
+# Visualization
+
+## Sketches about the circular representation of the SDGs and research fields
+
+![desktop](./doc/desktop.jpg)
+
+
+
 ## Recommended IDE Setup
 
 [VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur) + [TypeScript Vue Plugin (Volar)](https://marketplace.visualstudio.com/items?itemName=Vue.vscode-typescript-vue-plugin).
 
-## Customize configuration
-
-See [Vite Configuration Reference](https://vitejs.dev/config/).
 
 ## Project Setup
 
@@ -34,8 +39,8 @@ npm run dev
 npm run build
 ```
 
-### Lint with [ESLint](https://eslint.org/)
+### Compile, Minify for Production and deploy to GitHub Pages
 
 ```sh
-npm run lint
+npm run deploy
 ```

@@ -1,7 +1,6 @@
 <script setup>
 import { onMounted, ref, computed, watch } from "vue"
-// eslint-disable-next-line
-import * as d3 from "d3"
+import d3 from "../../d3-importer.js"
 import { useScreenSizeStore } from "../../stores/screenSize.js"
 import { useGraphStore } from "../../stores/graph.js"
 import { createDetailsMapGraph } from "../../utils/createDetailsMapGraph.js"

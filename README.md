@@ -54,7 +54,7 @@ npm run dev
 npm run build
 ```
 
-### Compile, Minify for Production and deploy to GitHub Pages
+### Compile, Minify for Production and Deploy to GitHub Pages
 
 ```sh
 npm run deploy

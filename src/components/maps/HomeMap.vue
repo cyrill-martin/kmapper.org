@@ -1,13 +1,19 @@
 <script setup>
-import { onMounted, ref, watch, computed } from "vue"
+import { defineAsyncComponent, onMounted, ref, watch, computed } from "vue"
 import d3 from "../../d3-importer.js"
 import { useGraphStore } from "../../stores/graph.js"
 import { useScreenSizeStore } from "../../stores/screenSize.js"
 import { useSearchStore } from "../../stores/search.js"
 import { debounce } from "../../utils/debounce.js"
 import { NModal } from "naive-ui"
-import ThePaginator from "../layout/ThePaginator.vue"
-import DetailsMapContainer from "./DetailsMapContainer.vue"
+// import ThePaginator from "../layout/ThePaginator.vue"
+const ThePaginator = defineAsyncComponent(() =>
+  import("../layout/ThePaginator.vue")
+)
+// import DetailsMapContainer from "./DetailsMapContainer.vue"
+const DetailsMapContainer = defineAsyncComponent(() =>
+  import("./DetailsMapContainer.vue")
+)
 
 // Use stores
 const screenSize = useScreenSizeStore()

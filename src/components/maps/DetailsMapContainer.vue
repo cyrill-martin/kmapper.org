@@ -1,6 +1,8 @@
 <script setup>
-import { onMounted } from "vue"
-import DetailsMap from "./DetailsMap.vue"
+import { defineAsyncComponent, onMounted, } from "vue"
+const DetailsMap = defineAsyncComponent(() =>
+  import("./DetailsMap.vue")
+)
 import { useGraphStore } from "../../stores/graph.js"
 import { createDetailsMapGraph } from "../../utils/createDetailsMapGraph.js"
 

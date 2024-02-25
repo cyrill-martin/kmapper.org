@@ -7,11 +7,27 @@ import { mapOpenAlexWorks } from "../utils/mapOpenAlexWorks.js"
 import { createSdgWorkNodes } from "../utils/createSdgWorkNodes.js"
 import { createFieldWorkNodes } from "../utils/createFieldWorkNodes.js"
 import { noSearchResults } from "../utils/messages.js"
-import testDataMobile from "../data/testDataMobile.json"
-import testDataDesktop from "../data/testDataDesktop.json"
 import { useMessage } from "naive-ui"
 
 export const useSearchStore = defineStore("search", () => {
+  // Use of test data!! ///////////////////////////////////
+  /////////////////////////////////////////////////////////
+  const testData = ref(false)
+
+  const testDataMobile = ref(null)
+  const testDataDesktop = ref(null)
+
+  // Conditionally import test data
+  if (import.meta.env.MODE === "development") {
+    Promise.all([
+      import("../data/testDataMobile.json"),
+      import("../data/testDataDesktop.json")
+    ]).then(([mobileTestData, desktopTestData]) => {
+      testDataMobile.value = mobileTestData
+      testDataDesktop.value = desktopTestData
+    })
+  }
+
   // Use the router
   const router = useRouter()
   const route = useRoute()
@@ -22,9 +38,6 @@ export const useSearchStore = defineStore("search", () => {
 
   const screenSize = useScreenSizeStore()
   const graph = useGraphStore()
-
-  // Use of test data!!
-  const testData = ref(false)
 
   // State
   const searchQuery = ref(null)
@@ -83,7 +96,7 @@ export const useSearchStore = defineStore("search", () => {
         throw error
       }
     } else {
-      return screenSize.isMobile ? testDataMobile : testDataDesktop
+      return screenSize.isMobile ? testDataMobile.value : testDataDesktop.value
     }
   }
 

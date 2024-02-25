@@ -13,7 +13,6 @@ export const useSearchStore = defineStore("search", () => {
   // Use of test data!! ///////////////////////////////////
   /////////////////////////////////////////////////////////
   const testData = ref(false)
-
   const testDataMobile = ref(null)
   const testDataDesktop = ref(null)
 

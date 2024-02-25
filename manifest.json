@@ -1,0 +1,85 @@
+{
+  "MapView.css": {
+    "file": "assets/MapView-2f82a8da.css",
+    "src": "MapView.css"
+  },
+  "_DetailsMapContainer-06832bbf.js": {
+    "dynamicImports": [
+      "src/components/maps/DetailsMap.vue"
+    ],
+    "file": "assets/DetailsMapContainer-06832bbf.js",
+    "imports": [
+      "index.html"
+    ],
+    "isDynamicEntry": true
+  },
+  "_MapView-aec06ecb.js": {
+    "css": [
+      "assets/MapView-2f82a8da.css"
+    ],
+    "dynamicImports": [
+      "src/components/layout/ThePaginator.vue",
+      "_DetailsMapContainer-06832bbf.js"
+    ],
+    "file": "assets/MapView-aec06ecb.js",
+    "imports": [
+      "index.html"
+    ],
+    "isDynamicEntry": true
+  },
+  "index.css": {
+    "file": "assets/index-8c1173b2.css",
+    "src": "index.css"
+  },
+  "index.html": {
+    "assets": [
+      "assets/kmapper_k-5362eafb.png",
+      "assets/FiraCode-Regular-f13d1ece.woff2"
+    ],
+    "css": [
+      "assets/index-8c1173b2.css"
+    ],
+    "dynamicImports": [
+      "src/views/AboutView.vue",
+      "_MapView-aec06ecb.js"
+    ],
+    "file": "assets/index-737fa723.js",
+    "isEntry": true,
+    "src": "index.html"
+  },
+  "node_modules/vfonts/assets/FiraCode-Regular.woff2": {
+    "file": "assets/FiraCode-Regular-f13d1ece.woff2",
+    "src": "node_modules/vfonts/assets/FiraCode-Regular.woff2"
+  },
+  "src/assets/images/kmapper_k.png": {
+    "file": "assets/kmapper_k-5362eafb.png",
+    "src": "src/assets/images/kmapper_k.png"
+  },
+  "src/components/layout/ThePaginator.vue": {
+    "file": "assets/ThePaginator-b183ae9b.js",
+    "imports": [
+      "index.html",
+      "_MapView-aec06ecb.js"
+    ],
+    "isDynamicEntry": true,
+    "src": "src/components/layout/ThePaginator.vue"
+  },
+  "src/components/maps/DetailsMap.vue": {
+    "file": "assets/DetailsMap-567c0002.js",
+    "imports": [
+      "_MapView-aec06ecb.js",
+      "index.html",
+      "_DetailsMapContainer-06832bbf.js"
+    ],
+    "isDynamicEntry": true,
+    "src": "src/components/maps/DetailsMap.vue"
+  },
+  "src/views/AboutView.vue": {
+    "file": "assets/AboutView-910cf90d.js",
+    "imports": [
+      "index.html"
+    ],
+    "isDynamicEntry": true,
+    "src": "src/views/AboutView.vue"
+  }
+}

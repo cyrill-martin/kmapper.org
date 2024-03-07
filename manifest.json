@@ -3,25 +3,25 @@
     "file": "assets/MapView-2f82a8da.css",
     "src": "MapView.css"
   },
-  "_DetailsMapContainer-5eec88d0.js": {
+  "_DetailsMapContainer-fde52a05.js": {
     "dynamicImports": [
       "src/components/maps/DetailsMap.vue"
     ],
-    "file": "assets/DetailsMapContainer-5eec88d0.js",
+    "file": "assets/DetailsMapContainer-fde52a05.js",
     "imports": [
       "index.html"
     ],
     "isDynamicEntry": true
   },
-  "_MapView-6edfdfa5.js": {
+  "_MapView-e4aaf8f6.js": {
     "css": [
       "assets/MapView-2f82a8da.css"
     ],
     "dynamicImports": [
       "src/components/layout/ThePaginator.vue",
-      "_DetailsMapContainer-5eec88d0.js"
+      "_DetailsMapContainer-fde52a05.js"
     ],
-    "file": "assets/MapView-6edfdfa5.js",
+    "file": "assets/MapView-e4aaf8f6.js",
     "imports": [
       "index.html"
     ],
@@ -41,9 +41,9 @@
     ],
     "dynamicImports": [
       "src/views/AboutView.vue",
-      "_MapView-6edfdfa5.js"
+      "_MapView-e4aaf8f6.js"
     ],
-    "file": "assets/index-e0e478ca.js",
+    "file": "assets/index-17d6f614.js",
     "isEntry": true,
     "src": "index.html"
   },
@@ -56,26 +56,26 @@
     "src": "src/assets/images/kmapper_k.png"
   },
   "src/components/layout/ThePaginator.vue": {
-    "file": "assets/ThePaginator-b285d3f0.js",
+    "file": "assets/ThePaginator-78ace3de.js",
     "imports": [
       "index.html",
-      "_MapView-6edfdfa5.js"
+      "_MapView-e4aaf8f6.js"
     ],
     "isDynamicEntry": true,
     "src": "src/components/layout/ThePaginator.vue"
   },
   "src/components/maps/DetailsMap.vue": {
-    "file": "assets/DetailsMap-3e3a48b8.js",
+    "file": "assets/DetailsMap-f2af9aa6.js",
     "imports": [
-      "_MapView-6edfdfa5.js",
+      "_MapView-e4aaf8f6.js",
       "index.html",
-      "_DetailsMapContainer-5eec88d0.js"
+      "_DetailsMapContainer-fde52a05.js"
     ],
     "isDynamicEntry": true,
     "src": "src/components/maps/DetailsMap.vue"
   },
   "src/views/AboutView.vue": {
-    "file": "assets/AboutView-a584192d.js",
+    "file": "assets/AboutView-cb35b80f.js",
     "imports": [
       "index.html"
     ],

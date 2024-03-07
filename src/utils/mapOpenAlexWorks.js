@@ -82,13 +82,13 @@ export async function mapOpenAlexWorks(searchResults) {
 
   // Fields
   function getFirstField(topics) {
-    const firstField = topics[0]
+    const firstTopic = topics[0]
 
-    return firstField
+    return firstTopic
       ? (() => {
-          uniqueFields.add(firstField.field.display_name)
-          fieldIRIs[firstField.field.display_name] = firstField.id
-          return [{ type: "field", id: firstField.field.display_name }]
+          uniqueFields.add(firstTopic.field.display_name)
+          fieldIRIs[firstTopic.field.display_name] = firstTopic.field.id
+          return [{ type: "field", id: firstTopic.field.display_name }]
         })()
       : null
   }
@@ -99,14 +99,14 @@ export async function mapOpenAlexWorks(searchResults) {
     if (workTopics.length) {
       let theseUniqueFields = new Set()
       workTopics.forEach((topic) => {
-        // Handling the unique domains of THIS work
+        // Handling the unique fields of THIS work
         theseUniqueFields.add(topic.field.display_name)
 
-        // Handling the unique domains of ALL the works
+        // Handling the unique fields of ALL the works
         uniqueFields.add(topic.field.display_name)
-        fieldIRIs[topic.domain.display_name] = topic.id
+        fieldIRIs[topic.field.display_name] = topic.field.id
       })
-      return [...theseUniqueFields].map((domain) => ({ type: "field", id: domain }))
+      return [...theseUniqueFields].map((field) => ({ type: "field", id: field }))
     } else {
       return getFirstField(work.topics)
     }
@@ -130,6 +130,7 @@ export async function mapOpenAlexWorks(searchResults) {
 
   // Field data
   function createGraphFields(uniqueFieldsSet) {
+    console.log(fieldIRIs)
     return [...uniqueFieldsSet].sort().map((field) => {
       return {
         name: field,

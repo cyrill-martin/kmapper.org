@@ -308,7 +308,14 @@ function drawFieldTitle() {
     .attr("class", "title-group")
     .attr("transform", `translate(0,-${props.sizes.worksBandwidth * 4})`)
 
-  const fieldGroup = theTitleGroup
+
+    const fieldLink = theTitleGroup
+    .append("a")
+    .attr("xlink:href", graph.detailsMapGraph.data.url)
+    .attr("target", "_blank")
+
+
+  const fieldGroup = fieldLink
     .append("g")
     .attr("transform", `translate(${props.sizes.worksBandwidth}, ${props.sizes.worksBandwidth})`)
 

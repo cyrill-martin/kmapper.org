@@ -172,21 +172,15 @@ function getSecondGroupTranslation() {
 }
 
 function addTitleGroup() {
-  titleGroup.value = ctr.value
-    .append("g")
-    .attr("transform", `translate(0, 0)`)
+  titleGroup.value = ctr.value.append("g").attr("transform", `translate(0, 0)`)
 }
 
 function addFirstGroup() {
-  firstGroup.value = ctr.value
-    .append("g")
-    .attr("transform", `translate(0, ${titleGroupHeight})`)
+  firstGroup.value = ctr.value.append("g").attr("transform", `translate(0, ${titleGroupHeight})`)
 }
 
 function addSecondGroup() {
-  secondGroup.value = ctr.value
-    .append("g")
-    .attr("transform", getSecondGroupTranslation())
+  secondGroup.value = ctr.value.append("g").attr("transform", getSecondGroupTranslation())
 }
 
 // Draw titles ///////////////////////////////////////////////////////
@@ -261,11 +255,7 @@ function drawSdgTitle() {
     .append("g")
     .attr("transform", `translate(${props.sizes.worksBandwidth}, ${props.sizes.worksBandwidth})`)
 
-  sdgGroup
-    .append("circle")
-    .attr("r", circleRadius)
-    .attr("stroke", theBlack)
-    .attr("fill", theBlack)
+  sdgGroup.append("circle").attr("r", circleRadius).attr("stroke", theBlack).attr("fill", theBlack)
 
   sdgGroup
     .append("text")
@@ -308,12 +298,10 @@ function drawFieldTitle() {
     .attr("class", "title-group")
     .attr("transform", `translate(0,-${props.sizes.worksBandwidth * 4})`)
 
-
-    const fieldLink = theTitleGroup
+  const fieldLink = theTitleGroup
     .append("a")
     .attr("xlink:href", graph.detailsMapGraph.data.url)
     .attr("target", "_blank")
-
 
   const fieldGroup = fieldLink
     .append("g")

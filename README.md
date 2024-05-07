@@ -14,7 +14,7 @@ cyrill.martin@kmapper.com
 2. The mapper (mapOpenAlexWorks.js) transforms the response as needed and adds objects to the graph store (graph.js)
 3. The home map (HomeMap.vue) uses the created graph objects and visualizes search results - works, assigned SDGs, and assigned research fields
 4. Any click on one of the elements (works, SDGs, research fiels) triggers another mapper (createDetailsMapGraph.js) to create the input for the details map component (DetailsMap.vue) shown in a modal
-5. The modal title contains a link to the actual work on OpenAlex if it's a work or to the SDG linked data information of the United Nations if it's an SDG. There are currently no links for research fields. 
+5. The modal title contains a link to the actual work on OpenAlex, to the SDG linked data information of the United Nations, or the research field information on OpenAlex.
 
 # Sketches
 

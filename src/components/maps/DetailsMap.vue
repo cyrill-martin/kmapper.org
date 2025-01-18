@@ -187,7 +187,7 @@ function addSecondGroup() {
 //////////////////////////////////////////////////////////////////////
 function drawTitle() {
   if (graph.detailsMapGraph.type === "works") {
-    drawWorksTitle()
+    drawWorksTitleAndMetadata()
   } else if (graph.detailsMapGraph.type === "sdgs") {
     drawSdgTitle()
   } else {
@@ -195,7 +195,7 @@ function drawTitle() {
   }
 }
 
-function drawWorksTitle() {
+function drawWorksTitleAndMetadata() {
   const theTitleGroup = titleGroup.value
     .append("g")
     .attr("class", "title-group")
@@ -238,6 +238,23 @@ function drawWorksTitle() {
     .duration(transitionDuration)
     .ease(easeAnimation)
     .attr("transform", "translate(0,0)")
+
+  // Adding year and journal
+  titleGroup.value
+    .append("g")
+    .attr("class", "title-metadata")
+    .attr("transform", `translate(0, ${props.sizes.worksBandwidth * 2})`)
+    .append("a")
+    .attr("xlink:href", graph.detailsMapGraph.data.doi)
+    .attr("target", "_blank")
+    .append("text")
+    .text(
+      `${graph.detailsMapGraph.data.year}${
+        graph.detailsMapGraph.data.source.name ? `: ${graph.detailsMapGraph.data.source.name}` : ""
+      } - ${graph.detailsMapGraph.data.doi}`
+    )
+    .style("font-size", `${props.sizes.field * 0.85}px`)
+    .attr("fill", theBlack)
 }
 
 function drawSdgTitle() {

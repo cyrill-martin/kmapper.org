@@ -7,13 +7,9 @@ import { useSearchStore } from "../../stores/search.js"
 import { debounce } from "../../utils/debounce.js"
 import { NModal } from "naive-ui"
 // import ThePaginator from "../layout/ThePaginator.vue"
-const ThePaginator = defineAsyncComponent(() =>
-  import("../layout/ThePaginator.vue")
-)
+const ThePaginator = defineAsyncComponent(() => import("../layout/ThePaginator.vue"))
 // import DetailsMapContainer from "./DetailsMapContainer.vue"
-const DetailsMapContainer = defineAsyncComponent(() =>
-  import("./DetailsMapContainer.vue")
-)
+const DetailsMapContainer = defineAsyncComponent(() => import("./DetailsMapContainer.vue"))
 
 // Use stores
 const screenSize = useScreenSizeStore()
@@ -31,6 +27,8 @@ onMounted(() => {
   // If the component is mounted after searching on the home page,...
   // numberOfGraphs is not 0, the graph has been created, and the map can be drawn
   graph.numberOfGraphs === 0 ? null : drawDynamicMap()
+
+  tooltip.value = d3.select("#tooltip")
 })
 
 watch(
@@ -306,16 +304,14 @@ function drawWorks(data, callback) {
               .attr("data-id", (d) => d.id)
               .text((d) => d.title)
             // Adding an overlay rectangle in order to handle mouse events
-            d3.select(this)
-              .append("rect")
-              .attr("class", "work-overlay")
-              .each(function () {
-                // Adding a title element to achieche a standard HTML tooltip
-                // Yes, I like the style of the standard tooltips!!
-                d3.select(this)
-                  .append("title")
-                  .text((d) => d.title)
-              })
+            d3.select(this).append("rect").attr("class", "work-overlay")
+            // .each(function () {
+            //   // Adding a title element to achieche a standard HTML tooltip
+            //   // Yes, I like the style of the standard tooltips!!
+            //   d3.select(this)
+            //     .append("title")
+            //     .text((d) => d.title)
+            // })
           }),
       (update) => update,
       (exit) => exit
@@ -381,9 +377,27 @@ function fontWeight(type) {
   return type === "mouseover" ? "bold" : "regular"
 }
 
+const tooltip = ref()
+
+function fillTooltip(data) {
+  tooltip.value.select(".tooltip-title").text(data.title)
+  tooltip.value
+    .select(".tooltip-citation")
+    .text(`${data.year}${data.source.name ? `: ${data.source.name}` : ""}`)
+}
+
+function showHideTooltip(type, DOMRect) {
+  console.log(DOMRect)
+  tooltip.value.style("visibility", type === "mouseover" ? "visible" : "hidden")
+  tooltip.value
+    .style("left", `${DOMRect.left + DOMRect.width / 2 - 450}px`)
+    .style("top", `${DOMRect.top - 85}px`)
+  // 450 is half of the tooltip's width as set in the <style>
+}
+
 // Add work mouse events
 function addWorkMouseEvents() {
-  worksGroup.value.selectAll(".work-overlay").on("mouseover mouseout", function (event) {
+  worksGroup.value.selectAll(".work-overlay").on("mouseover mouseout", function (event, data) {
     // Get the current work
     const workId = d3.select(this).attr("data-id")
 
@@ -411,6 +425,9 @@ function addWorkMouseEvents() {
     d3.selectAll(`.field.work-element-${workId} .field-name`)
       .attr("fill", elementColor(event.type))
       .attr("font-weight", fontWeight(event.type))
+
+    fillTooltip(data)
+    showHideTooltip(event.type, this.getBoundingClientRect())
   })
 }
 
@@ -1046,8 +1063,29 @@ function addClickEvents() {
   >
     <DetailsMapContainer v-if="showModal" :input-obj="modalInput" />
   </n-modal>
+  <div id="tooltip">
+    <div class="tooltip-title"></div>
+    <div class="tooltip-citation"></div>
+  </div>
   <div id="home-map"></div>
   <div>
     <ThePaginator />
   </div>
 </template>
+
+<style scoped>
+#tooltip {
+  text-align: center;
+  visibility: hidden;
+  position: fixed;
+  z-index: 10;
+  background-color: rgba(247, 247, 247, 0.9);
+  border-radius: 0px;
+  padding: 5px;
+  width: 900px;
+}
+
+.tooltip-citation {
+  font-size: 0.85rem;
+}
+</style>

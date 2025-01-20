@@ -390,7 +390,8 @@ function showHideTooltip(type, DOMRect) {
   console.log(DOMRect)
   tooltip.value.style("visibility", type === "mouseover" ? "visible" : "hidden")
   tooltip.value
-    .style("left", `${DOMRect.left + DOMRect.width / 2 - 450}px`)
+    .style("width", `${screenSize.width}px`)
+    .style("left", `${DOMRect.left + DOMRect.width / 2 - screenSize.width / 2}px`)
     .style("top", `${DOMRect.top - 85}px`)
   // 450 is half of the tooltip's width as set in the <style>
 }
@@ -1082,7 +1083,6 @@ function addClickEvents() {
   background-color: rgba(247, 247, 247, 0.9);
   border-radius: 0px;
   padding: 5px;
-  width: 900px;
 }
 
 .tooltip-citation {

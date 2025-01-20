@@ -18,6 +18,8 @@ onMounted(() => {
   createStaticMapElements()
   drawDynamicMap()
   console.log("detailsMapGraph", graph.detailsMapGraph)
+
+  tooltip.value = d3.select("#details-tooltip")
 })
 
 function getAvailableModalWidth() {
@@ -652,13 +654,13 @@ function drawWorksInSecondGroup(callback1, callback2) {
     .data(worksInSecondGroup.value, function (_, i) {
       return i
     })
-    .each(function () {
-      // Adding a title element to achieche a standard HTML tooltip
-      // Yes, I like the style of the standard tooltips!!
-      d3.select(this)
-        .append("title")
-        .text((d) => d.title)
-    })
+  // .each(function () {
+  //   // Adding a title element to achieche a standard HTML tooltip
+  //   // Yes, I like the style of the standard tooltips!!
+  //   d3.select(this)
+  //     .append("title")
+  //     .text((d) => d.title)
+  // })
 
   // Merge the enter and update selections
   const updateShownWorks = enterShownWorks.merge(shownWorksSelection)
@@ -794,37 +796,62 @@ function drawElementToWorksConnectionsInFirstGroup() {
     .attr("stroke", theGrey)
 }
 
+const tooltip = ref(null)
+
+function fillTooltip(data) {
+  tooltip.value.select(".tooltip-title").text(data.title)
+  tooltip.value
+    .select(".tooltip-citation")
+    .text(`${data.year}${data.source.name ? `: ${data.source.name}` : ""}`)
+}
+
+function showHideTooltip(type, DOMRect) {
+  console.log(DOMRect)
+  tooltip.value.style("visibility", type === "mouseover" ? "visible" : "hidden")
+  tooltip.value
+    .style("width", `${mapWidth.value}px`)
+    .style("left", `${(screenSize.width - screenSize.modalWidth) / 2}px`)
+    // .style("left", `${DOMRect.left + DOMRect.width / 2 - 450}px`)
+    .style("top", `${DOMRect.top - 85}px`)
+  // 450 is half of the tooltip's width as set in the <style>
+}
+
 function addShownWorksMouseEvents(callback) {
-  secondGroup.value.selectAll(".shown-work-overlay").on("mouseover mouseout", function (event) {
-    const elementIndex = clickedFirstGroupElement.value
-    const workIndex = d3.select(this).attr("data-id")
+  secondGroup.value
+    .selectAll(".shown-work-overlay")
+    .on("mouseover mouseout", function (event, data) {
+      const elementIndex = clickedFirstGroupElement.value
+      const workIndex = d3.select(this).attr("data-id")
 
-    // Highlighting and setting back shown work
-    d3.select(`.shown-work-rect[data-id='${workIndex}']`)
-      .attr("stroke", elementColor(event.type))
-      .attr("fill", elementColor(event.type))
+      // Highlighting and setting back shown work
+      d3.select(`.shown-work-rect[data-id='${workIndex}']`)
+        .attr("stroke", elementColor(event.type))
+        .attr("fill", elementColor(event.type))
 
-    d3.selectAll(`line.element-${elementIndex}`)
-      .attr("stroke", lineColor(event.type))
-      .attr("stroke-width", lineWwidth(event.type))
+      d3.selectAll(`line.element-${elementIndex}`)
+        .attr("stroke", lineColor(event.type))
+        .attr("stroke-width", lineWwidth(event.type))
 
-    // Highlighting and setting back connection lines
-    d3.selectAll(`.connection-line-${elementIndex}`)
-      .attr("stroke", lineColor(event.type))
-      .attr("stroke-width", lineWwidth(event.type))
-    // Highlighting and setting back element circles
-    d3.selectAll(`.element-${elementIndex} circle`)
-      .attr("stroke", elementColor(event.type))
-      .attr("fill", elementColor(event.type))
-    // Highlighting and setting back SDGs
-    d3.selectAll(`.element-${elementIndex} .sdg-group-id`)
-      .attr("fill", elementColor(event.type))
-      .attr("font-weight", fontWeight(event.type))
-    // // Highlighting and setting back fields
-    d3.selectAll(`.element-${elementIndex} .field-group-name`)
-      .attr("fill", elementColor(event.type))
-      .attr("font-weight", fontWeight(event.type))
-  })
+      // Highlighting and setting back connection lines
+      d3.selectAll(`.connection-line-${elementIndex}`)
+        .attr("stroke", lineColor(event.type))
+        .attr("stroke-width", lineWwidth(event.type))
+      // Highlighting and setting back element circles
+      d3.selectAll(`.element-${elementIndex} circle`)
+        .attr("stroke", elementColor(event.type))
+        .attr("fill", elementColor(event.type))
+      // Highlighting and setting back SDGs
+      d3.selectAll(`.element-${elementIndex} .sdg-group-id`)
+        .attr("fill", elementColor(event.type))
+        .attr("font-weight", fontWeight(event.type))
+      // // Highlighting and setting back fields
+      d3.selectAll(`.element-${elementIndex} .field-group-name`)
+        .attr("fill", elementColor(event.type))
+        .attr("font-weight", fontWeight(event.type))
+
+      fillTooltip(data)
+      showHideTooltip(event.type, this.getBoundingClientRect())
+    })
 
   callback() // callback is addShwonWorksClickEvents()
 }
@@ -903,14 +930,12 @@ function drawWorksInFirstGroup(data, callback1, callback2) {
             .attr("data-id", (d) => d.id)
             .text((d) => d.title)
           // Adding an overlay rectangle in order to handle mouse events
-          workGroup
-            .append("rect")
-            .attr("class", "first-group-work-overlay")
-            .each(function () {
-              d3.select(this)
-                .append("title")
-                .text((d) => d.title)
-            })
+          workGroup.append("rect").attr("class", "first-group-work-overlay")
+          // .each(function () {
+          //   d3.select(this)
+          //     .append("title")
+          //     .text((d) => d.title)
+          // })
 
           const circleGroup = d3
             .select(this)
@@ -990,7 +1015,7 @@ function drawWorksInFirstGroup(data, callback1, callback2) {
 }
 
 function addWorkMouseEvents() {
-  firstGroup.value.selectAll(".group-element").on("mouseover mouseout", function (event) {
+  firstGroup.value.selectAll(".group-element").on("mouseover mouseout", function (event, data) {
     const index = d3.select(this).attr("data-index")
 
     if (graph.detailsMapGraph.children[index].children.length) {
@@ -1025,6 +1050,9 @@ function addWorkMouseEvents() {
     d3.selectAll(`.element-${index} .first-group-work-rect`)
       .attr("stroke", elementColor(event.type))
       .attr("fill", elementColor(event.type))
+
+    fillTooltip(data)
+    showHideTooltip(event.type, this.getBoundingClientRect())
   })
 }
 
@@ -1299,5 +1327,25 @@ function addShwonElementsClickEvents() {
 </script>
 
 <template>
+  <div id="details-tooltip">
+    <div class="tooltip-title"></div>
+    <div class="tooltip-citation"></div>
+  </div>
   <div id="details-map"></div>
 </template>
+
+<style scoped>
+#details-tooltip {
+  text-align: center;
+  visibility: hidden;
+  position: fixed;
+  z-index: 15;
+  background-color: rgba(247, 247, 247, 0.9);
+  border-radius: 0px;
+  padding: 5px;
+}
+
+.tooltip-citation {
+  font-size: 0.85rem;
+}
+</style>

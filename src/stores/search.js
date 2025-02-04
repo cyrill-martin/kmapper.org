@@ -51,6 +51,7 @@ export const useSearchStore = defineStore("search", () => {
   const hasSearchResults = computed(() => searchResults.value.results.length)
   const isValidSearchQuery = computed(() => searchQuery.value.trim().length !== 0)
   const politeMail = ref("mail@kmapper.com")
+  const publicationYear = ref(null)
 
   watch(
     () => searchQuery.value,
@@ -61,18 +62,27 @@ export const useSearchStore = defineStore("search", () => {
 
   // Actions
 
+  // Filter
+  function setPublicationYear(value) {
+    console.log("filter", value)
+    publicationYear.value = value
+  }
+
   // Base function to search OpenAlex works
   async function searchOpenAlexWorks(obj) {
     if (!testData.value) {
       const query = encodeURIComponent(obj.query)
       const perPage = obj.perPage
       const page = obj.page
+      const publicationYear = obj.publicationYear
       const goldOpenAccessOnly = obj.goldOpenAccessOnly
       const email = obj.email
 
       try {
+        console.log(publicationYear)
         let url = `https://api.openalex.org/works?search=${query}&per-page=${perPage}&page=${page}`
         url = goldOpenAccessOnly ? `${url}&filter=open_access.oa_status:gold` : url
+        url = publicationYear ? `${url},publication_year:${publicationYear}` : url
         url = url + `&mailto=${email}`
 
         console.log("GET", url)
@@ -110,6 +120,7 @@ export const useSearchStore = defineStore("search", () => {
         perPage: pageSize.value,
         page: page.value,
         goldOpenAccessOnly: goldOpenAccess.value,
+        publicationYear: publicationYear.value,
         email: politeMail.value
       })
 
@@ -187,6 +198,7 @@ export const useSearchStore = defineStore("search", () => {
     hasSearchResults,
     isValidSearchQuery,
     politeMail,
-    testData
+    testData,
+    setPublicationYear
   }
 })

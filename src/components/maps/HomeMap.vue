@@ -387,7 +387,7 @@ function fillTooltip(data) {
 }
 
 function showHideTooltip(type, DOMRect) {
-  console.log(DOMRect)
+  // console.log(DOMRect)
   tooltip.value.style("visibility", type === "mouseover" ? "visible" : "hidden")
   tooltip.value
     .style("width", `${screenSize.width}px`)

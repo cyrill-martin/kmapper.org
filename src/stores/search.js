@@ -147,8 +147,9 @@ export const useSearchStore = defineStore("search", () => {
 
           if (publicationYear.value) {
             query.py = publicationYear.value
+          } else if (route.query.py) {
+            delete query.py
           }
-
           // Change route if not already on /map
           router.push({
             name: "map",
@@ -159,6 +160,8 @@ export const useSearchStore = defineStore("search", () => {
           // Else, update query parameter q
           if (publicationYear.value) {
             query.py = publicationYear.value
+          } else if (route.query.py) {
+            delete query.py
           }
 
           router.replace({ query: query })

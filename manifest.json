@@ -3,25 +3,25 @@
     "file": "assets/MapView-b93ad6d3.css",
     "src": "MapView.css"
   },
-  "_DetailsMapContainer-d96e7c33.js": {
+  "_DetailsMapContainer-90eb1fb6.js": {
     "dynamicImports": [
       "src/components/maps/DetailsMap.vue"
     ],
-    "file": "assets/DetailsMapContainer-d96e7c33.js",
+    "file": "assets/DetailsMapContainer-90eb1fb6.js",
     "imports": [
       "index.html"
     ],
     "isDynamicEntry": true
   },
-  "_MapView-dc127f6c.js": {
+  "_MapView-9665b5b9.js": {
     "css": [
       "assets/MapView-b93ad6d3.css"
     ],
     "dynamicImports": [
       "src/components/layout/ThePaginator.vue",
-      "_DetailsMapContainer-d96e7c33.js"
+      "_DetailsMapContainer-90eb1fb6.js"
     ],
-    "file": "assets/MapView-dc127f6c.js",
+    "file": "assets/MapView-9665b5b9.js",
     "imports": [
       "index.html"
     ],
@@ -41,9 +41,9 @@
     ],
     "dynamicImports": [
       "src/views/AboutView.vue",
-      "_MapView-dc127f6c.js"
+      "_MapView-9665b5b9.js"
     ],
-    "file": "assets/index-d3fd13f9.js",
+    "file": "assets/index-bfdfbca6.js",
     "isEntry": true,
     "src": "index.html"
   },
@@ -56,10 +56,10 @@
     "src": "src/assets/images/kmapper_k.png"
   },
   "src/components/layout/ThePaginator.vue": {
-    "file": "assets/ThePaginator-cfd02869.js",
+    "file": "assets/ThePaginator-881c8dde.js",
     "imports": [
       "index.html",
-      "_MapView-dc127f6c.js"
+      "_MapView-9665b5b9.js"
     ],
     "isDynamicEntry": true,
     "src": "src/components/layout/ThePaginator.vue"
@@ -72,17 +72,17 @@
     "css": [
       "assets/DetailsMap-d6b3c176.css"
     ],
-    "file": "assets/DetailsMap-717726d1.js",
+    "file": "assets/DetailsMap-43787251.js",
     "imports": [
-      "_MapView-dc127f6c.js",
+      "_MapView-9665b5b9.js",
       "index.html",
-      "_DetailsMapContainer-d96e7c33.js"
+      "_DetailsMapContainer-90eb1fb6.js"
     ],
     "isDynamicEntry": true,
     "src": "src/components/maps/DetailsMap.vue"
   },
   "src/views/AboutView.vue": {
-    "file": "assets/AboutView-4ae0fc36.js",
+    "file": "assets/AboutView-cc337386.js",
     "imports": [
       "index.html"
     ],

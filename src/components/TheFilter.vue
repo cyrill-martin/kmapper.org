@@ -53,7 +53,7 @@ function changeEditState() {
             <template #trigger>
               <n-input
                 style="text-align: left"
-                :size="'tiny'"
+                :size="'small'"
                 :disabled="!editState"
                 v-model:value="yearString"
                 placeholder=""
@@ -62,7 +62,7 @@ function changeEditState() {
             </template>
             <span>e.g. 2023, &gt;2023, &lt;2023, 2020-2023</span>
           </n-tooltip>
-          <n-button :size="'tiny'" secondary :type="stateButtonType" round @click="changeEditState"
+          <n-button :size="'small'" secondary :type="stateButtonType" round @click="changeEditState"
             ><n-icon :component="stateIcon" />
           </n-button>
         </n-input-group>

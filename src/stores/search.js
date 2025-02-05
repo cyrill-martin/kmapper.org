@@ -143,14 +143,25 @@ export const useSearchStore = defineStore("search", () => {
         console.log("Field-work nodes", graph.fieldWorkNodes)
 
         if (route.name !== "map") {
+          const query = { q: searchQuery.value }
+
+          if (publicationYear.value) {
+            query.py = publicationYear.value
+          }
+
           // Change route if not already on /map
           router.push({
             name: "map",
-            query: { q: searchQuery.value }
+            query: query
           })
         } else {
+          const query = { ...route.query, q: searchQuery.value }
           // Else, update query parameter q
-          router.replace({ query: { ...route.query, q: searchQuery.value } })
+          if (publicationYear.value) {
+            query.py = publicationYear.value
+          }
+
+          router.replace({ query: query })
         }
 
         graph.incrementNumberOfGraphs()

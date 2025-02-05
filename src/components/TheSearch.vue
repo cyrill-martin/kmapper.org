@@ -19,9 +19,13 @@ const screenSize = useScreenSizeStore()
 onMounted(async () => {
   // Access query parameters
   const qParam = route.query.q
+  const pyParam = route.query.py
 
   if (qParam && !search.searchQuery) {
     search.setSearchQuery(qParam)
+    if (pyParam) {
+      search.setPublicationYear(pyParam)
+    }
     await search.searchAndMapContent()
   }
 })

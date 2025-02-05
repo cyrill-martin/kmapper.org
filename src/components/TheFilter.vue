@@ -1,16 +1,22 @@
 <script setup>
-import { ref, computed, onMounted } from "vue"
+import { ref, computed, onMounted, watch } from "vue"
 import { NInputGroup, NInput, NIcon, NButton, NTooltip, NCollapse, NCollapseItem } from "naive-ui"
 import { useSearchStore } from "../stores/search.js"
 import { PencilSharp, CheckmarkSharp } from "@vicons/ionicons5"
 
+const search = useSearchStore()
 const emit = defineEmits(["year-filter"])
 
 onMounted(() => {
   yearString.value = search.publicationYear
 })
 
-const search = useSearchStore()
+watch(
+  () => search.publicationYear,
+  () => {
+    yearString.value = search.publicationYear
+  }
+)
 
 const editState = ref(false)
 const yearString = ref(null)

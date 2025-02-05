@@ -199,6 +199,7 @@ export const useSearchStore = defineStore("search", () => {
     isValidSearchQuery,
     politeMail,
     testData,
+    publicationYear,
     setPublicationYear
   }
 })

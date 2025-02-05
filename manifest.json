@@ -3,32 +3,32 @@
     "file": "assets/MapView-b93ad6d3.css",
     "src": "MapView.css"
   },
-  "_DetailsMapContainer-f7144dfa.js": {
+  "_DetailsMapContainer-a32921d7.js": {
     "dynamicImports": [
       "src/components/maps/DetailsMap.vue"
     ],
-    "file": "assets/DetailsMapContainer-f7144dfa.js",
+    "file": "assets/DetailsMapContainer-a32921d7.js",
     "imports": [
       "index.html"
     ],
     "isDynamicEntry": true
   },
-  "_MapView-cd184877.js": {
+  "_MapView-9fa7f266.js": {
     "css": [
       "assets/MapView-b93ad6d3.css"
     ],
     "dynamicImports": [
       "src/components/layout/ThePaginator.vue",
-      "_DetailsMapContainer-f7144dfa.js"
+      "_DetailsMapContainer-a32921d7.js"
     ],
-    "file": "assets/MapView-cd184877.js",
+    "file": "assets/MapView-9fa7f266.js",
     "imports": [
       "index.html"
     ],
     "isDynamicEntry": true
   },
   "index.css": {
-    "file": "assets/index-a3ec3a29.css",
+    "file": "assets/index-ede224c2.css",
     "src": "index.css"
   },
   "index.html": {
@@ -37,13 +37,13 @@
       "assets/FiraCode-Regular-f13d1ece.woff2"
     ],
     "css": [
-      "assets/index-a3ec3a29.css"
+      "assets/index-ede224c2.css"
     ],
     "dynamicImports": [
       "src/views/AboutView.vue",
-      "_MapView-cd184877.js"
+      "_MapView-9fa7f266.js"
     ],
-    "file": "assets/index-1d49508b.js",
+    "file": "assets/index-052bb65a.js",
     "isEntry": true,
     "src": "index.html"
   },
@@ -56,10 +56,10 @@
     "src": "src/assets/images/kmapper_k.png"
   },
   "src/components/layout/ThePaginator.vue": {
-    "file": "assets/ThePaginator-9e28d8a9.js",
+    "file": "assets/ThePaginator-96ce3001.js",
     "imports": [
       "index.html",
-      "_MapView-cd184877.js"
+      "_MapView-9fa7f266.js"
     ],
     "isDynamicEntry": true,
     "src": "src/components/layout/ThePaginator.vue"
@@ -72,17 +72,17 @@
     "css": [
       "assets/DetailsMap-d6b3c176.css"
     ],
-    "file": "assets/DetailsMap-be721061.js",
+    "file": "assets/DetailsMap-c6a6253e.js",
     "imports": [
-      "_MapView-cd184877.js",
+      "_MapView-9fa7f266.js",
       "index.html",
-      "_DetailsMapContainer-f7144dfa.js"
+      "_DetailsMapContainer-a32921d7.js"
     ],
     "isDynamicEntry": true,
     "src": "src/components/maps/DetailsMap.vue"
   },
   "src/views/AboutView.vue": {
-    "file": "assets/AboutView-f1398b79.js",
+    "file": "assets/AboutView-d18fcdf2.js",
     "imports": [
       "index.html"
     ],

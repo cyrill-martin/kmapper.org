@@ -699,7 +699,7 @@ function drawWorksInSecondGroup(callback1, callback2) {
     .attr("x", 5)
     .attr("y", props.sizes.worksBandwidth * 0.85)
     .style("font-size", props.sizes.workTitle)
-    .attr("fill", "white")
+    .attr("fill", "#f7f7f7")
 
   secondGroup.value
     .selectAll(".shown-work")
@@ -964,7 +964,7 @@ function drawWorksInFirstGroup(data, callback1, callback2) {
             circleGroup
               .append("text")
               .text((d) => d.children.length)
-              .attr("fill", "white")
+              .attr("fill", "#f7f7f7")
               .style("font-size", `${props.sizes.field}px`)
               .attr("dominant-baseline", "middle")
               .attr("text-anchor", "middle")

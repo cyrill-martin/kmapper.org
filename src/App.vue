@@ -30,6 +30,7 @@ const themeOverrides = {
 <style>
 .flex-container {
   min-height: 100vh;
+  background-color: #f7f7f7;
 }
 main {
   display: flex;

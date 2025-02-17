@@ -346,7 +346,7 @@ function drawWorks(data, callback) {
     .attr("x", xScale.value.bandwidth() * 0.01)
     .attr("y", yScaleWorks.value.bandwidth() * 0.85)
     .style("font-size", getFontSize("work-title"))
-    .attr("fill", "white")
+    .attr("fill", "#f7f7f7")
 
   // Positioning each <g> element with class "work" along the yScaleWorks
   worksGroup.value

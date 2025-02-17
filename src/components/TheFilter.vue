@@ -1,92 +1,124 @@
 <script setup>
 import { ref, computed, onMounted, watch } from "vue"
-import { NInputGroup, NInput, NIcon, NButton, NTooltip, NCollapse, NCollapseItem } from "naive-ui"
+import { NInputGroup, NInput, NIcon, NButton, NTooltip, NSelect } from "naive-ui"
 import { useSearchStore } from "../stores/search.js"
-import { PencilSharp, CheckmarkSharp } from "@vicons/ionicons5"
+import { CheckmarkSharp } from "@vicons/ionicons5"
 
 const search = useSearchStore()
-const emit = defineEmits(["year-filter"])
+const emit = defineEmits(["filters"])
 
+// Lifecycle
 onMounted(() => {
-  yearString.value = search.publicationYear
+  publicationYear.value = search.publicationYear
+  oaStatus.value = search.oaStatus
 })
 
+// Watchers
 watch(
   () => search.publicationYear,
   () => {
-    yearString.value = search.publicationYear
+    publicationYear.value = search.publicationYear
   }
 )
 
-const editState = ref(false)
-const yearString = ref(null)
+watch(
+  () => search.oaStatus,
+  () => {
+    oaStatus.value = search.oaStatus
+  }
+)
 
-const stateIcon = computed(() => {
-  return editState.value ? CheckmarkSharp : PencilSharp
-})
+// Editing
+const editState = ref(false)
 
 const stateButtonType = computed(() => {
   return editState.value ? "success" : "tertiary"
 })
-
-const collapseItemTitle = computed(() => {
-  const baseTitle = "filter by publication year"
-  return search.publicationYear ? `${baseTitle} ●` : baseTitle
-})
-
-function setPublicationYear() {
-  const currentYear = yearString.value ? yearString.value.replace(/\s+/g, "") : null
-  search.setPublicationYear(currentYear ? currentYear : null)
-}
 
 function changeEditState() {
   editState.value = !editState.value
 
   if (editState.value === false) {
     setPublicationYear()
-    emit("year-filter")
+    setOaStatus()
+    emit("filters")
   }
+}
+
+// Year filter
+const publicationYear = ref(null)
+
+function setPublicationYear() {
+  const currentYear = publicationYear.value ? publicationYear.value.replace(/\s+/g, "") : null
+  search.setPublicationYear(currentYear ? currentYear : null)
+}
+
+// Open access filter
+const oaStatus = ref(null)
+
+const oaStatusOptions = [
+  { label: "diamond", value: "diamond", disabled: true },
+  { label: "gold", value: "gold" },
+  { label: "green", value: "green" },
+  { label: "hybrid", value: "hybrid" },
+  { label: "bronze", value: "bronze" }
+]
+
+function setOaStatus() {
+  console.log(oaStatus.value)
+  search.setOaStatus(oaStatus.value)
 }
 </script>
 
 <template>
-  <n-collapse class="filter">
-    <n-collapse-item :title="collapseItemTitle">
-      <n-input-group class="year-filter">
-        <span class="year-filter-label">year is</span>
-        <n-input-group>
-          <n-tooltip placement="bottom" trigger="click">
-            <template #trigger>
-              <n-input
-                style="text-align: left"
-                :size="'small'"
-                :disabled="!editState"
-                v-model:value="yearString"
-                placeholder=""
-                round
-              ></n-input>
-            </template>
-            <span>e.g. 2023, &gt;2023, &lt;2023, 2020-2023</span>
-          </n-tooltip>
-          <n-button :size="'small'" secondary :type="stateButtonType" round @click="changeEditState"
-            ><n-icon :component="stateIcon" />
-          </n-button>
-        </n-input-group>
-      </n-input-group>
-    </n-collapse-item>
-  </n-collapse>
+  <div class="filter">
+    <n-input-group class="filter-group">
+      <span class="filter-label">publication year</span>
+      <n-tooltip placement="bottom" trigger="click">
+        <template #trigger>
+          <n-input
+            style="text-align: left"
+            :disabled="!editState"
+            v-model:value="publicationYear"
+            placeholder=""
+          ></n-input>
+        </template>
+        <span>e.g. 2023, &gt;2023, &lt;2023, 2020-2023</span>
+      </n-tooltip>
+    </n-input-group>
+  </div>
+  <div class="filter">
+    <n-input-group class="filter-group">
+      <span class="filter-label">open access status</span>
+      <n-select
+        v-model:value="oaStatus"
+        :disabled="!editState"
+        :options="oaStatusOptions"
+        multiple
+      />
+    </n-input-group>
+  </div>
+  <div class="button-area">
+    <n-button class="edit-button" secondary :type="stateButtonType" round @click="changeEditState">
+      <n-icon v-if="editState" :component="CheckmarkSharp" />
+      <span v-else>Edit</span>
+    </n-button>
+  </div>
 </template>
 
 <style scoped>
 .filter {
-  margin: 0.5rem 0 0 2rem;
-  flex: 1;
+  margin: 0.5rem 0 1.5rem 0;
 }
-.year-filter {
-  width: 210px;
+.filter-group {
   align-items: center;
 }
-.year-filter-label {
-  min-width: 70px;
+.filter-label {
+  min-width: 180px;
+  margin-right: 0.5rem;
+}
+.button-area {
+  margin-top: 3rem;
+  text-align: right;
 }
 </style>

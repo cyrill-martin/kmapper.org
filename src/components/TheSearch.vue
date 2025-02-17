@@ -1,7 +1,7 @@
 <script setup>
-import { onMounted, computed } from "vue"
+import { ref, onMounted, computed } from "vue"
 import { useRoute } from "vue-router"
-import { NInputGroup, NInput, NButton, NIcon } from "naive-ui"
+import { NInputGroup, NInput, NButton, NIcon, NModal } from "naive-ui"
 import { useSearchStore } from "../stores/search.js"
 import { useScreenSizeStore } from "../stores/screenSize.js"
 import SearchOutline from "@vicons/ionicons5/SearchOutline"
@@ -32,6 +32,8 @@ onMounted(async () => {
 
 const isValidSearch = computed(() => search.isValidSearchQuery)
 
+const showFilterModal = ref(false)
+
 const searchSize = computed(() => {
   if (route.path === "/") {
     return screenSize.isMobile ? "medium" : "large"
@@ -39,9 +41,26 @@ const searchSize = computed(() => {
     return screenSize.isMobile ? "small" : "medium"
   }
 })
+
+const filterTriggerTitle = computed(() => {
+  const baseTitle = "filters"
+  return search.hasFilters ? `${baseTitle} ●` : baseTitle
+})
 </script>
 
 <template>
+  <n-modal
+    title="Filters"
+    id="filter-modal"
+    :style="{ width: screenSize.modalWidth }"
+    v-model:show="showFilterModal"
+    :mask-closable="true"
+    preset="card"
+    destroy-on-close
+    :on-after-leave="null"
+    draggable
+    ><TheFilter @filters="isValidSearch && search.searchAndMapContent()"
+  /></n-modal>
   <n-input-group>
     <n-input
       :size="searchSize"
@@ -66,5 +85,17 @@ const searchSize = computed(() => {
       Search
     </n-button>
   </n-input-group>
-  <TheFilter @year-filter="isValidSearch && search.searchAndMapContent()" />
+  <div class="filter-trigger" @click="showFilterModal = true">{{ filterTriggerTitle }}</div>
 </template>
+
+<style scoped>
+.filter-trigger {
+  margin: 0.5rem 0 0 2.35rem;
+  cursor: pointer;
+}
+
+.n-input,
+.n-input-group {
+  background-color: #f7f7f7;
+}
+</style>

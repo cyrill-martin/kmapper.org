@@ -44,7 +44,6 @@ export const useSearchStore = defineStore("search", () => {
   const pageSize = computed(() => (screenSize.isMobile ? 18 : 36))
   const page = ref(1)
   const paginatorPage = ref(1)
-  const goldOpenAccess = ref(true)
   const isLoading = ref(false)
   const searchResults = ref(null)
   const resultsCount = computed(() => Math.ceil(searchResults.value.meta.count / pageSize.value))
@@ -52,6 +51,7 @@ export const useSearchStore = defineStore("search", () => {
   const isValidSearchQuery = computed(() => searchQuery.value.trim().length !== 0)
   const politeMail = ref("mail@kmapper.com")
   const publicationYear = ref(null)
+  const oaStatus = ref(["diamond", "gold"])
 
   watch(
     () => searchQuery.value,
@@ -64,9 +64,17 @@ export const useSearchStore = defineStore("search", () => {
 
   // Filter
   function setPublicationYear(value) {
-    console.log("filter", value)
     publicationYear.value = value
   }
+
+  function setOaStatus(value) {
+    oaStatus.value = value
+  }
+
+  const hasFilters = computed(() => {
+    if (publicationYear.value || oaStatus.value) return true
+    return false
+  })
 
   // Base function to search OpenAlex works
   async function searchOpenAlexWorks(obj) {
@@ -75,13 +83,14 @@ export const useSearchStore = defineStore("search", () => {
       const perPage = obj.perPage
       const page = obj.page
       const publicationYear = obj.publicationYear
-      const goldOpenAccessOnly = obj.goldOpenAccessOnly
+      // const diamondOpenAccessOnly = obj.diamondOpenAccessOnly
+      const oaStatus = obj.oaStatus
       const email = obj.email
 
       try {
         console.log(publicationYear)
         let url = `https://api.openalex.org/works?search=${query}&per-page=${perPage}&page=${page}`
-        url = goldOpenAccessOnly ? `${url}&filter=open_access.oa_status:gold` : url
+        url = `${url}&filter=open_access.oa_status:${oaStatus}`
         url = publicationYear ? `${url},publication_year:${publicationYear}` : url
         url = url + `&mailto=${email}`
 
@@ -119,7 +128,7 @@ export const useSearchStore = defineStore("search", () => {
         query: searchQuery.value,
         perPage: pageSize.value,
         page: page.value,
-        goldOpenAccessOnly: goldOpenAccess.value,
+        oaStatus: oaStatus.value.join("|"),
         publicationYear: publicationYear.value,
         email: politeMail.value
       })
@@ -202,7 +211,6 @@ export const useSearchStore = defineStore("search", () => {
     pageSize,
     page,
     paginatorPage,
-    goldOpenAccess,
     isLoading,
     searchResults,
     resultsCount,
@@ -214,6 +222,9 @@ export const useSearchStore = defineStore("search", () => {
     politeMail,
     testData,
     publicationYear,
-    setPublicationYear
+    setPublicationYear,
+    oaStatus,
+    setOaStatus,
+    hasFilters
   }
 })

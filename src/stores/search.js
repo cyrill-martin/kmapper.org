@@ -48,7 +48,9 @@ export const useSearchStore = defineStore("search", () => {
   const searchResults = ref(null)
   const resultsCount = computed(() => Math.ceil(searchResults.value.meta.count / pageSize.value))
   const hasSearchResults = computed(() => searchResults.value.results.length)
-  const isValidSearchQuery = computed(() => searchQuery.value.trim().length !== 0)
+  const isValidSearchQuery = computed(
+    () => searchQuery.value && searchQuery.value.trim().length !== 0
+  )
   const politeMail = ref("mail@kmapper.com")
   const publicationYear = ref(null)
   const oaStatus = ref(["diamond", "gold"])
@@ -83,7 +85,6 @@ export const useSearchStore = defineStore("search", () => {
       const perPage = obj.perPage
       const page = obj.page
       const publicationYear = obj.publicationYear
-      // const diamondOpenAccessOnly = obj.diamondOpenAccessOnly
       const oaStatus = obj.oaStatus
       const email = obj.email
 

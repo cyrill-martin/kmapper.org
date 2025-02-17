@@ -13,21 +13,6 @@ onMounted(() => {
   oaStatus.value = search.oaStatus
 })
 
-// Watchers
-watch(
-  () => search.publicationYear,
-  () => {
-    publicationYear.value = search.publicationYear
-  }
-)
-
-watch(
-  () => search.oaStatus,
-  () => {
-    oaStatus.value = search.oaStatus
-  }
-)
-
 // Editing
 const editState = ref(false)
 
@@ -56,18 +41,48 @@ function setPublicationYear() {
 // Open access filter
 const oaStatus = ref(null)
 
-const oaStatusOptions = [
-  { label: "diamond", value: "diamond", disabled: true },
-  { label: "gold", value: "gold" },
-  { label: "green", value: "green" },
-  { label: "hybrid", value: "hybrid" },
-  { label: "bronze", value: "bronze" }
-]
+const oaStatusOptions = ref([
+  { label: "diamond", value: "diamond", disabled: false },
+  { label: "gold", value: "gold", disabled: false },
+  { label: "green", value: "green", disabled: false },
+  { label: "hybrid", value: "hybrid", disabled: false },
+  { label: "bronze", value: "bronze", disabled: false },
+  { label: "closed", value: "closed", disabled: false }
+])
 
 function setOaStatus() {
-  console.log(oaStatus.value)
   search.setOaStatus(oaStatus.value)
 }
+
+// Watchers
+watch(
+  () => oaStatus.value,
+  (newValues) => {
+    // if (!newValues || newValues.length === 0) {
+    //   oaStatus.value = oldValues
+    // }
+    if (newValues.length === 1) {
+      const option = oaStatusOptions.value.find((option) => option.value === newValues[0])
+      option.disabled = true
+    } else if (newValues.length > 1) {
+      oaStatusOptions.value.forEach((option) => (option.disabled = false))
+    }
+  }
+)
+
+watch(
+  () => search.publicationYear,
+  (newValues) => {
+    publicationYear.value = newValues
+  }
+)
+
+watch(
+  () => search.oaStatus,
+  (newValues) => {
+    oaStatus.value = newValues
+  }
+)
 </script>
 
 <template>
@@ -95,6 +110,7 @@ function setOaStatus() {
         :disabled="!editState"
         :options="oaStatusOptions"
         multiple
+        :fallback-option="true"
       />
     </n-input-group>
   </div>

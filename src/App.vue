@@ -8,7 +8,10 @@ const themeOverrides = {
   common: {
     primaryColor: "#333447",
     primaryColorPressed: "#333447",
-    primaryColorHover: "#333447"
+    primaryColorHover: "#333447",
+    inputColor: "#f7f7f7",
+    inputColorDisabled: "#f7f7f7",
+    modalColor: "#f7f7f7"
   }
 }
 </script>

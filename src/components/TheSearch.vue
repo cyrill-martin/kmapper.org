@@ -42,23 +42,20 @@ const searchSize = computed(() => {
   }
 })
 
-const filterTriggerTitle = computed(() => {
-  const baseTitle = "filters"
-  return search.hasFilters ? `${baseTitle} ●` : baseTitle
-})
+// const filterTriggerTitle = computed(() => {
+//   const baseTitle = "filters"
+//   return search.hasFilters ? `${baseTitle} ●` : baseTitle
+// })
 </script>
 
 <template>
   <n-modal
-    title="Filters"
     id="filter-modal"
     :style="{ width: screenSize.modalWidth }"
     v-model:show="showFilterModal"
     :mask-closable="true"
     preset="card"
     destroy-on-close
-    :on-after-leave="null"
-    draggable
     ><TheFilter @filters="isValidSearch && search.searchAndMapContent()"
   /></n-modal>
   <n-input-group>
@@ -85,17 +82,12 @@ const filterTriggerTitle = computed(() => {
       Search
     </n-button>
   </n-input-group>
-  <div class="filter-trigger" @click="showFilterModal = true">{{ filterTriggerTitle }}</div>
+  <div class="filter-trigger" @click="showFilterModal = true">filters ★</div>
 </template>
 
 <style scoped>
 .filter-trigger {
   margin: 0.5rem 0 0 2.35rem;
   cursor: pointer;
-}
-
-.n-input,
-.n-input-group {
-  background-color: #f7f7f7;
 }
 </style>

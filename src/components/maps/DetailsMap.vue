@@ -17,7 +17,7 @@ onMounted(() => {
   // Create the static, screen-dependent map elements
   createStaticMapElements()
   drawDynamicMap()
-  console.log("detailsMapGraph", graph.detailsMapGraph)
+  // console.log("detailsMapGraph", graph.detailsMapGraph)
 
   tooltip.value = d3.select("#details-tooltip")
 })

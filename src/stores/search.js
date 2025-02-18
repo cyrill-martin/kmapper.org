@@ -52,8 +52,12 @@ export const useSearchStore = defineStore("search", () => {
     () => searchQuery.value && searchQuery.value.trim().length !== 0
   )
   const politeMail = ref("mail@kmapper.com")
-  const publicationYear = ref(null)
-  const oaStatus = ref(["diamond", "gold"])
+
+  const defaultPublicationYear = ref(null)
+  const publicationYear = ref(defaultPublicationYear.value)
+
+  const defaultOaStatus = ref(["diamond", "gold"])
+  const oaStatus = ref(defaultOaStatus.value)
 
   watch(
     () => searchQuery.value,
@@ -73,11 +77,6 @@ export const useSearchStore = defineStore("search", () => {
     oaStatus.value = value
   }
 
-  const hasFilters = computed(() => {
-    if (publicationYear.value || oaStatus.value) return true
-    return false
-  })
-
   // Base function to search OpenAlex works
   async function searchOpenAlexWorks(obj) {
     if (!testData.value) {
@@ -89,7 +88,6 @@ export const useSearchStore = defineStore("search", () => {
       const email = obj.email
 
       try {
-        console.log(publicationYear)
         let url = `https://api.openalex.org/works?search=${query}&per-page=${perPage}&page=${page}`
         url = `${url}&filter=open_access.oa_status:${oaStatus}`
         url = publicationYear ? `${url},publication_year:${publicationYear}` : url
@@ -134,46 +132,45 @@ export const useSearchStore = defineStore("search", () => {
         email: politeMail.value
       })
 
-      console.log("Search results", searchResults.value)
+      // console.log("Search results", searchResults.value)
 
       if (hasSearchResults.value) {
         // Map OpenAlex results to kmapper home map
         const homeMapGraph = await mapOpenAlexWorks(searchResults.value)
         graph.setHomeMapGraph(homeMapGraph)
-        console.log("Home graph", graph.homeMapGraph)
+        // console.log("Home graph", graph.homeMapGraph)
 
         // Create SDG-work nodes
         const sdgWorkNodes = await createSdgWorkNodes(graph.homeMapGraph)
         graph.setSdgWorkNodes(sdgWorkNodes)
-        console.log("SDG-work nodes", graph.sdgWorkNodes)
+        // console.log("SDG-work nodes", graph.sdgWorkNodes)
 
         // Create field-work nodes
         const fieldWorkNodes = await createFieldWorkNodes(graph.homeMapGraph)
         graph.setFieldWorkNodes(fieldWorkNodes)
-        console.log("Field-work nodes", graph.fieldWorkNodes)
+        // console.log("Field-work nodes", graph.fieldWorkNodes)
+
+        const query =
+          route.name !== "map" ? { q: searchQuery.value } : { ...route.query, q: searchQuery.value }
+
+        if (publicationYear.value) {
+          query.py = publicationYear.value
+        } else if (route.query.py) {
+          delete query.py
+        }
+
+        if (oaStatus.value) {
+          query.oa = oaStatus.value.join("|")
+        } else if (route.query.oa) {
+          delete query.oa
+        }
 
         if (route.name !== "map") {
-          const query = { q: searchQuery.value }
-
-          if (publicationYear.value) {
-            query.py = publicationYear.value
-          } else if (route.query.py) {
-            delete query.py
-          }
-          // Change route if not already on /map
           router.push({
             name: "map",
             query: query
           })
         } else {
-          const query = { ...route.query, q: searchQuery.value }
-          // Else, update query parameter q
-          if (publicationYear.value) {
-            query.py = publicationYear.value
-          } else if (route.query.py) {
-            delete query.py
-          }
-
           router.replace({ query: query })
         }
 
@@ -225,7 +222,6 @@ export const useSearchStore = defineStore("search", () => {
     publicationYear,
     setPublicationYear,
     oaStatus,
-    setOaStatus,
-    hasFilters
+    setOaStatus
   }
 })

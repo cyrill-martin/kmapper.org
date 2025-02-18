@@ -130,7 +130,6 @@ export async function mapOpenAlexWorks(searchResults) {
 
   // Field data
   function createGraphFields(uniqueFieldsSet) {
-    console.log(fieldIRIs)
     return [...uniqueFieldsSet].sort().map((field) => {
       return {
         name: field,

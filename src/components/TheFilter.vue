@@ -58,9 +58,6 @@ function setOaStatus() {
 watch(
   () => oaStatus.value,
   (newValues) => {
-    // if (!newValues || newValues.length === 0) {
-    //   oaStatus.value = oldValues
-    // }
     if (newValues.length === 1) {
       const option = oaStatusOptions.value.find((option) => option.value === newValues[0])
       option.disabled = true
@@ -104,7 +101,13 @@ watch(
   </div>
   <div class="filter">
     <n-input-group class="filter-group">
-      <span class="filter-label">open access status</span>
+      <span class="filter-label"
+        ><a
+          href="https://docs.openalex.org/api-entities/works/work-object#oa_status"
+          target="_blank"
+          >open access status</a
+        ></span
+      >
       <n-select
         v-model:value="oaStatus"
         :disabled="!editState"
@@ -132,6 +135,7 @@ watch(
 .filter-label {
   min-width: 180px;
   margin-right: 0.5rem;
+  align-items: center;
 }
 .button-area {
   margin-top: 3rem;

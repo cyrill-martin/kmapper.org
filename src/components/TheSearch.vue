@@ -20,11 +20,15 @@ onMounted(async () => {
   // Access query parameters
   const qParam = route.query.q
   const pyParam = route.query.py
+  const oaParam = route.query.oa
 
   if (qParam && !search.searchQuery) {
     search.setSearchQuery(qParam)
     if (pyParam) {
       search.setPublicationYear(pyParam)
+    }
+    if (oaParam) {
+      search.setOaStatus(splitOaParam(oaParam))
     }
     await search.searchAndMapContent()
   }
@@ -42,10 +46,9 @@ const searchSize = computed(() => {
   }
 })
 
-// const filterTriggerTitle = computed(() => {
-//   const baseTitle = "filters"
-//   return search.hasFilters ? `${baseTitle} ●` : baseTitle
-// })
+function splitOaParam(param) {
+  return param.split("|")
+}
 </script>
 
 <template>
@@ -82,7 +85,7 @@ const searchSize = computed(() => {
       Search
     </n-button>
   </n-input-group>
-  <div class="filter-trigger" @click="showFilterModal = true">filters ★</div>
+  <div class="filter-trigger" @click="showFilterModal = true">filters ●</div>
 </template>
 
 <style scoped>

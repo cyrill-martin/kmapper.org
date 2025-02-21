@@ -654,13 +654,6 @@ function drawWorksInSecondGroup(callback1, callback2) {
     .data(worksInSecondGroup.value, function (_, i) {
       return i
     })
-  // .each(function () {
-  //   // Adding a title element to achieche a standard HTML tooltip
-  //   // Yes, I like the style of the standard tooltips!!
-  //   d3.select(this)
-  //     .append("title")
-  //     .text((d) => d.title)
-  // })
 
   // Merge the enter and update selections
   const updateShownWorks = enterShownWorks.merge(shownWorksSelection)
@@ -858,6 +851,8 @@ function addShownWorksMouseEvents(callback) {
 
 function addShwonWorksClickEvents() {
   secondGroup.value.selectAll(".shown-work-overlay").on("click", async function () {
+    tooltip.value.style("visibility", "hidden")
+
     const workIndex = d3.select(this).attr("data-id")
 
     // E.g. {type: 'works', root: {...}, sizes: {...} }

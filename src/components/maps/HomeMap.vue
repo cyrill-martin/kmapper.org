@@ -1080,7 +1080,8 @@ function addClickEvents() {
   visibility: hidden;
   position: fixed;
   z-index: 10;
-  background-color: rgba(247, 247, 247, 0.9);
+  background-color: rgb(81, 78, 253, 0.9);
+  color: #f7f7f7;
   border-radius: 0px;
   padding: 5px;
 }

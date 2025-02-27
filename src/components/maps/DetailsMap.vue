@@ -232,7 +232,7 @@ function drawWorksTitleAndMetadata() {
     .attr("x", 5)
     .attr("y", props.sizes.worksBandwidth * 0.85)
     .style("font-size", props.sizes.workTitle)
-    .attr("fill", "white")
+    .attr("fill", "#f7f7f7")
 
   titleGroup.value
     .select(".title-group")
@@ -499,7 +499,7 @@ function drawElementsInFirstGroup(data, callback1, callback2) {
             circleGroup
               .append("text")
               .text((d) => d.data.children.length)
-              .attr("fill", "white")
+              .attr("fill", "#f7f7f7")
               .style("font-size", `${props.sizes.field}px`)
               .attr("dominant-baseline", "middle")
               .attr("text-anchor", "middle")
@@ -1335,7 +1335,8 @@ function addShwonElementsClickEvents() {
   visibility: hidden;
   position: fixed;
   z-index: 15;
-  background-color: rgba(247, 247, 247, 0.9);
+  background-color: rgb(81, 78, 253, 0.9);
+  color: #f7f7f7;
   border-radius: 0px;
   padding: 5px;
 }

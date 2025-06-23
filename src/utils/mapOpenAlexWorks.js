@@ -139,8 +139,28 @@ export async function mapOpenAlexWorks(searchResults) {
   }
 
   // Related works
-  function getRelatedWorks(work) {
-    return work.related_works.length ? work.related_works : null
+  // function getRelatedWorks(work) {
+  //   return work.related_works.length ? work.related_works : null
+  // }
+
+  // Create abstract
+  function getAbstract(work) {
+    let abstract
+    if (work.abstract_inverted_index) {
+      abstract = []
+
+      Object.entries(work.abstract_inverted_index).forEach(([key, value]) => {
+        value.forEach((index) => {
+          abstract[index] = key
+        })
+      })
+
+      abstract = abstract.join(" ")
+    } else {
+      abstract = null
+    }
+
+    return abstract
   }
 
   ////////////////////////////////////////////////////////////
@@ -167,7 +187,8 @@ export async function mapOpenAlexWorks(searchResults) {
     const url = doi ? doi : landingPageUrl
     // Title
     const title = getTitle(result)
-    // Create plaintext abstract based on OpenAlex data ???
+    // Abstract
+    const abstract = getAbstract(result)
     // Source type
     const type = getType(result)
     // Source name
@@ -183,7 +204,7 @@ export async function mapOpenAlexWorks(searchResults) {
     // Links
     const links = [...(sdgs || []), ...(fields || [])]
     // Related works
-    const relatedWorks = getRelatedWorks(result)
+    // const relatedWorks = getRelatedWorks(result)
 
     return {
       id: index,
@@ -191,14 +212,15 @@ export async function mapOpenAlexWorks(searchResults) {
       doi,
       url,
       title,
+      abstract,
       source: {
         type,
         name
       },
       year,
       authors,
-      links,
-      relatedWorks
+      links
+      // relatedWorks
     }
   })
 

@@ -59,6 +59,9 @@ export const useSearchStore = defineStore("search", () => {
   const defaultOaStatus = ref(["diamond", "gold"])
   const oaStatus = ref(defaultOaStatus.value)
 
+  const paperSpace = ref([])
+  // paper: { query: "...", date: " ", sdgs: [], subjects: [], title: "..."}
+
   watch(
     () => searchQuery.value,
     () => {
@@ -137,6 +140,9 @@ export const useSearchStore = defineStore("search", () => {
       if (hasSearchResults.value) {
         // Map OpenAlex results to kmapper home map
         const homeMapGraph = await mapOpenAlexWorks(searchResults.value)
+
+        console.log(homeMapGraph)
+
         graph.setHomeMapGraph(homeMapGraph)
         // console.log("Home graph", graph.homeMapGraph)
 
@@ -202,6 +208,10 @@ export const useSearchStore = defineStore("search", () => {
     isLoading.value = !isLoading.value
   }
 
+  function addToPaperSpace(paper) {
+    paperSpace.value.push(paper)
+  }
+
   return {
     searchAndMapContent,
     searchQuery,
@@ -222,6 +232,7 @@ export const useSearchStore = defineStore("search", () => {
     publicationYear,
     setPublicationYear,
     oaStatus,
-    setOaStatus
+    setOaStatus,
+    addToPaperSpace
   }
 })

@@ -1,5 +1,6 @@
 <script setup>
 import { onMounted, ref, computed, watch } from "vue"
+import { NCollapse, NCollapseItem } from "naive-ui"
 import d3 from "../../d3-importer.js"
 import { useScreenSizeStore } from "../../stores/screenSize.js"
 import { useGraphStore } from "../../stores/graph.js"
@@ -189,7 +190,7 @@ function addSecondGroup() {
 //////////////////////////////////////////////////////////////////////
 function drawTitle() {
   if (graph.detailsMapGraph.type === "works") {
-    drawWorksTitleAndMetadata()
+    // drawWorksTitleAndMetadata()
   } else if (graph.detailsMapGraph.type === "sdgs") {
     drawSdgTitle()
   } else {
@@ -197,7 +198,7 @@ function drawTitle() {
   }
 }
 
-function drawWorksTitleAndMetadata() {
+/* function drawWorksTitleAndMetadata() {
   const theTitleGroup = titleGroup.value
     .append("g")
     .attr("class", "title-group")
@@ -241,7 +242,7 @@ function drawWorksTitleAndMetadata() {
     .ease(easeAnimation)
     .attr("transform", "translate(0,0)")
 
-  // Adding year and journal
+  // Adding year and journal and DOI
   titleGroup.value
     .append("g")
     .attr("class", "title-metadata")
@@ -257,7 +258,7 @@ function drawWorksTitleAndMetadata() {
     )
     .style("font-size", `${props.sizes.field * 0.85}px`)
     .attr("fill", theBlack)
-}
+} */
 
 function drawSdgTitle() {
   const theTitleGroup = titleGroup.value
@@ -1326,6 +1327,28 @@ function addShwonElementsClickEvents() {
     <div class="tooltip-title"></div>
     <div class="tooltip-citation"></div>
   </div>
+  <div v-if="graph.detailsMapGraph.type === 'works'">
+    <div class="details-work-title">
+      <a :href="graph.detailsMapGraph.data.openAlexId" target="_blank">
+        <div>{{ graph.detailsMapGraph.data.title }}</div>
+      </a>
+    </div>
+    <div class="details-work-citation">
+      <a :href="graph.detailsMapGraph.data.doi" target="_blank">
+        <span>{{ graph.detailsMapGraph.data.year }}</span
+        ><span v-if="graph.detailsMapGraph.data.source.name"
+          >: {{ graph.detailsMapGraph.data.source.name }}</span
+        ><span> - {{ graph.detailsMapGraph.data.doi }}</span>
+      </a>
+    </div>
+    <div class="details-work-abstract" v-if="graph.detailsMapGraph.data.abstract">
+      <n-collapse>
+        <n-collapse-item title="Abstract" name="abstract">
+          <div>{{ graph.detailsMapGraph.data.abstract }}</div>
+        </n-collapse-item>
+      </n-collapse>
+    </div>
+  </div>
   <div id="details-map"></div>
 </template>
 
@@ -1343,5 +1366,29 @@ function addShwonElementsClickEvents() {
 
 .tooltip-citation {
   font-size: 0.85rem;
+}
+
+.details-work-title {
+  background-color: #333447;
+  padding: 1px 8px;
+  margin-bottom: 0.1rem;
+}
+
+.details-work-title a {
+  color: #f7f7f7;
+  text-decoration: none;
+}
+
+.details-work-citation span {
+  font-size: 0.925rem;
+}
+
+.details-work-citation a {
+  color: #333447;
+  text-decoration: none;
+}
+
+.details-work-abstract {
+  margin-top: 0.5rem;
 }
 </style>

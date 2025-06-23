@@ -1338,7 +1338,7 @@ function addShwonElementsClickEvents() {
         <span>{{ graph.detailsMapGraph.data.year }}</span
         ><span v-if="graph.detailsMapGraph.data.source.name"
           >: {{ graph.detailsMapGraph.data.source.name }}</span
-        ><span> - {{ graph.detailsMapGraph.data.doi }}</span>
+        ><span v-if="graph.detailsMapGraph.data.doi"> - {{ graph.detailsMapGraph.data.doi }}</span>
       </a>
     </div>
     <div class="details-work-abstract" v-if="graph.detailsMapGraph.data.abstract">

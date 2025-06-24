@@ -1327,7 +1327,10 @@ function addShwonElementsClickEvents() {
     <div class="tooltip-title"></div>
     <div class="tooltip-citation"></div>
   </div>
-  <div v-if="graph.detailsMapGraph.type === 'works'">
+  <div
+    v-if="graph.detailsMapGraph.type === 'works'"
+    :style="{ 'font-size': props.sizes.workTitle }"
+  >
     <div class="details-work-title">
       <a :href="graph.detailsMapGraph.data.openAlexId" target="_blank">
         <div>{{ graph.detailsMapGraph.data.title }}</div>
@@ -1377,10 +1380,6 @@ function addShwonElementsClickEvents() {
 .details-work-title a {
   color: #f7f7f7;
   text-decoration: none;
-}
-
-.details-work-citation span {
-  font-size: 0.925rem;
 }
 
 .details-work-citation a {

@@ -42,6 +42,7 @@ function resetSearch() {
       </div>
       <div class="nav-container">
         <nav>
+          <RouterLink to="/paperspace">Paper Space</RouterLink>
           <RouterLink to="/about">About</RouterLink>
         </nav>
       </div>
@@ -64,5 +65,9 @@ header {
   display: flex;
   flex: 1;
   justify-content: end;
+  align-items: baseline;
+}
+.nav-container nav a {
+  margin: 0 0 0 15px;
 }
 </style>

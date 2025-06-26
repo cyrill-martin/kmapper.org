@@ -1,8 +1,12 @@
 <script setup>
+import { onMounted } from "vue"
 import { NConfigProvider, NMessageProvider, NFlex } from "naive-ui"
 import { RouterView } from "vue-router"
 import TheHeader from "./components/layout/TheHeader.vue"
 import TheFooter from "./components/layout/TheFooter.vue"
+import { usePaperSpaceStore } from "./stores/paperSpace.js"
+
+const paperSpace = usePaperSpaceStore()
 
 const themeOverrides = {
   common: {
@@ -14,6 +18,10 @@ const themeOverrides = {
     modalColor: "#f7f7f7"
   }
 }
+
+onMounted(async () => {
+  await paperSpace.checkLocalStorage()
+})
 </script>
 
 <template>

@@ -4,7 +4,7 @@ import { useRoute } from "vue-router"
 import { NInputGroup, NInput, NButton, NIcon, NModal } from "naive-ui"
 import { useSearchStore } from "../stores/search.js"
 import { useScreenSizeStore } from "../stores/screenSize.js"
-import SearchOutline from "@vicons/ionicons5/SearchOutline"
+import { SearchOutline } from "@vicons/ionicons5"
 import TheFilter from "./TheFilter.vue"
 
 // Use the router

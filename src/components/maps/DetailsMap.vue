@@ -1,17 +1,20 @@
 <script setup>
 import { onMounted, ref, computed, watch } from "vue"
-import { NCollapse, NCollapseItem } from "naive-ui"
+import { NCollapse, NCollapseItem, NIcon } from "naive-ui"
 import d3 from "../../d3-importer.js"
 import { useScreenSizeStore } from "../../stores/screenSize.js"
 import { useGraphStore } from "../../stores/graph.js"
+import { usePaperSpaceStore } from "../../stores/paperSpace.js"
 import { createDetailsMapGraph } from "../../utils/createDetailsMapGraph.js"
 import { debounce } from "../../utils/debounce.js"
+import { AddCircleOutline, Checkmark } from "@vicons/ionicons5"
 
 const props = defineProps(["sizes"])
 
 // Use stores
 const screenSize = useScreenSizeStore()
 const graph = useGraphStore()
+const paperSpace = usePaperSpaceStore()
 
 onMounted(() => {
   getAvailableModalWidth()
@@ -1320,6 +1323,24 @@ function addShwonElementsClickEvents() {
     drawDynamicMap()
   })
 }
+
+const paperSpaceIconSize = computed(() => {
+  return screenSize.isMobile ? 22 : 25
+})
+
+const isPaperInSpace = computed(() => {
+  return paperSpace.papersInSpace.includes(graph.detailsMapGraph.data.openAlexId)
+})
+
+const paperSpaceIconText = computed(() => {
+  return isPaperInSpace.value ? "in Paper Space" : "add to Paper Space"
+})
+
+function handlePaperSpace() {
+  isPaperInSpace.value
+    ? paperSpace.removeFromPaperSpace(graph.detailsMapGraph.data.openAlexId)
+    : paperSpace.addToPaperSpace(graph.detailsMapGraph.data)
+}
 </script>
 
 <template>
@@ -1350,6 +1371,13 @@ function addShwonElementsClickEvents() {
           <div>{{ graph.detailsMapGraph.data.abstract }}</div>
         </n-collapse-item>
       </n-collapse>
+    </div>
+    <div class="paper-space-controls" @click="handlePaperSpace">
+      <n-icon :size="paperSpaceIconSize">
+        <Checkmark v-if="isPaperInSpace" style="width: 100%; height: 100%" />
+        <AddCircleOutline v-else style="width: 100%; height: 100%" />
+      </n-icon>
+      <span>{{ paperSpaceIconText }}</span>
     </div>
   </div>
   <div id="details-map"></div>
@@ -1386,7 +1414,16 @@ function addShwonElementsClickEvents() {
   color: #333447;
   text-decoration: none;
 }
-
+.paper-space-controls {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 1rem;
+  cursor: pointer;
+}
+.paper-space-controls span {
+  font-size: 12px;
+}
 .details-work-abstract {
   margin-top: 0.5rem;
 }

@@ -1,7 +1,7 @@
 <script setup>
 import { ref, onMounted, computed } from "vue"
 import { useRoute } from "vue-router"
-import { NInputGroup, NInput, NButton, NIcon, NModal } from "naive-ui"
+import { NInputGroup, NInput, NButton, NIcon, NModal, useMessage } from "naive-ui"
 import { useSearchStore } from "../stores/search.js"
 import { useScreenSizeStore } from "../stores/screenSize.js"
 import { SearchOutline } from "@vicons/ionicons5"
@@ -13,6 +13,8 @@ const route = useRoute()
 // Use stores
 const search = useSearchStore()
 const screenSize = useScreenSizeStore()
+
+const message = useMessage()
 
 // onMounted //////////////////
 ///////////////////////////////
@@ -30,7 +32,7 @@ onMounted(async () => {
     if (oaParam) {
       search.setOaStatus(splitOaParam(oaParam))
     }
-    await search.searchAndMapContent()
+    await search.searchAndMapContent(message)
   }
 })
 
@@ -59,7 +61,7 @@ function splitOaParam(param) {
     :mask-closable="true"
     preset="card"
     destroy-on-close
-    ><TheFilter @filters="isValidSearch && search.searchAndMapContent()"
+    ><TheFilter @filters="isValidSearch && search.searchAndMapContent(message)"
   /></n-modal>
   <n-input-group>
     <n-input
@@ -69,7 +71,7 @@ function splitOaParam(param) {
       v-model:loading="search.isLoading"
       placeholder="Search OpenAlex for gold open access works"
       v-model:value="search.searchQuery"
-      @keyup.enter="isValidSearch && search.searchAndMapContent()"
+      @keyup.enter="isValidSearch && search.searchAndMapContent(message)"
     >
       <template #prefix>
         <n-icon :component="SearchOutline" />
@@ -80,7 +82,7 @@ function splitOaParam(param) {
       round
       type="primary"
       ghost
-      @click="isValidSearch && search.searchAndMapContent()"
+      @click="isValidSearch && search.searchAndMapContent(message)"
     >
       Search
     </n-button>

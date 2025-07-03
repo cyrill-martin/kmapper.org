@@ -1,6 +1,5 @@
 <script setup>
 import { onMounted } from "vue"
-import { NConfigProvider, NMessageProvider, NFlex } from "naive-ui"
 import { RouterView } from "vue-router"
 import TheHeader from "./components/layout/TheHeader.vue"
 import TheFooter from "./components/layout/TheFooter.vue"
@@ -15,7 +14,8 @@ const themeOverrides = {
     primaryColorHover: "#333447",
     inputColor: "#f7f7f7",
     inputColorDisabled: "#f7f7f7",
-    modalColor: "#f7f7f7"
+    modalColor: "#f7f7f7",
+    warningColor: "#333447"
   }
 }
 
@@ -26,15 +26,17 @@ onMounted(async () => {
 
 <template>
   <n-config-provider :theme-overrides="themeOverrides">
-    <n-message-provider>
-      <n-flex vertical class="flex-container">
-        <TheHeader />
-        <main>
-          <RouterView />
-        </main>
-        <TheFooter />
-      </n-flex>
-    </n-message-provider>
+    <n-dialog-provider>
+      <n-message-provider>
+        <n-flex vertical class="flex-container">
+          <TheHeader />
+          <main>
+            <RouterView />
+          </main>
+          <TheFooter />
+        </n-flex>
+      </n-message-provider>
+    </n-dialog-provider>
   </n-config-provider>
 </template>
 
@@ -47,5 +49,11 @@ main {
   display: flex;
   flex: 1;
   padding: 0 1rem 0 1rem;
+}
+
+.n-base-icon svg,
+.n-icon svg {
+  width: 100%;
+  height: 100%;
 }
 </style>

@@ -1,14 +1,22 @@
 import { defineStore } from "pinia"
 import { ref, computed } from "vue"
+import { paperSpaceConsentDialog } from "../utils/paperSpaceConsent.js"
 
 export const usePaperSpaceStore = defineStore("paperSpace", () => {
   const papers = ref(null)
 
+  function checkForConsent() {
+    return localStorage.getItem("paper-space-consent")
+  }
+
   // Function to add a paper to the paper space
-  function addToPaperSpace(work) {
-    papers.value.push(work)
-    saveInLocalStorage(papers.value)
-    console.log(papers.value)
+  function addToPaperSpace(dialogInstance, work) {
+    if (checkForConsent()) {
+      papers.value.push(work)
+      saveInLocalStorage(papers.value)
+    } else {
+      paperSpaceConsentDialog(dialogInstance)
+    }
   }
 
   function setPaperSpace(papersArray) {
@@ -36,7 +44,7 @@ export const usePaperSpaceStore = defineStore("paperSpace", () => {
   }
 
   async function checkLocalStorage() {
-    const papersString = localStorage.getItem("paperSpace")
+    const papersString = localStorage.getItem("paper-space")
 
     if (papersString) {
       const parsedPaperString = loadFromLocalStorage(papersString)
@@ -47,7 +55,7 @@ export const usePaperSpaceStore = defineStore("paperSpace", () => {
   }
 
   function saveInLocalStorage(papers) {
-    localStorage.setItem("paperSpace", JSON.stringify(papers))
+    localStorage.setItem("paper-space", JSON.stringify(papers))
   }
 
   function loadFromLocalStorage(papersString) {
@@ -64,7 +72,7 @@ export const usePaperSpaceStore = defineStore("paperSpace", () => {
       }
     } catch (e) {
       console.error("Error parsing 'paperSpace' from localStorage:", e)
-      localStorage.removeItem("paperSpace")
+      localStorage.removeItem("paper-space")
       return []
     }
   }
@@ -78,6 +86,7 @@ export const usePaperSpaceStore = defineStore("paperSpace", () => {
     checkLocalStorage,
     saveInLocalStorage,
     loadFromLocalStorage,
-    setPaperSpace
+    setPaperSpace,
+    checkForConsent
   }
 })

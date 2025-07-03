@@ -1,9 +1,10 @@
 <script setup>
 import { onMounted, ref, computed, watch } from "vue"
-import { NCollapse, NCollapseItem, NIcon } from "naive-ui"
+import { NCollapse, NCollapseItem, NIcon, useDialog } from "naive-ui"
 import d3 from "../../d3-importer.js"
 import { useScreenSizeStore } from "../../stores/screenSize.js"
 import { useGraphStore } from "../../stores/graph.js"
+import { useSearchStore } from "../../stores/search.js"
 import { usePaperSpaceStore } from "../../stores/paperSpace.js"
 import { createDetailsMapGraph } from "../../utils/createDetailsMapGraph.js"
 import { debounce } from "../../utils/debounce.js"
@@ -15,14 +16,15 @@ const props = defineProps(["sizes"])
 const screenSize = useScreenSizeStore()
 const graph = useGraphStore()
 const paperSpace = usePaperSpaceStore()
+const search = useSearchStore()
+
+const dialog = useDialog()
 
 onMounted(() => {
   getAvailableModalWidth()
   // Create the static, screen-dependent map elements
   createStaticMapElements()
   drawDynamicMap()
-  // console.log("detailsMapGraph", graph.detailsMapGraph)
-
   tooltip.value = d3.select("#details-tooltip")
 })
 
@@ -1337,9 +1339,11 @@ const paperSpaceIconText = computed(() => {
 })
 
 function handlePaperSpace() {
-  isPaperInSpace.value
-    ? paperSpace.removeFromPaperSpace(graph.detailsMapGraph.data.openAlexId)
-    : paperSpace.addToPaperSpace(graph.detailsMapGraph.data)
+  if (isPaperInSpace.value) {
+    paperSpace.removeFromPaperSpace(graph.detailsMapGraph.data.openAlexId)
+  } else {
+    paperSpace.addToPaperSpace(dialog, { query: search.searchQuery, ...graph.detailsMapGraph.data })
+  }
 }
 </script>
 
@@ -1359,10 +1363,7 @@ function handlePaperSpace() {
     </div>
     <div class="details-work-citation">
       <a :href="graph.detailsMapGraph.data.doi" target="_blank">
-        <span>{{ graph.detailsMapGraph.data.year }}</span
-        ><span v-if="graph.detailsMapGraph.data.source.name"
-          >: {{ graph.detailsMapGraph.data.source.name }}</span
-        ><span v-if="graph.detailsMapGraph.data.doi"> - {{ graph.detailsMapGraph.data.doi }}</span>
+        {{ graph.detailsMapGraph.data.citation }}
       </a>
     </div>
     <div class="details-work-abstract" v-if="graph.detailsMapGraph.data.abstract">
@@ -1374,8 +1375,8 @@ function handlePaperSpace() {
     </div>
     <div class="paper-space-controls" @click="handlePaperSpace">
       <n-icon :size="paperSpaceIconSize">
-        <Checkmark v-if="isPaperInSpace" style="width: 100%; height: 100%" />
-        <AddCircleOutline v-else style="width: 100%; height: 100%" />
+        <Checkmark v-if="isPaperInSpace" />
+        <AddCircleOutline v-else />
       </n-icon>
       <span>{{ paperSpaceIconText }}</span>
     </div>

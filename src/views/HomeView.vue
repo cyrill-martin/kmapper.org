@@ -1,6 +1,5 @@
 <script setup>
 import { computed } from "vue"
-import { NFlex } from "naive-ui"
 import TheSearch from "../components/TheSearch.vue"
 import { useScreenSizeStore } from "../stores/screenSize.js"
 

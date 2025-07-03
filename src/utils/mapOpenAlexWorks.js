@@ -163,6 +163,19 @@ export async function mapOpenAlexWorks(searchResults) {
     return abstract
   }
 
+  function getCitation(work) {
+    // e.g.: 2024: Miranda - https://doi.org/10.4000/miranda.60150
+    const workYear = getYear(work)
+    const workSource = getName(work)
+    const doi = getDoi(work)
+
+    let citation = workYear ? `${workYear}: ` : ""
+    citation = workSource ? `${citation} ${workSource}` : citation
+    citation = doi ? `${citation} - ${doi}` : citation
+
+    return citation
+  }
+
   ////////////////////////////////////////////////////////////
   // MAPPING /////////////////////////////////////////////////
   ////////////////////////////////////////////////////////////
@@ -205,6 +218,7 @@ export async function mapOpenAlexWorks(searchResults) {
     const links = [...(sdgs || []), ...(fields || [])]
     // Related works
     // const relatedWorks = getRelatedWorks(result)
+    const citation = getCitation(result)
 
     return {
       id: index,
@@ -219,7 +233,8 @@ export async function mapOpenAlexWorks(searchResults) {
       },
       year,
       authors,
-      links
+      links,
+      citation
       // relatedWorks
     }
   })

@@ -1,5 +1,4 @@
 <script setup>
-import { NFlex } from "naive-ui"
 import { useScreenSizeStore } from "../stores/screenSize.js"
 import TheSearch from "../components/TheSearch.vue"
 import HomeMap from "../components/maps/HomeMap.vue"

@@ -1,7 +1,6 @@
 <script setup>
 import { computed } from "vue"
 import { useRoute } from "vue-router"
-import { NFlex } from "naive-ui"
 import TheSearch from "../TheSearch.vue"
 import { useSearchStore } from "../../stores/search.js"
 import { useScreenSizeStore } from "../../stores/screenSize.js"

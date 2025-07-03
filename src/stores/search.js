@@ -7,7 +7,6 @@ import { mapOpenAlexWorks } from "../utils/mapOpenAlexWorks.js"
 import { createSdgWorkNodes } from "../utils/createSdgWorkNodes.js"
 import { createFieldWorkNodes } from "../utils/createFieldWorkNodes.js"
 import { noSearchResults } from "../utils/messages.js"
-import { useMessage } from "naive-ui"
 
 export const useSearchStore = defineStore("search", () => {
   // Use of test data!! ///////////////////////////////////
@@ -30,10 +29,6 @@ export const useSearchStore = defineStore("search", () => {
   // Use the router
   const router = useRouter()
   const route = useRoute()
-
-  // The message instance for this component. It will be sent to the
-  // corresponding utils function
-  const message = useMessage()
 
   const screenSize = useScreenSizeStore()
   const graph = useGraphStore()
@@ -121,7 +116,7 @@ export const useSearchStore = defineStore("search", () => {
   }
 
   // Function to to conduct user search and transform search results to kmapper data
-  async function searchAndMapContent() {
+  async function searchAndMapContent(messageInstance) {
     try {
       // Search OpenAlex
       toggleLoading() // Start loading indication
@@ -184,7 +179,7 @@ export const useSearchStore = defineStore("search", () => {
       } else {
         graph.setHomeMapGraph(null)
         graph.incrementNumberOfGraphs()
-        noSearchResults(message, searchQuery.value)
+        noSearchResults(messageInstance, searchQuery.value)
       }
 
       toggleLoading() // End loading indication

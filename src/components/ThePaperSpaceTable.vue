@@ -45,7 +45,7 @@ const columns = [
     }
   },
   { title: "Title", key: "title" },
-  { title: "Year", key: "year" },
+  { title: "Year", key: "year", width: 60 },
   {
     title: "SDG",
     key: "sdg",
@@ -74,3 +74,15 @@ const columns = [
     />
   </div>
 </template>
+
+<style>
+.n-data-table-th__title {
+  font-weight: bold !important;
+}
+</style>
+
+<style scoped>
+.n-data-table :deep(.n-data-table__pagination) {
+  justify-content: center !important;
+}
+</style>

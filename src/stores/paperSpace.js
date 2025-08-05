@@ -4,6 +4,7 @@ import { paperSpaceConsentDialog } from "../utils/paperSpaceConsent.js"
 
 export const usePaperSpaceStore = defineStore("paperSpace", () => {
   const papers = ref(null)
+  const checkedPapers = ref([])
 
   function checkForConsent() {
     return localStorage.getItem("paper-space-consent")
@@ -28,6 +29,17 @@ export const usePaperSpaceStore = defineStore("paperSpace", () => {
   function removeFromPaperSpace(openAlexId) {
     papers.value = papers.value.filter((paper) => paper.openAlexId !== openAlexId)
     saveInLocalStorage(papers.value)
+  }
+
+  function removeMultiplePapers() {
+    const papersToDelete = checkedPapers.value
+
+    papersToDelete.forEach((openAlexId) => {
+      removeFromPaperSpace(openAlexId)
+    })
+    // Set back checked papers
+    const emptyArray = []
+    setCheckedPapers(emptyArray)
   }
 
   // List of OpenAlex ID currently in the paper space
@@ -77,6 +89,10 @@ export const usePaperSpaceStore = defineStore("paperSpace", () => {
     }
   }
 
+  function setCheckedPapers(keys) {
+    checkedPapers.value = keys
+  }
+
   return {
     papers,
     papersInSpace,
@@ -87,6 +103,9 @@ export const usePaperSpaceStore = defineStore("paperSpace", () => {
     saveInLocalStorage,
     loadFromLocalStorage,
     setPaperSpace,
-    checkForConsent
+    checkForConsent,
+    checkedPapers,
+    setCheckedPapers,
+    removeMultiplePapers
   }
 })

@@ -3,13 +3,12 @@ import { onMounted } from "vue"
 import { usePaperSpaceStore } from "../stores/paperSpace.js"
 import { useDialog } from "naive-ui"
 import { paperSpaceConsentDialog } from "../utils/paperSpaceConsent.js"
-import ThePaperSpaceTable from "../components/ThePaperSpaceTable.vue"
+import TheTable from "../components/paperspace/TheTable.vue"
 
 const paperSpace = usePaperSpaceStore()
 const dialog = useDialog()
 
 onMounted(() => {
-  console.log(paperSpace.papers)
   const consent = paperSpace.checkForConsent()
   if (!consent) {
     paperSpaceConsentDialog(dialog)
@@ -17,14 +16,14 @@ onMounted(() => {
 })
 </script>
 <template>
-  <n-flex vertical>
+  <div>
     <div>
       <h1>Paper Space</h1>
     </div>
     <div>
-      <ThePaperSpaceTable />
+      <TheTable />
     </div>
-  </n-flex>
+  </div>
 </template>
 
 <style scoped>

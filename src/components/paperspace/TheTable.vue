@@ -1,8 +1,9 @@
 <script setup>
 import { h } from "vue"
-import { NDataTable } from "naive-ui"
-import { usePaperSpaceStore } from "../stores/paperSpace.js"
-import { SDGs } from "../data/SDGs.js"
+import { NFlex, NDataTable } from "naive-ui"
+import { usePaperSpaceStore } from "../../stores/paperSpace.js"
+import { SDGs } from "../../data/SDGs.js"
+import TheControls from "./TheControls.vue"
 
 const paperSpace = usePaperSpaceStore()
 
@@ -62,17 +63,31 @@ const columns = [
   },
   { title: "Query", key: "query" }
 ]
+
+function handleCheck(rowKeys) {
+  console.log(rowKeys)
+  paperSpace.setCheckedPapers(rowKeys)
+}
 </script>
 
 <template>
-  <div>
-    <n-data-table
-      :columns="columns"
-      :data="paperSpace.papers"
-      :pagination="{ pageSize: 10 }"
-      :row-key="(row) => row.openAlexId"
-    />
-  </div>
+  <n-flex vertical>
+    <div class="paper-space-controls">
+      <div v-if="paperSpace.checkedPapers.length">
+        <TheControls />
+      </div>
+    </div>
+    <div>
+      <n-data-table
+        :columns="columns"
+        :data="paperSpace.papers"
+        :pagination="{ pageSize: 10 }"
+        :row-key="(row) => row.openAlexId"
+        :checked-row-keys="paperSpace.checkedPapers"
+        @update:checked-row-keys="handleCheck"
+      />
+    </div>
+  </n-flex>
 </template>
 
 <style>
@@ -84,5 +99,8 @@ const columns = [
 <style scoped>
 .n-data-table :deep(.n-data-table__pagination) {
   justify-content: center !important;
+}
+.paper-space-controls {
+  min-height: 34px;
 }
 </style>

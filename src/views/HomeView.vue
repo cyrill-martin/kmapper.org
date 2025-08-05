@@ -6,16 +6,10 @@ import { useScreenSizeStore } from "../stores/screenSize.js"
 const screenSize = useScreenSizeStore()
 const logoSize = computed(() => (screenSize.isMobile ? "150px" : "250px"))
 const bottomMargin = computed(() => (screenSize.isMobile ? "0 0 10px 0" : "0 0 25px 0"))
-const desktopHome = computed(() => (screenSize.isMobile ? false : true))
-const homeJustify = computed(() => (screenSize.isMobile ? "start" : "center"))
 </script>
 
 <template>
-  <n-flex
-    vertical
-    :justify="homeJustify"
-    :class="{ desktopHome: desktopHome, mobileHome: !desktopHome }"
-  >
+  <n-flex vertical class="homeContainer">
     <div>
       <img
         :style="{ width: logoSize }"
@@ -34,11 +28,15 @@ const homeJustify = computed(() => (screenSize.isMobile ? "start" : "center"))
 </template>
 
 <style>
-.desktopHome {
+.homeContainer {
   flex: 1;
   margin: 0 30vw;
+  padding-top: 25vh;
 }
-.mobileHome {
-  flex: 1;
+@media (max-width: 1000px) {
+  .homeContainer {
+    margin: 0 5vw;
+    padding-top: 5vh;
+  }
 }
 </style>

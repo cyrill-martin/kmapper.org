@@ -31,7 +31,7 @@ const bottomMargin = computed(() => (screenSize.isMobile ? "0 0 10px 0" : "0 0 2
 .homeContainer {
   flex: 1;
   margin: 0 30vw;
-  padding-top: 25vh;
+  padding-top: 15vh;
 }
 @media (max-width: 1000px) {
   .homeContainer {

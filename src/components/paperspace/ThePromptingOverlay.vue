@@ -49,11 +49,13 @@ function listFields(links) {
     .join(listDelimiter)
 }
 
-function createTextFormat(paper) {
+function createTextFormat(paper, index) {
   const sdgs = listSDGs(paper.links)
   const fields = listFields(paper.links)
 
-  return `Title: ${paper.title}
+  return `*Paper ${index + 1}*
+
+Title: ${paper.title}
 Year: ${paper.year}
 Journal: ${paper.source.name}
 URL: ${paper.url}
@@ -68,8 +70,8 @@ async function listCheckedPapersDate() {
     return paperSpace.checkedPapers.includes(paper.openAlexId)
   })
 
-  const paperArray = relevantPapers.map((paper) => {
-    return createTextFormat(paper)
+  const paperArray = relevantPapers.map((paper, index) => {
+    return createTextFormat(paper, index)
   })
 
   return paperArray.join(`

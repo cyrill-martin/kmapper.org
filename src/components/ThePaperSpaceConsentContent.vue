@@ -12,8 +12,8 @@
         third parties.
       </li>
       <li>
-        <strong>Fully controllable by you:</strong> You can view, manage, or delete your saved
-        papers anytime in the Paper Space.
+        <strong>Fully controllable by you:</strong> You can view and delete your saved papers
+        anytime in the Paper Space.
       </li>
       <li>
         <strong>Persistent:</strong> It will remain in your browser's local storage until your

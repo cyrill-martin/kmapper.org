@@ -136,7 +136,7 @@ export const useSearchStore = defineStore("search", () => {
         // Map OpenAlex results to kmapper home map
         const homeMapGraph = await mapOpenAlexWorks(searchResults.value)
 
-        console.log(homeMapGraph)
+        // console.log(homeMapGraph)
 
         graph.setHomeMapGraph(homeMapGraph)
         // console.log("Home graph", graph.homeMapGraph)

@@ -65,7 +65,6 @@ const columns = [
 ]
 
 function handleCheck(rowKeys) {
-  console.log(rowKeys)
   paperSpace.setCheckedPapers(rowKeys)
 }
 </script>

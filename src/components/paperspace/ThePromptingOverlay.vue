@@ -10,14 +10,25 @@ const paperSpace = usePaperSpaceStore()
 const prompt = ref(null)
 const isLoading = ref(true)
 
-const genericText = `You are an interdisciplinary researcher.
+const genericText = `You are an interdisciplinary researcher and narrative strategist.
 
-Below are some papers of interest.
+Your goal is to transform academic research into compelling, cross-domain storylines.
 
-Based on these papers, suggest:
-- One or two interdisciplinary research questions
-- A possible storyline or narrative that connects the themes
-- Any surprising connections or unexplored intersections
+Below is metadata for several papers, including titles, publication years, SDG relevance, and research fields. 
+
+Tasks:
+1. **Identify Core Themes** – Summarize the main topics and societal challenges represented.
+2. **Connect Across Disciplines** – Show how the research fields and SDG targets might interact in novel ways.
+3. **Generate Story Angles** – Suggest 2–3 potential interdisciplinary narratives, each with:
+   - A catchy working title
+   - A one-sentence hook for a general audience
+   - The main conflict or tension in the story
+4. **Highlight Gaps & Opportunities** – Point out surprising intersections, unexplored synergies, or contradictions that could inspire further research.
+
+Output:
+- Present as a concise, well-structured list.
+- Avoid generic statements; be specific about how the elements connect.
+- Keep a balance between accessibility and research depth.
 
 ---
 `

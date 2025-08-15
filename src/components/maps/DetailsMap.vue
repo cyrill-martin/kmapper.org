@@ -1373,12 +1373,23 @@ function handlePaperSpace() {
         </n-collapse-item>
       </n-collapse>
     </div>
-    <div class="paper-space-controls" @click="handlePaperSpace">
+    <!-- <div class="paper-space-controls" @click="handlePaperSpace">
       <n-icon :size="paperSpaceIconSize">
         <Checkmark v-if="isPaperInSpace" />
         <AddCircleOutline v-else />
       </n-icon>
       <span>{{ paperSpaceIconText }}</span>
+    </div> -->
+    <div class="paper-space-controls" @click="handlePaperSpace">
+      <Transition name="fade" mode="out-in">
+        <div :key="isPaperInSpace ? 'in-space' : 'not-in-space'" class="icon-text-wrapper">
+          <n-icon :size="paperSpaceIconSize">
+            <Checkmark v-if="isPaperInSpace" />
+            <AddCircleOutline v-else />
+          </n-icon>
+          <span>{{ paperSpaceIconText }}</span>
+        </div>
+      </Transition>
     </div>
   </div>
   <div id="details-map"></div>
@@ -1427,5 +1438,23 @@ function handlePaperSpace() {
 }
 .details-work-abstract {
   margin-top: 0.5rem;
+}
+
+.icon-text-wrapper {
+  /* This is the key to fixing the alignment */
+  display: flex;
+  align-items: center; /* Vertically aligns the icon and text */
+  gap: 5px; /* Adds a small space between the icon and text */
+}
+
+/* Existing transition styles */
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.2s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
 }
 </style>

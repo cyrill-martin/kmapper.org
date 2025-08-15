@@ -33,6 +33,6 @@ function handlePrompting() {
         </template>
       </n-button>
     </template>
-    Generate prompt input
+    Generate prompt
   </n-tooltip>
 </template>

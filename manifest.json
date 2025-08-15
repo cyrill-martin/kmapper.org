@@ -3,38 +3,38 @@
     "file": "assets/MapView-a0d80116.css",
     "src": "MapView.css"
   },
-  "_DetailsMapContainer-c284abbd.js": {
+  "_DetailsMapContainer-12e47000.js": {
     "dynamicImports": [
       "src/components/maps/DetailsMap.vue"
     ],
-    "file": "assets/DetailsMapContainer-c284abbd.js",
+    "file": "assets/DetailsMapContainer-12e47000.js",
     "imports": [
       "index.html"
     ],
     "isDynamicEntry": true
   },
-  "_MapView-26b25d24.js": {
+  "_MapView-41c26786.js": {
     "css": [
       "assets/MapView-a0d80116.css"
     ],
     "dynamicImports": [
       "src/components/layout/ThePaginator.vue",
-      "_DetailsMapContainer-c284abbd.js"
+      "_DetailsMapContainer-12e47000.js"
     ],
-    "file": "assets/MapView-26b25d24.js",
+    "file": "assets/MapView-41c26786.js",
     "imports": [
       "index.html"
     ],
     "isDynamicEntry": true
   },
-  "_Pagination-7c8aaf7c.js": {
-    "file": "assets/Pagination-7c8aaf7c.js",
+  "_Pagination-b3c19644.js": {
+    "file": "assets/Pagination-b3c19644.js",
     "imports": [
       "index.html"
     ]
   },
-  "_composables-708418ab.js": {
-    "file": "assets/composables-708418ab.js",
+  "_composables-47c6a749.js": {
+    "file": "assets/composables-47c6a749.js",
     "imports": [
       "index.html"
     ]
@@ -53,10 +53,10 @@
     ],
     "dynamicImports": [
       "src/views/AboutView.vue",
-      "_MapView-26b25d24.js",
+      "_MapView-41c26786.js",
       "src/views/PaperSpaceView.vue"
     ],
-    "file": "assets/index-b050904d.js",
+    "file": "assets/index-8f13bf85.js",
     "isEntry": true,
     "src": "index.html"
   },
@@ -69,34 +69,34 @@
     "src": "src/assets/images/kmapper_k.png"
   },
   "src/components/layout/ThePaginator.vue": {
-    "file": "assets/ThePaginator-3207bd10.js",
+    "file": "assets/ThePaginator-319e9686.js",
     "imports": [
       "index.html",
-      "_Pagination-7c8aaf7c.js"
+      "_Pagination-b3c19644.js"
     ],
     "isDynamicEntry": true,
     "src": "src/components/layout/ThePaginator.vue"
   },
   "src/components/maps/DetailsMap.css": {
-    "file": "assets/DetailsMap-894c5910.css",
+    "file": "assets/DetailsMap-d01612e7.css",
     "src": "src/components/maps/DetailsMap.css"
   },
   "src/components/maps/DetailsMap.vue": {
     "css": [
-      "assets/DetailsMap-894c5910.css"
+      "assets/DetailsMap-d01612e7.css"
     ],
-    "file": "assets/DetailsMap-84db61e5.js",
+    "file": "assets/DetailsMap-fb79ffff.js",
     "imports": [
-      "_MapView-26b25d24.js",
       "index.html",
-      "_DetailsMapContainer-c284abbd.js",
-      "_composables-708418ab.js"
+      "_MapView-41c26786.js",
+      "_DetailsMapContainer-12e47000.js",
+      "_composables-47c6a749.js"
     ],
     "isDynamicEntry": true,
     "src": "src/components/maps/DetailsMap.vue"
   },
   "src/views/AboutView.vue": {
-    "file": "assets/AboutView-ab675959.js",
+    "file": "assets/AboutView-e13f1075.js",
     "imports": [
       "index.html"
     ],
@@ -111,11 +111,11 @@
     "css": [
       "assets/PaperSpaceView-d6a1f7d3.css"
     ],
-    "file": "assets/PaperSpaceView-f4d78f17.js",
+    "file": "assets/PaperSpaceView-6c58d46d.js",
     "imports": [
       "index.html",
-      "_composables-708418ab.js",
-      "_Pagination-7c8aaf7c.js"
+      "_composables-47c6a749.js",
+      "_Pagination-b3c19644.js"
     ],
     "isDynamicEntry": true,
     "src": "src/views/PaperSpaceView.vue"

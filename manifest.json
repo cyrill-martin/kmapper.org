@@ -3,38 +3,38 @@
     "file": "assets/MapView-e113aa6a.css",
     "src": "MapView.css"
   },
-  "_DetailsMapContainer-a8f8607f.js": {
+  "_DetailsMapContainer-d551283b.js": {
     "dynamicImports": [
       "src/components/maps/DetailsMap.vue"
     ],
-    "file": "assets/DetailsMapContainer-a8f8607f.js",
+    "file": "assets/DetailsMapContainer-d551283b.js",
     "imports": [
       "index.html"
     ],
     "isDynamicEntry": true
   },
-  "_MapView-457ceb43.js": {
+  "_MapView-34404432.js": {
     "css": [
       "assets/MapView-e113aa6a.css"
     ],
     "dynamicImports": [
       "src/components/layout/ThePaginator.vue",
-      "_DetailsMapContainer-a8f8607f.js"
+      "_DetailsMapContainer-d551283b.js"
     ],
-    "file": "assets/MapView-457ceb43.js",
+    "file": "assets/MapView-34404432.js",
     "imports": [
       "index.html"
     ],
     "isDynamicEntry": true
   },
-  "_Pagination-3f5d4ed0.js": {
-    "file": "assets/Pagination-3f5d4ed0.js",
+  "_Pagination-384d5f28.js": {
+    "file": "assets/Pagination-384d5f28.js",
     "imports": [
       "index.html"
     ]
   },
-  "_composables-8d1af27a.js": {
-    "file": "assets/composables-8d1af27a.js",
+  "_composables-24f6afa2.js": {
+    "file": "assets/composables-24f6afa2.js",
     "imports": [
       "index.html"
     ]
@@ -53,10 +53,10 @@
     ],
     "dynamicImports": [
       "src/views/AboutView.vue",
-      "_MapView-457ceb43.js",
+      "_MapView-34404432.js",
       "src/views/PaperSpaceView.vue"
     ],
-    "file": "assets/index-587d60a6.js",
+    "file": "assets/index-622bcd32.js",
     "isEntry": true,
     "src": "index.html"
   },
@@ -69,10 +69,10 @@
     "src": "src/assets/images/kmapper_k.png"
   },
   "src/components/layout/ThePaginator.vue": {
-    "file": "assets/ThePaginator-4f3669a8.js",
+    "file": "assets/ThePaginator-35aad5c0.js",
     "imports": [
       "index.html",
-      "_Pagination-3f5d4ed0.js"
+      "_Pagination-384d5f28.js"
     ],
     "isDynamicEntry": true,
     "src": "src/components/layout/ThePaginator.vue"
@@ -85,18 +85,18 @@
     "css": [
       "assets/DetailsMap-bc52c01a.css"
     ],
-    "file": "assets/DetailsMap-e611a706.js",
+    "file": "assets/DetailsMap-bc40e86e.js",
     "imports": [
       "index.html",
-      "_MapView-457ceb43.js",
-      "_DetailsMapContainer-a8f8607f.js",
-      "_composables-8d1af27a.js"
+      "_MapView-34404432.js",
+      "_DetailsMapContainer-d551283b.js",
+      "_composables-24f6afa2.js"
     ],
     "isDynamicEntry": true,
     "src": "src/components/maps/DetailsMap.vue"
   },
   "src/views/AboutView.vue": {
-    "file": "assets/AboutView-1bdf6e2f.js",
+    "file": "assets/AboutView-93b2b122.js",
     "imports": [
       "index.html"
     ],
@@ -111,11 +111,11 @@
     "css": [
       "assets/PaperSpaceView-d6a1f7d3.css"
     ],
-    "file": "assets/PaperSpaceView-75afbadb.js",
+    "file": "assets/PaperSpaceView-b22efa7c.js",
     "imports": [
       "index.html",
-      "_composables-8d1af27a.js",
-      "_Pagination-3f5d4ed0.js"
+      "_composables-24f6afa2.js",
+      "_Pagination-384d5f28.js"
     ],
     "isDynamicEntry": true,
     "src": "src/views/PaperSpaceView.vue"

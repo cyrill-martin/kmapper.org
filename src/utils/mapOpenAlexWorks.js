@@ -57,8 +57,9 @@ export async function mapOpenAlexWorks(searchResults) {
 
   // Authors
   function getAuthors(work) {
-    const authors = work.authorships.length
-      ? work.authorships.map((authorObj) => ({
+    const authorships = work.authorships || []
+    const authors = authorships.length
+      ? authorships.map((authorObj) => ({
           name: authorObj.author.display_name,
           orcid: authorObj.author.orcid || null
         }))
@@ -69,8 +70,10 @@ export async function mapOpenAlexWorks(searchResults) {
 
   // SDGs
   function getSdgs(work) {
-    return work.sustainable_development_goals.length
-      ? work.sustainable_development_goals
+    const sustainable_development_goals = work.sustainable_development_goals || []
+
+    return sustainable_development_goals.length
+      ? sustainable_development_goals
           .filter((sdg) => sdg.score > thresholds.sdg)
           .map((sdg) => {
             const sdgId = sdg.id.replace("https://metadata.un.org/sdg/", "")
@@ -94,7 +97,8 @@ export async function mapOpenAlexWorks(searchResults) {
   }
 
   function getFields(work) {
-    const workTopics = work.topics.filter((topic) => topic.score > thresholds.field)
+    const topics = work.topics || []
+    const workTopics = topics.filter((topic) => topic.score > thresholds.field)
 
     if (workTopics.length) {
       let theseUniqueFields = new Set()
@@ -108,7 +112,7 @@ export async function mapOpenAlexWorks(searchResults) {
       })
       return [...theseUniqueFields].map((field) => ({ type: "field", id: field }))
     } else {
-      return getFirstField(work.topics)
+      return getFirstField(topics)
     }
   }
 

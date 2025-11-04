@@ -804,15 +804,15 @@ function fillTooltip(data) {
     .text(`${data.year}${data.source.name ? `: ${data.source.name}` : ""}`)
 }
 
-function showHideTooltip(type, DOMRect) {
-  // console.log(DOMRect)
-  tooltip.value.style("visibility", type === "mouseover" ? "visible" : "hidden")
+function showHideTooltip(type) {
+  type === "mouseover"
+    ? tooltip.value.classed("visible", true)
+    : tooltip.value.classed("visible", false)
+
   tooltip.value
     .style("width", `${mapWidth.value}px`)
     .style("left", `${(screenSize.width - screenSize.modalWidth) / 2}px`)
-    // .style("left", `${DOMRect.left + DOMRect.width / 2 - 450}px`)
-    .style("top", `${DOMRect.top - 85}px`)
-  // 450 is half of the tooltip's width as set in the <style>
+    .style("top", 0)
 }
 
 function addShownWorksMouseEvents(callback) {
@@ -932,11 +932,6 @@ function drawWorksInFirstGroup(data, callback1, callback2) {
             .text((d) => d.title)
           // Adding an overlay rectangle in order to handle mouse events
           workGroup.append("rect").attr("class", "first-group-work-overlay")
-          // .each(function () {
-          //   d3.select(this)
-          //     .append("title")
-          //     .text((d) => d.title)
-          // })
 
           const circleGroup = d3
             .select(this)
@@ -1373,13 +1368,6 @@ function handlePaperSpace() {
         </n-collapse-item>
       </n-collapse>
     </div>
-    <!-- <div class="paper-space-controls" @click="handlePaperSpace">
-      <n-icon :size="paperSpaceIconSize">
-        <Checkmark v-if="isPaperInSpace" />
-        <AddCircleOutline v-else />
-      </n-icon>
-      <span>{{ paperSpaceIconText }}</span>
-    </div> -->
     <div class="paper-space-controls" @click="handlePaperSpace">
       <Transition name="fade" mode="out-in">
         <div :key="isPaperInSpace ? 'in-space' : 'not-in-space'" class="icon-text-wrapper">
@@ -1398,17 +1386,28 @@ function handlePaperSpace() {
 <style scoped>
 #details-tooltip {
   text-align: center;
-  visibility: hidden;
-  position: fixed;
+  position: absolute;
   z-index: 15;
   background-color: rgb(81, 78, 253, 0.9);
   color: #f7f7f7;
   border-radius: 0px;
   padding: 5px;
+
+  opacity: 0;
+  visibility: hidden;
+
+  transition:
+    opacity 0.3s ease,
+    visibility 0s linear 0.3s;
 }
 
 .tooltip-citation {
   font-size: 0.85rem;
+}
+
+#details-tooltip.visible {
+  opacity: 1;
+  visibility: visible;
 }
 
 .details-work-title {

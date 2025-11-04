@@ -386,14 +386,12 @@ function fillTooltip(data) {
     .text(`${data.year}${data.source.name ? `: ${data.source.name}` : ""}`)
 }
 
-function showHideTooltip(type, DOMRect) {
-  // console.log(DOMRect)
-  tooltip.value.style("visibility", type === "mouseover" ? "visible" : "hidden")
-  tooltip.value
-    .style("width", `${screenSize.width}px`)
-    .style("left", `${DOMRect.left + DOMRect.width / 2 - screenSize.width / 2}px`)
-    .style("top", `${DOMRect.top - 85}px`)
-  // 450 is half of the tooltip's width as set in the <style>
+function showHideTooltip(type) {
+  type === "mouseover"
+    ? tooltip.value.classed("visible", true)
+    : tooltip.value.classed("visible", false)
+
+  tooltip.value.style("width", `${screenSize.width}px`).style("left", 0).style("top", 0)
 }
 
 // Add work mouse events
@@ -1077,16 +1075,28 @@ function addClickEvents() {
 <style scoped>
 #tooltip {
   text-align: center;
-  visibility: hidden;
   position: fixed;
   z-index: 10;
-  background-color: rgb(81, 78, 253, 0.9);
+  background-color: rgba(81, 78, 253, 0.9);
   color: #f7f7f7;
-  border-radius: 0px;
+  border-radius: 0;
   padding: 5px;
+
+  opacity: 0;
+  visibility: hidden;
+
+  transition:
+    opacity 0.3s ease,
+    visibility 0s linear 0.3s;
 }
 
 .tooltip-citation {
   font-size: 0.85rem;
+}
+
+/* visible state added by JS */
+#tooltip.visible {
+  opacity: 1;
+  visibility: visible;
 }
 </style>

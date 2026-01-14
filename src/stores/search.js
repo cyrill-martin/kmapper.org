@@ -46,7 +46,7 @@ export const useSearchStore = defineStore("search", () => {
   const isValidSearchQuery = computed(
     () => searchQuery.value && searchQuery.value.trim().length !== 0
   )
-  const politeMail = ref("mail@kmapper.com")
+  const apiKey = ref("PPBj7ss2iUW6W2O5dPO9SR")
 
   const defaultPublicationYear = ref(null)
   const publicationYear = ref(defaultPublicationYear.value)
@@ -83,13 +83,13 @@ export const useSearchStore = defineStore("search", () => {
       const page = obj.page
       const publicationYear = obj.publicationYear
       const oaStatus = obj.oaStatus
-      const email = obj.email
+      const key = obj.key
 
       try {
         let url = `https://api.openalex.org/works?search=${query}&per-page=${perPage}&page=${page}`
         url = `${url}&filter=open_access.oa_status:${oaStatus}`
         url = publicationYear ? `${url},publication_year:${publicationYear}` : url
-        url = url + `&mailto=${email}`
+        url = url + `&api_key=${key}`
 
         console.log("GET", url)
 
@@ -127,7 +127,7 @@ export const useSearchStore = defineStore("search", () => {
         page: page.value,
         oaStatus: oaStatus.value.join("|"),
         publicationYear: publicationYear.value,
-        email: politeMail.value
+        key: apiKey.value
       })
 
       // console.log("Search results", searchResults.value)
@@ -222,7 +222,7 @@ export const useSearchStore = defineStore("search", () => {
     toggleLoading,
     hasSearchResults,
     isValidSearchQuery,
-    politeMail,
+    apiKey,
     testData,
     publicationYear,
     setPublicationYear,

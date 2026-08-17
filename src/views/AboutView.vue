@@ -14,8 +14,8 @@
     <p>This is an ongoing experiment and I welcome your feedback.</p>
     <p>
       Cyrill Martin <br />
-      <a href="https://kmapper.com" target="_blank">kmapper GmbH</a><br />
-      <a href="mailto:cyrill.martin@kmapper.com">cyrill.martin@kmapper.com</a>
+      <a href="https://kmapper.ch" target="_blank">kmapper GmbH</a><br />
+      <a href="mailto:cyrill.martin@kmapper.ch">cyrill.martin@kmapper.ch</a>
     </p>
   </n-flex>
 </template>

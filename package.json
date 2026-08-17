@@ -14,7 +14,6 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/cyrill-martin/kmapper.org.git"
-    
   },
   "homepage": "https://github.com/cyrill-martin/kmapper.org",
   "dependencies": {
@@ -37,5 +36,9 @@
     "naive-ui": "^2.37.3",
     "prettier": "^3.0.3",
     "vite": "^4.4.9"
+  },
+  "allowScripts": {
+    "esbuild@0.18.20": true,
+    "vue-demi@0.14.6": true
   }
 }

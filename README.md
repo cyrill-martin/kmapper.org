@@ -6,7 +6,7 @@ It also visualizes the relevant Sustainable Development Goals and research domai
 This is an ongoing experiment and I welcome your feedback.
 
 Cyrill Martin
-cyrill.martin@kmapper.com
+cyrill.martin@kmapper.ch
 
 # What's Going On?
 
